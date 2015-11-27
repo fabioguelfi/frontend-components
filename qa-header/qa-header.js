@@ -17,6 +17,9 @@ Polymer(
         logoTitle: {
           type: String
         },
+        componentsPath: {
+          type: String
+        },
         user: {
         	type: Object
         }
