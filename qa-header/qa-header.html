@@ -1,17 +1,13 @@
 <dom-module id="qa-header">
 	<link rel="stylesheet" href="qa-header.css">
-	<link rel="import" href="/bower_components/iron-icons/iron-icons.html">
-	<link rel="import" href="/bower_components/paper-icon-button/paper-icon-button.html">
+	<link rel="import" href="{{ componentsPath }}/iron-icons/iron-icons.html">
+	<link rel="import" href="{{ componentsPath }}/paper-icon-button/paper-icon-button.html">
 
 	<template>
 
-		<!-- left -->
 		<div class="header-left">
-			<!-- <a href="#" on-click="menuClick" class="menu-icon">
-				<paper-icon-button icon="menu"></paper-icon-button>
-			</a> -->
 			<div>
-				<h1><img class="logo" src="https://d406l28ic3dl5.cloudfront.net/5a-logo.svg"/><span>| CRM</span></h1>
+				<h1><img class="logo" src="https://d406l28ic3dl5.cloudfront.net/5a-logo.svg"/><span>{{ logoTitle }}</span></h1>
 			</div>
 		</div>
 
@@ -22,8 +18,8 @@
 		
 		<div class="user">
 			<div class="user-info">
-				<p class="name">{{name}}</p>
-				<p class="role">{{perfil}}</p>
+				<p class="name">{{ user.name }}</p>
+				<p class="role">{{ user.role }}</p>
 			</div>
 			<figure class="user-photo">
 				<img src="http://lorempixel.com/65/65/sports/" alt="" />
@@ -31,11 +27,7 @@
 		</div>
 	</div>
 
-
 	</template>
-
-
-
 
 	<script type="text/javascript" src="qa-header.js"></script>
 </dom-module>
