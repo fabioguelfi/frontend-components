@@ -1,0 +1,37 @@
+/*
+ * Created by Willianson
+ * At 2015.08.19
+ */
+
+
+
+
+/* base
+---------------------------------------------------------------------------------------*/
+qa-header 						{ display:block; position:relative; top:0; right:0; left:0; z-index:1; height:70px; background:#00A2F6; color: #FFF;}
+qa-header 						{  }
+
+
+qa-header .logo{display: inline-block; vertical-align: middle;}
+
+
+/* left
+---------------------------------------------------------------------------------------*/
+qa-header div.header-left 			{ float:left; }
+qa-header div.header-left a 		{ float:left; /*line-height:67px;*/ padding:12px 25px; }
+qa-header div.header-left div 		{ float:left; padding:0; }
+qa-header div.header-left div h1 	{ line-height:67px; font-size:22px; }
+qa-header div.header-left div h1 span { opacity: 0.7; position: relative; top: 1px;}
+qa-header div.header-left .menu-icon { color: #FFF; }
+
+
+
+/* right
+---------------------------------------------------------------------------------------*/
+qa-header div.header-right									{ float:right; padding:0 25px; }
+qa-header div.header-right div.user							{ display:inline-block; }
+qa-header div.header-right div.user div.user-info			{ float:left; padding:15px 25px; line-height:140%; text-align:right; }
+qa-header div.header-right div.user div.user-info p.name	{ opacity:0.8; font-size:18px; }
+qa-header div.header-right div.user div.user-info p.role	{ font-size:13px; }
+qa-header div.header-right div.user figure.user-photo		{ float:right; margin-top:7px; width:54px; height:54px; border-radius:50%; border:1px solid rgba(0,0,0,0.4); background:rgba(0,0,0,0.2); overflow:hidden; }
+qa-header div.header-right div.user figure.user-photo img	{ display:block; width:100%; }
