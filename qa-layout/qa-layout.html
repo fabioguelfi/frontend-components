@@ -5,43 +5,34 @@
 
 
 
-
 <!-- components -->
-<link rel="import" href="/bower_components/qa-components/qa-header/qa-header.html">
-<link rel="import" href="/bower_components/qa-components/qa-submenu/qa-submenu.html">
-<link rel="import" href="/bower_components/qa-components/qa-navigation/qa-navigation.html">
-
-
-
+<link rel="import" href="../qa-header/qa-header.html">
+<link rel="import" href="../qa-submenu/qa-submenu.html">
+<link rel="import" href="../qa-navigation/qa-navigation.html">
 
 <dom-module id="qa-layout">
 	<link rel="stylesheet" href="qa-layout.css">
 
-
-
-
 	<template>
 
-
-		<!-- header -->
-		<qa-header></qa-header>
+		<template is="dom-if" if="{{ !dontShowHeader }}">
+			<!-- header -->
+			<qa-header components-path="{{ componentsPath }}"></qa-header>
+		</template>
 		
-		<!-- submenu -->
-		<qa-submenu></qa-submenu>
+		<template is="dom-if" if="{{ !dontShowSubmenu }}">
+			<!-- submenu -->
+			<qa-submenu></qa-submenu>
+		</template>
 
-
-		<!-- navigation -->
-		<qa-navigation></qa-navigation>
-
+		<template is="dom-if" if="{{ !dontShowNavigation }}">
+			<!-- navigation -->
+			<qa-navigation components-path="{{ componentsPath }}"></qa-navigation>
+		</template>
 
 		<!-- content -->
 		<main><content></content></main>
-
-
 	</template>
-
-
-
 
 	<script type="text/javascript" src="qa-layout.js"></script>
 </dom-module>

@@ -1,0 +1,48 @@
+<!--
+	Created by Willianson
+	At 2015.08.19
+-->
+
+
+
+
+<dom-module id="qa-navigation">
+	<link rel="stylesheet" href="qa-navigation.css">
+
+
+	<template>
+	
+		<link rel="import" href="{{ componentsPath }}/iron-flex-layout/iron-flex-layout.html">
+		<link rel="import" href="{{ componentsPath }}/iron-icons/iron-icons.html">
+		<link rel="import" href="{{ componentsPath }}/paper-icon-button/paper-icon-button.html">	
+
+		<!-- overlay -->
+		<div class="overlay transition" on-click="close"></div>
+
+		<!-- left -->
+		<nav class="transition">
+			<header class="flex">
+				<h3 class="flex-item">Navegação</h3>
+				<a href="#" on-click="close">
+					<paper-icon-button icon="arrow-back"></paper-icon-button>
+				</a>
+			</header>
+
+			<dl>
+				<dt><a href="#">Link A</a></dt>
+				<dt><a href="#">Link B</a></dt>
+				<dt><a href="#">Link C</a></dt>
+				<dd><a href="#">Link C.1</a></dd>
+				<dd><a href="#">Link C.2</a></dd>
+				<dt><a href="#">Link D</a></dt>
+			</dl>
+		</nav>
+
+
+	</template>
+
+
+
+
+	<script type="text/javascript" src="qa-navigation.js"></script>
+</dom-module>
