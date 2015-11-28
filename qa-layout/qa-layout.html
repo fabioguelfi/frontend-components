@@ -17,7 +17,7 @@
 
 		<template is="dom-if" if="{{ !dontShowHeader }}">
 			<!-- header -->
-			<qa-header components-path="{{ componentsPath }}"></qa-header>
+			<qa-header components-path="{{ componentsPath }}" logo-title="{{ logoTitle }}" user-name="{{ userName }}" user-role="{{ userRole }}"></qa-header>
 		</template>
 		
 		<template is="dom-if" if="{{ !dontShowSubmenu }}">

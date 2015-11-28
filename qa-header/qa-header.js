@@ -20,15 +20,19 @@ Polymer(
         componentsPath: {
           type: String
         },
-        user: {
-        	type: Object
-        }
+		userName: {
+		  	type: String
+		},
+		userRole: {
+		  	type: String
+		}
       },	
 
 	/* init
 	---------------------------------------------------------------------------*/
 
 	ready: function() {
+		console.log('user header =  ' + JSON.stringify(this.user));
 	}
 
 

@@ -30,12 +30,23 @@ Polymer(
         dontShowNavigation: {
             type: Boolean,
             value: false
-        }
+        },
+        logoTitle: {
+            type: String
+		},
+		userName: {
+		  	type: String
+		},
+		userRole: {
+		  	type: String
+		}
       },
 
 	/* init
 	---------------------------------------------------------------------------*/
     ready: function() {
+    	
+    	
     },
 
 
