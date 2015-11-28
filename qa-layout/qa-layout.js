@@ -36,9 +36,6 @@ Polymer(
 	/* init
 	---------------------------------------------------------------------------*/
     ready: function() {
-    	console.log('this.showHeaderSection1 = ' + this.dontShowHeader);
-    	console.log('this.showSubmenuSection1 = ' + this.dontShowSubmenu);
-    	console.log('this.showNavigationSection1 = ' + this.dontShowNavigation);
     },
 
 
