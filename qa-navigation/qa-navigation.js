@@ -16,6 +16,12 @@ Polymer(
 	/* properties
 	---------------------------------------------------------------------------*/
 	nome: "test",
+	properties: {
+        componentsPath: {
+          type: String
+        }
+      },
+	
 
 
 
