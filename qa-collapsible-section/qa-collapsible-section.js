@@ -1,33 +1,32 @@
 Polymer(
 {
-	is: 'qa-header',
+	is: 'qa-collapsible-section',
 
 
 	/* properties
 	---------------------------------------------------------------------------*/
 	properties: {
-        logoTitle: {
-          type: String
-        },
-        componentsPath: {
-          type: String
-        },
-		userName: {
-		  	type: String
-		},
-		userRole: {
-		  	type: String
-		}
-      },	
+		legend: String,
+		targetId: String,
+	},
+
 
 	/* init
 	---------------------------------------------------------------------------*/
 
+	
 	ready: function() {
+		this.target = "#" + this.targetId;
 
-	}
+	},
 
 
 	/* methods
 	---------------------------------------------------------------------------*/
+
+	toggle: function(e) {
+	    $(e.target.getAttribute('data-target')).toggle();
+	    $(e.target).find('.ico').toggleClass('open');
+	},
+
 });

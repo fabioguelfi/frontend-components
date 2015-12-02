@@ -1,33 +1,40 @@
 Polymer(
 {
-	is: 'qa-header',
+	is: 'qa-fieldset',
+
+
 
 
 	/* properties
 	---------------------------------------------------------------------------*/
 	properties: {
-        logoTitle: {
-          type: String
-        },
-        componentsPath: {
-          type: String
-        },
-		userName: {
-		  	type: String
+		legend: String,
+		dataLegend: {
+			type: Number,
+			observer: "_dataChanged"
 		},
-		userRole: {
-		  	type: String
+	},
+
+	_dataChanged: function() {
+		var self = this;
+		if(self.dataLegend !== undefined){
+			self.legend += self.dataLegend;
 		}
-      },	
+	},
+
 
 	/* init
 	---------------------------------------------------------------------------*/
 
+	
 	ready: function() {
 
-	}
+
+	},
 
 
 	/* methods
 	---------------------------------------------------------------------------*/
+
+
 });

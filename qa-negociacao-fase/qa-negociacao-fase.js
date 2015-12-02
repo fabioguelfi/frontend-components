@@ -1,33 +1,31 @@
 Polymer(
 {
-	is: 'qa-header',
+
+	is: 'qa-negociacao-fase',
+
 
 
 	/* properties
 	---------------------------------------------------------------------------*/
 	properties: {
-        logoTitle: {
-          type: String
-        },
-        componentsPath: {
-          type: String
-        },
-		userName: {
-		  	type: String
-		},
-		userRole: {
-		  	type: String
-		}
-      },	
+		colorScheme: String,
+		faseLabel: String,
+	},
+
 
 	/* init
 	---------------------------------------------------------------------------*/
 
 	ready: function() {
 
-	}
+
+	},
 
 
 	/* methods
 	---------------------------------------------------------------------------*/
+
+	
+
+
 });

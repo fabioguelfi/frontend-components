@@ -1,11 +1,3 @@
-/*
- * Created by Willianson
- * At 2015.08.19
- */
-
-
-
-
 Polymer(
 {
 	is: 'qa-layout',

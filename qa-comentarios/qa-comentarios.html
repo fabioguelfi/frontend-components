@@ -1,0 +1,48 @@
+<dom-module id="qa-comentarios">
+  <link rel="stylesheet" href="qa-comentarios.css">
+  <script type="text/javascript" src="/bower_components/underscore/underscore-min.js"></script>
+	<script type="text/javascript" src="/bower_components/moment/min/moment.min.js"></script>
+
+  <template>
+	<div>
+
+			
+
+			<div id="dvObservation">
+				<h2>Observações gerais</h2>
+				<p id="pObservation">{{observation}}</p>
+				<div id="editObservation">
+					<a href="" id="btnEditObservation"><iron-icon icon="editor:mode-edit" class="comment-icon" title="Editar"></iron-icon></a>
+					<!-- <input type="button" id="btnEditObservation" value="Editar" /> -->
+				</div>
+				<div id="dvForm" style="display:none;">
+					<form is="iron-form" method="post" id="form-observacao" class="flex" content-type="application/json">
+						<iron-icon icon="communication:comment" class="comment-icon"></iron-icon> 
+						<input id="txtObservation" autocomplete="off" class="commentbox" type="text" name="observation" rows="5" placeholder="Editar observação...">
+					</form>
+				</div>
+				
+			</div>
+
+
+			<h2>Comentários</h2>
+
+			<div id="historico">
+					<template is="dom-repeat" items="{{comments}}" >
+						<p>
+							<span>{{item.message}}</span> - <span>{{item.author}}</span> - <span>{{getDate(item.timestamp)}}</span>
+						</p>
+					</template>
+			</div>
+
+		<div>
+			<form is="iron-form" method="post" id="form-comentario" class="flex" content-type="application/json">
+				<iron-icon icon="communication:comment" class="comment-icon"></iron-icon> 
+				<input id="addCommentBtn" autocomplete="off" class="commentbox" type="text" name="comment" rows="1" placeholder="Adicionar comentário...">
+			</form>
+		</div>
+	</div>
+	</template>
+
+	<script type="text/javascript" src="qa-comentarios.js"></script>
+</dom-module>

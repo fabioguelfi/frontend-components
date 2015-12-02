@@ -1,0 +1,41 @@
+qa-comentarios input {
+    width: 93%;
+    border-color: #b0b0b0;
+    border-top: 0;
+    border-left: 0;
+    border-right: 0;
+    padding: 6px 0;
+    margin-bottom: 20px;
+    font-size: 16px;
+}
+
+qa-comentarios #form-comentario .comment-icon {
+    color: #009ae1;
+    margin-right: 5px;
+    margin-top: 5px;
+}
+
+qa-comentarios p {
+    margin: 10px 0;
+}
+
+#dvObservation p {
+    width: calc(95% - 20px);
+    display: inline-block;
+    padding-right: 20px;
+}
+
+#editObservation {
+    display: inline-block;
+    vertical-align: top;
+    width: 20px;
+}
+
+#dvForm .comment-icon {
+    color: #009ae1;
+    margin-right: 5px;
+}
+
+#historico {
+    margin-bottom: 25px;
+}

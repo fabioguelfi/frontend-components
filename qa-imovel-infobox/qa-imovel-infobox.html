@@ -1,0 +1,77 @@
+<dom-module id="qa-imovel-infobox">
+    <link rel="stylesheet" href="qa-imovel-infobox.css">
+
+    <template>
+
+		<div class="fotos clearfix">
+						<div class="item" on-click="itemClick">
+							<template is="dom-if" if="{{imovel.capa}}">
+								<a target="_blank" href="{{imovel.urlImovel}}"><img src="{{imovel.capa}}" alt=""></a>
+							</template>
+						</div>
+					</div>
+					<div class="descricao">
+						<div class="titulo"><span>{{imovel.imovelId}}</span> - <span>{{imovel.descricao}}</span> 
+							<template is="dom-if" if="{{imovel.urlImovel}}">
+								<a  class="veranuncio" target="_blank"	href="{{imovel.urlImovel}}"><i class="fa fa-eye"></i>Ver anúncio</a>
+							</template>
+							</div>
+						<div class="endereco"><span>{{imovel.endereco.logradouro}}</span>, <span>{{imovel.endereco.numero}}</span> - apto <span>{{imovel.endereco.complemento}}</span> - <span>{{imovel.endereco.bairro}}</span> - CEP <span>{{imovel.endereco.cep}}</span> - <span>{{imovel.endereco.cidade}}</span> - <span>{{imovel.endereco.estado}}</span></div>
+						<div class="caracteristicas clearfix">
+							<div class="wrapper">
+
+								<!-- items -->
+								<div class="item">
+									<h1>ÁREA ÚTIL (M²)</h1>
+									<p><span>{{imovel.caracteristicas.area}}</span></p>
+								</div>
+								<div class="item">
+									<h1>DORMIT.</h1>
+									<p><span>{{imovel.caracteristicas.quartos}}</span> <small>(<em><span>{{imovel.caracteristicas.suites}}</span> suite(s)</em>)</small></p>
+									
+								</div>
+								<div class="item">
+									<h1>GARAGENS</h1>
+									<p><span>{{imovel.caracteristicas.vagas}}</span> <small>(<em><span>{{imovel.caracteristicas.vagasTipo}}</span></em>)</small></p>
+								</div>
+								<div class="item">
+									<h1>BANHEIROS</h1>
+									<p><span>{{imovel.caracteristicas.banheiros}}</span></p>
+								</div>
+								<div class="item">
+									<h1>ANDAR</h1>
+									<p><span>{{imovel.caracteristicas.andar}}</span></p>
+								</div>
+								<div class="item">
+									<h1>ELEVADOR</h1>
+									<p><span>{{formatInfo(imovel.caracteristicas.elevador)}}</span></p>
+								</div>
+								<div class="item">
+									<h1>ANIMAIS</h1>
+									<p><span>{{imovel.caracteristicas.animais}}</span></p>
+								</div>
+
+								<div class="item">
+									<h1>MÓVEIS</h1>
+									<p><span>{{formatInfo(imovel.caracteristicas.mobiliado)}}</span></p>
+								</div>
+							</div>
+						</div>
+					</div>
+					<div class="valores">
+						<div class="pacote">Pacote<br>R$ <span>{{imovel.financeiro.total}}</span></div>
+						<div class="outros">
+							<div class="item">
+								<span class="label">Aluguel</span><span class="valor">R$ <em><span>{{imovel.financeiro.aluguel}}</span></em></span>
+							</div>
+							<div class="item">
+								<span class="label">Condominio</span><span class="valor">R$ <em><span>{{imovel.financeiro.condominio}}</span></em></span>
+							</div>
+							<div class="item">
+								<span class="label">IPTU</span><span class="valor">R$ <em><span>{{imovel.financeiro.iptu}}</span></em></span>
+							</div>								
+						</div>
+					</div>
+	</template>
+	<script type="text/javascript" src="qa-imovel-infobox.js"></script>
+</dom-module>					

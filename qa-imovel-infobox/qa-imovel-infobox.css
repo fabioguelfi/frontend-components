@@ -1,0 +1,176 @@
+/* fotos
+---------------------------------------------------------------------------------------*/
+
+div.fotos {
+    padding-right: 18px;
+    width: 165px;
+    display: inline-block;
+    vertical-align: top;
+}
+
+div.fotos div.item {
+    position: relative;
+    float: left;
+    margin-right: 10px;
+    width: 160px;
+    height: 110px;
+    text-align: center;
+    overflow: hidden;
+    background-image: url(//d406l28ic3dl5.cloudfront.net/imovel-thumb-placeholder.jpg);
+    background-size: cover;
+    background-position: center;
+}
+
+div.fotos div.item:last-of-type a::before {
+    content: attr(title);
+    display: block;
+    position: absolute;
+    top: 43%;
+    width: 100%;
+    font-weight: 600;
+    text-align: center;
+}
+
+div.fotos div.item img {
+    display: block;
+    /*margin-left:-25px;*/
+    height: 100%;
+    width: 100%;
+}
+
+/* box descrição 
+-----------------------------------------------------------------------------------*/
+
+fieldset .descricao {
+    display: inline-block;
+    width: 52%;
+    height: 100%;
+    vertical-align: top;
+}
+
+fieldset .titulo {
+    color: #00A2F6;
+    font-size: 18px;
+    margin-bottom: 5px;
+    font-weight: bold;
+}
+
+fieldset .endereco {
+    font-size: 16px;
+    line-height: 20px;
+    min-height: 42px;
+}
+
+div.caracteristicas div.wrapper div.item:last-child {
+    border-right: 0px;
+}
+
+.veranuncio {
+    font-size: 13px;
+    color: #00A2F6;
+}
+
+.veranuncio i {
+    margin: 0 5px 0 15px;
+}
+
+/* caracteristicas
+---------------------------------------------------------------------------------------*/
+
+div.caracteristicas {
+    margin-top: 6px;
+}
+
+div.caracteristicas div.wrapper {
+    display: inline-block;
+    white-space: nowrap;
+}
+
+div.caracteristicas div.wrapper div.item {
+    display: inline-block;
+    margin-right: 10px;
+    padding-right: 10px;
+    height: 40px;
+    vertical-align: top;
+    border-right: 1px solid #CCC;
+}
+
+div.caracteristicas div.wrapper div.item h1 {
+    line-height: 20px;
+    font-size: 10px;
+}
+
+div.caracteristicas div.wrapper div.item p {
+    margin: 0 0 3px;
+    line-height: 23px;
+    font-size: 16px;
+    color: #999;
+    text-align: center;
+}
+
+div.caracteristicas div.wrapper div.item small {
+    display: inline-block;
+    margin: 0;
+    line-height: 15px;
+    font-size: 9px;
+    color: #666;
+    text-align: center;
+    text-transform: uppercase;
+}
+
+
+/* valores
+---------------------------------------------------------------------------------------*/
+
+div.valores {
+    width: 280px;
+    display: inline-block;
+    float: right;
+    padding: 13px 10px 0 0;
+}
+
+div.valores .pacote {
+    display: inline-block;
+    width: 60px;
+    height: 40px;
+    background-color: #F7F7F7;
+    color: #00A2F6;
+    text-align: center;
+    padding: 20px;
+    line-height: 19px;
+}
+
+div.valores .outros {
+    float: right;
+    color: #00A2F6;
+}
+
+div.valores div.item {}
+
+div.valores div.item::after {
+    content: '';
+    display: block;
+    clear: both;
+}
+
+div.valores div.item.selected {
+    margin-bottom: 12px;
+    font-weight: 700;
+}
+
+div.valores div.item:hover {
+    background-color: rgba(0, 0, 0, 0.05);
+}
+
+div.valores div.item span {
+    padding: 4px 6px;
+    font: inherit;
+}
+
+div.valores div.item span.label {
+    float: left;
+}
+
+div.valores div.item span.valor {
+    float: right;
+}
