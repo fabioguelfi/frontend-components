@@ -32,7 +32,7 @@ Polymer(
 	load: function() {
 		
 		var self = this;
-		$.getJSON(PROPERTIES_URL + '/api/properties/' + self.imovelId, function(json, textStatus)
+		$.getJSON('/api/properties/' + self.imovelId, function(json, textStatus)
 		{
 
 			for(i=0; i<json.imovel.amenidades.length; i++){
