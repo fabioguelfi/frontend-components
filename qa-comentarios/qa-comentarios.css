@@ -9,7 +9,7 @@ qa-comentarios input {
     font-size: 16px;
 }
 
-qa-comentarios #form-comentario .comment-icon {
+qa-comentarios .form-comentario .comment-icon {
     color: #009ae1;
     margin-right: 5px;
     margin-top: 5px;
@@ -19,23 +19,23 @@ qa-comentarios p {
     margin: 10px 0;
 }
 
-#dvObservation p {
+.dvObservation p {
     width: calc(95% - 20px);
     display: inline-block;
     padding-right: 20px;
 }
 
-#editObservation {
+.editObservation {
     display: inline-block;
     vertical-align: top;
     width: 20px;
 }
 
-#dvForm .comment-icon {
+.dvForm .comment-icon {
     color: #009ae1;
     margin-right: 5px;
 }
 
-#historico {
+.historico {
     margin-bottom: 25px;
 }

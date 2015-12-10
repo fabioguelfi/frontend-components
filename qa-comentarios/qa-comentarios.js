@@ -60,41 +60,42 @@ Polymer(
 	},
 
 	attached: function() {
-		$('#form-comentario').attr('action', this.getMessagesPath());
-		$('#form-observacao').attr('action', this.getObservationPath());
-		$('#btnEditObservation').click(function(e) {
+		var self = this;
+		$(self).find('.form-comentario').attr('action', this.getMessagesPath());
+		$(self).find('.form-observacao').attr('action', this.getObservationPath());
+		$(self).find('.btnEditObservation').click(function(e) {
 			e.preventDefault();
 			$(this).hide();
-			$('#dvForm').show();
-			$('#txtObservation').val($('#pObservation').text());
-			$('#txtObservation').focus();
+			$(self).find('.dvForm').show();
+			$(self).find('.txtObservation').val($(self).find('.pObservation').text());
+			$(self).find('.txtObservation').focus();
 			
-			$('#pObservation').hide();
+			$(self).find('.pObservation').hide();
 		});
-		this.bindFormCallback();
+		self.bindFormCallback();
 	},
 
 	bindFormCallback: function(){
 		var self = this;
-		$('#form-comentario').unbind("iron-form-response");
-		$('#form-comentario').on("iron-form-response", function(response, status){
+		$(self).find('.form-comentario').unbind("iron-form-response");
+		$(self).find('.form-comentario').on("iron-form-response", function(response, status){
 			self.reset();
-			$('#addCommentBtn').val('');
+			$(self).find('.addCommentBtn').val('');
 
 		});
 
-		$('#form-observacao').unbind("iron-form-error");
-		$('#form-observacao').on("iron-form-error", function() {
-			$('#pObservation').show();
-			$('#dvForm').hide();
-			$('#btnEditObservation').show();
+		$(self).find('.form-observacao').unbind("iron-form-error");
+		$(self).find('.form-observacao').on("iron-form-error", function() {
+			$(self).find('.pObservation').show();
+			$(self).find('.dvForm').hide();
+			$(self).find('.btnEditObservation').show();
 			alert('ocorreu um erro');
 		});
-		$('#form-observacao').on("iron-form-response", function(response, status){
-			$('#pObservation').text($('#txtObservation').val())
-			$('#btnEditObservation').show();
-			$('#dvForm').hide();
-			$('#pObservation').show();
+		$(self).find('.form-observacao').on("iron-form-response", function(response, status){
+			$(self).find('.pObservation').text($(self).find('.txtObservation').val())
+			$(self).find('.btnEditObservation').show();
+			$(self).find('.dvForm').hide();
+			$(self).find('.pObservation').show();
 		});
 	},
 
