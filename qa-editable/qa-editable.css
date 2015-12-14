@@ -1,0 +1,95 @@
+/* Editable
+---------------------------------------------------------- */
+qa-editable {
+    display: inline-block;
+    position: relative;
+}
+
+qa-editable .comment-icon {
+    display: none;
+    position: absolute;
+    top: 0;
+    right: -21px;
+}
+
+qa-editable .done-icon {
+    display: none;
+    position: absolute;
+    top: 0;
+    right: -21px;
+} 
+
+qa-editable .clear-icon {
+    display: none;
+    position: absolute;
+    top: 19px;
+    right: -21px;
+}
+
+qa-editable.edit_mode .clear-icon,
+qa-editable.edit_mode .done-icon {
+    display: inline-block;
+}
+
+qa-editable iron-icon.iron-icon-0 {
+    width: 18px;
+    height: 18px;
+    color: #fff;
+    vertical-align: top;
+    margin-right: 2px;
+    cursor: pointer;
+}
+
+qa-editable iron-icon.comment-icon {
+
+}
+
+qa-editable iron-icon.comment-icon {
+    background-color: #0499F7;
+}
+
+qa-editable:not(.edit_mode):hover {
+    background-color: #EFEFF0;
+}
+
+qa-editable:not(.edit_mode):hover .comment-icon {
+    display: inline-block;
+}
+
+qa-editable:not(.edit_mode) > .comment-icon:hover {
+    display: inline-block;
+}
+
+qa-editable .edit_wrapper {
+    display: inline-block;
+    padding: 0;
+}
+
+qa-editable .edit_input {
+    padding: 2px;
+    border: none;
+    border-bottom: 1px solid #999;
+    margin-right: 3px;
+    vertical-align: top;
+}
+
+qa-editable iron-icon.done-icon {
+    background-color: #32CC34;
+}
+
+qa-editable iron-icon.clear-icon {
+    background-color: #D5294B;
+}
+
+
+/* Msg Erro */
+qa-editable .err {
+    position: absolute;
+    background-color: #DA3131;
+    color: white;
+    text-align: center;
+    width: 100%;
+    opacity: 0.8;
+    font-weight: normal;
+    display: none;
+}

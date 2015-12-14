@@ -1,0 +1,12 @@
+<dom-module id="qa-editable">
+    <link rel="stylesheet" href="qa-editable.css">
+
+    <template>
+    	<h5 class="err">Ocorreu um erro ao editar</h5>
+		<content></content>
+		<iron-icon icon="editor:mode-edit" class="comment-icon" title="Editar" on-click="editAction"></iron-icon> 
+		<iron-icon icon="icons:done" class="done-icon" title="Salvar" on-click="saveAction"></iron-icon>
+		<iron-icon icon="icons:clear" class="clear-icon" title="Cancelar" on-click="clearAction"></iron-icon>
+	</template>
+	<script type="text/javascript" src="qa-editable.js"></script>
+</dom-module>

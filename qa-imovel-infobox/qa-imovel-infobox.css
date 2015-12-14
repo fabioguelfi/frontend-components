@@ -68,6 +68,7 @@ div.caracteristicas div.wrapper div.item:last-child {
 .veranuncio {
     font-size: 13px;
     color: #00A2F6;
+    font-weight: normal;
 }
 
 .veranuncio i {
@@ -123,21 +124,20 @@ div.caracteristicas div.wrapper div.item small {
 ---------------------------------------------------------------------------------------*/
 
 div.valores {
-    width: 280px;
+    width: 240px;
     display: inline-block;
     float: right;
-    padding: 13px 10px 0 0;
 }
 
 div.valores .pacote {
-    display: inline-block;
-    width: 60px;
-    height: 40px;
+    width: 58px;
+    height: 30px;
     background-color: #F7F7F7;
     color: #00A2F6;
     text-align: center;
-    padding: 20px;
-    line-height: 19px;
+    padding: 12px 17px 19px 17px;
+    line-height: 18px;
+    float: left;
 }
 
 div.valores .outros {
@@ -163,14 +163,5 @@ div.valores div.item:hover {
 }
 
 div.valores div.item span {
-    padding: 4px 6px;
-    font: inherit;
-}
-
-div.valores div.item span.label {
-    float: left;
-}
-
-div.valores div.item span.valor {
-    float: right;
+    line-height: 21px;
 }
