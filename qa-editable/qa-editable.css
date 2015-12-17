@@ -74,11 +74,12 @@ qa-editable .edit_input {
 }
 
 qa-editable.full, qa-editable.full .edit_wrapper {
-    width: 96%;
+    width: 96%!important;
+    padding: 3px 0;
 }
 
 qa-editable.full .edit_input {
-    width: 100%;
+    width: 100%!important;
 }
 
 qa-editable iron-icon.done-icon {
