@@ -12,73 +12,73 @@
 					</div>
 					<div class="descricao">
 						<div class="titulo">							
-							<qa-editable path="/api/properties/edit">
-								<span>{{imovel.imovelId}}</span> - <editable-field obj="imovel.titulo">{{imovel.titulo}}</editable-field>
+							<qa-editable path="/api/properties/{{imovel.imovelId}}">
+								<span>{{imovel.imovelId}}</span> - <editable-field obj="imovel.titulo" datatype="string">{{imovel.titulo}}</editable-field>
 								<template is="dom-if" if="{{imovel.urlImovel}}">
 									<a  class="veranuncio" target="_blank"	href="{{imovel.urlImovel}}"><i class="fa fa-eye"></i>Ver anúncio</a>
 								</template>
 							</qa-editable>							
 						</div>
-						<qa-editable path="/api/properties/edit">
+						<qa-editable path="/api/properties/{{imovel.imovelId}}">
 							<div class="endereco">
-								<editable-field obj="imovel.endereco.logradouro">{{imovel.endereco.logradouro}}</editable-field>, <editable-field obj="imovel.endereco.numero">{{imovel.endereco.numero}}</editable-field> - apto <editable-field obj="imovel.endereco.complemento">{{imovel.endereco.complemento}}</editable-field> - <editable-field obj="imovel.endereco.bairro">{{imovel.endereco.bairro}}</editable-field> - CEP <editable-field obj="imovel.endereco.cep">{{imovel.endereco.cep}}</editable-field> - <editable-field class="cidade" obj="imovel.endereco.cidade">{{imovel.endereco.cidade}}</editable-field> - <editable-field obj="imovel.endereco.estado">{{imovel.endereco.estado}}</editable-field>
+								<editable-field obj="imovel.endereco.logradouro" datatype="string">{{imovel.endereco.logradouro}}</editable-field>, <editable-field obj="imovel.endereco.numero" datatype="number">{{imovel.endereco.numero}}</editable-field> - apto <editable-field obj="imovel.endereco.complemento" datatype="string">{{imovel.endereco.complemento}}</editable-field> - <editable-field obj="imovel.endereco.bairro" datatype="string">{{imovel.endereco.bairro}}</editable-field> - CEP <editable-field obj="imovel.endereco.cep" datatype="cep">{{imovel.endereco.cep}}</editable-field> - <editable-field class="cidade" obj="imovel.endereco.cidade" datatype="string">{{imovel.endereco.cidade}}</editable-field> - <editable-field obj="imovel.endereco.estado" datatype="string">{{imovel.endereco.estado}}</editable-field>
 							</div>
 						</qa-editable>
-						<qa-editable path="/api/properties/edit">
+						<qa-editable path="/api/properties/{{imovel.imovelId}}">
 							<div class="caracteristicas clearfix">
 								<div class="wrapper">
 
 									<!-- items -->
 									<div class="item">
 										<h1>ÁREA ÚTIL</h1>
-										<p><editable-field obj="imovel.caracteristicas.area">{{imovel.caracteristicas.area}}</editable-field></p>
+										<p><editable-field obj="imovel.caracteristicas.area" datatype="number">{{imovel.caracteristicas.area}}</editable-field></p>
 									</div>
 									<div class="item">
 										<h1>DORMITÓRIOS</h1>
-										<p><editable-field obj="imovel.caracteristicas.quartos">{{imovel.caracteristicas.quartos}}</editable-field> <small>(<em><editable-field obj="imovel.caracteristicas.suites">{{imovel.caracteristicas.suites}}</editable-field> suites</em>)</small></p>
+										<p><editable-field obj="imovel.caracteristicas.quartos" datatype="number">{{imovel.caracteristicas.quartos}}</editable-field> <small>(<em><editable-field obj="imovel.caracteristicas.suites" datatype="number">{{imovel.caracteristicas.suites}}</editable-field> suites</em>)</small></p>
 										
 									</div>
 									<div class="item">
 										<h1>GARAGENS</h1>
-										<p><editable-field obj="imovel.caracteristicas.vagas">{{imovel.caracteristicas.vagas}}</editable-field> <small>(<em><editable-field obj="imovel.caracteristicas.vagasTipo">{{imovel.caracteristicas.vagasTipo}}</editable-field></em>)</small></p>
+										<p><editable-field obj="imovel.caracteristicas.vagas" datatype="number">{{imovel.caracteristicas.vagas}}</editable-field> <small>(<em><editable-field obj="imovel.caracteristicas.vagasTipo" datatype="vagasTipo">{{imovel.caracteristicas.vagasTipo}}</editable-field></em>)</small></p>
 									</div>
 									<div class="item">
 										<h1>BANHEIROS</h1>
-										<p><editable-field obj="imovel.caracteristicas.banheiros">{{imovel.caracteristicas.banheiros}}</editable-field></p>
+										<p><editable-field obj="imovel.caracteristicas.banheiros" datatype="number">{{imovel.caracteristicas.banheiros}}</editable-field></p>
 									</div>
 									<div class="item">
 										<h1>ANDAR</h1>
-										<p><editable-field obj="imovel.caracteristicas.andar">{{imovel.caracteristicas.andar}}</editable-field></p>
+										<p><editable-field obj="imovel.caracteristicas.andar" datatype="number">{{imovel.caracteristicas.andar}}</editable-field></p>
 									</div>
 									<div class="item">
 										<h1>ELEVADOR</h1>
-										<p><editable-field obj="imovel.caracteristicas.elevador">{{formatInfo(imovel.caracteristicas.elevador)}}</editable-field></p>
+										<p><editable-field obj="imovel.caracteristicas.elevador" datatype="boolean">{{formatInfo(imovel.caracteristicas.elevador)}}</editable-field></p>
 									</div>
 									<div class="item">
 										<h1>ANIMAIS</h1>
-										<p><editable-field obj="imovel.caracteristicas.animais">{{imovel.caracteristicas.animais}}</editable-field></p>
+										<p>{{imovel.caracteristicas.animais}}</p>
 									</div>
 
 									<div class="item">
 										<h1>MOBILIADO</h1>
-										<p><editable-field obj="imovel.caracteristicas.mobiliado">{{formatInfo(imovel.caracteristicas.mobiliado)}}</editable-field></p>
+										<p><editable-field obj="imovel.caracteristicas.mobiliado" datatype="boolean">{{formatInfo(imovel.caracteristicas.mobiliado)}}</editable-field></p>
 									</div>
 								</div>
 							</div>
 						</qa-editable>
 					</div>
-					<qa-editable class="right" path="/api/properties/edit">
+					<qa-editable class="right" path="/api/properties/{{imovel.imovelId}}">
 						<div class="valores">
-							<div class="pacote">Pacote<br>R$ <editable-field obj="imovel.financeiro.total">{{imovel.financeiro.total}}</editable-field></div>
+							<div class="pacote">Pacote<br>R$ <editable-field obj="imovel.financeiro.total" datatype="number">{{imovel.financeiro.total}}</editable-field></div>
 							<div class="outros">
 								<div class="item">
-									<span class="left">Aluguel</span><span class="right">R$ <em><editable-field obj="imovel.financeiro.aluguel">{{imovel.financeiro.aluguel}}</editable-field></em></span>
+									<span class="left">Aluguel</span><span class="right">R$ <em><editable-field obj="imovel.financeiro.aluguel" datatype="number">{{imovel.financeiro.aluguel}}</editable-field></em></span>
 								</div>
 								<div class="item">
-									<span class="left">Condominio</span><span class="right">R$ <em><editable-field obj="imovel.financeiro.condominio">{{imovel.financeiro.condominio}}</editable-field></em></span>
+									<span class="left">Condominio</span><span class="right">R$ <em><editable-field obj="imovel.financeiro.condominio" datatype="number">{{imovel.financeiro.condominio}}</editable-field></em></span>
 								</div>
 								<div class="item">
-									<span class="left">IPTU</span><span class="right">R$ <em><editable-field obj="imovel.financeiro.iptu">{{imovel.financeiro.iptu}}</editable-field></em></span>
+									<span class="left">IPTU</span><span class="right">R$ <em><editable-field obj="imovel.financeiro.iptu" datatype="number">{{imovel.financeiro.iptu}}</editable-field></em></span>
 								</div>								
 							</div>
 						</div>

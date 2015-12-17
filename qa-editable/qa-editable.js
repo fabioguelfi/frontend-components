@@ -6,8 +6,8 @@ Polymer({
     properties: {
         path: String,
     },
-
-    ready: function() {
+ready
+    : function() {
         var self = this;
     },
 
@@ -18,11 +18,12 @@ Polymer({
     editAction: function() {
 
         var self = this,
-            input_text,
+            input,
             obj,
             old_value,
             wrapper,
-            input_width;
+            input_width,
+            datatype;
 
         $(self).addClass('edit_mode');
 
@@ -36,33 +37,57 @@ Polymer({
             //armazena info
             obj = $(this).attr('obj');
             old_value = $(this).text();
+            datatype = $(this).attr('datatype');
             self.old_values_obj[obj] = old_value;
 
-            $(this).text().replace(' ', '');
             input_width = $(this).width();
 
-
             //remover info e insere input
-            input_text = $(document.createElement('input'))
-                .attr({
-                    type: 'text',
-                    name: obj,
-                    value: old_value,
-                    class: 'edit_input'
-                })
-                .css({
-                    width: input_width + 5 + 'px'
-                })
+            switch (datatype) {
+                case 'boolean':
+                    input = $(document.createElement('select'))
+                        .attr({
+                            name: obj,
+                            class: 'edit_input',
+                            datatype: datatype
+                        })
+                        .append($(document.createElement('option'))
+                            .attr({
+                                value: '',
+                                selected: (old_value === '-') ? true : false
+                            })
+                            .text('-'))
+                        .append($(document.createElement('option'))
+                            .attr({
+                                value: 'sim',
+                                selected: (old_value === 'sim') ? true : false
+                            })
+                            .text('sim'))
+                        .append($(document.createElement('option'))
+                            .attr({
+                                value: 'não',
+                                selected: (old_value === 'não') ? true : false
+                            })
+                            .text('não'))
+                    break;
+                default:
+                    input = $(document.createElement('input'))
+                        .attr({
+                            type: 'text',
+                            name: obj,
+                            value: old_value,
+                            class: 'edit_input',
+                            datatype: datatype
+                        })
+                        .css({
+                            width: input_width + 5 + 'px'
+                        })
+                    break;
+            }
 
-            wrapper.append(input_text);
+            wrapper.append(input);
 
             $(this).html(wrapper);
-
-            /*$(self).keypress(function(e) {
-                if(e.which == 13) {
-                    console.log(self);
-                }
-            });*/
 
         });
 
@@ -79,17 +104,23 @@ Polymer({
             var new_values_obj = {},
                 obj, obj_send,
                 wrapper,
-                value;
+                value,
+                datatype;
 
             //armazena info
             obj = $(this).find('.edit_input').attr('name');
             obj_send = obj.replace(/\./g, '/');
-
-            //prepara array para ajax
+            datatype = $(this).find('.edit_input').attr('datatype');
             value = $(this).find('.edit_input').val();
-            new_values_obj["op"] = "replace";
+
+            //verifica se campo é inexistente
+            if (!self.isNullField(value, datatype)) {
+                new_values_obj["op"] = "replace";
+                new_values_obj["value"] = self.formatValueJson(value, datatype);
+            } else {
+                new_values_obj["op"] = "remove";
+            }
             new_values_obj["path"] = "/" + obj_send;
-            new_values_obj["value"] = value;
             new_values_arr.push(new_values_obj);
 
 
@@ -98,14 +129,76 @@ Polymer({
                 .attr({
                     obj: obj
                 })
-                .text(value);
+                .text(self.formatReloadValue(value, datatype));
 
             $(this).html(wrapper);
             $(self).removeClass('edit_mode');
         });
 
-        console.log(new_values_arr);
+        this.doPost(new_values_arr);
 
+    },
+
+    // Função de verificação se valor é inexistente
+    isNullField: function(val, datatype) {
+        switch (datatype) {
+            case 'boolean':
+                return (val === "-" || val.trim() === '') ? true : false;
+                break;
+            default:
+                return (val.trim() === '') ? true : false;
+                break;
+        }
+
+    },
+
+    // Função de formatação do valor para ajax
+    formatValueJson: function(val, datatype) {
+
+        switch (datatype) {
+            case 'boolean':
+                if (val === 'não') return 'false';
+                else if (val === 'sim') return 'true';
+                else return 'null';
+                break;
+            default:
+                return val;
+                break;
+        }
+    },
+
+    // Função de formatação do valor para repopular tela
+    formatReloadValue: function(val, datatype) {
+        switch (datatype) {
+            case 'boolean':
+                if (val === '') return '-';
+                else return val;
+                break;
+            default:
+                return val;
+                break;
+        }
+    },
+
+    // Função que faz a chamada patch
+    doPost: function(new_values_arr) {
+
+        $.ajax({
+            headers : {
+                'Accept' : 'application/json',
+                'Content-Type' : 'application/json'
+            },
+            url : this.path,
+            type : 'PATCH',
+            data : JSON.stringify(new_values_arr),
+            success : function(response, textStatus, jqXhr) {
+                console.log("Patch enviado com sucesso!");
+                //console.log(JSON.stringify(new_values_arr));
+            },
+            error : function(jqXHR, textStatus, errorThrown) {
+                console.log("Ocorreram os seguintes erros: " + textStatus, errorThrown);
+            }
+        });
     },
 
     clearAction: function() {
@@ -132,13 +225,6 @@ Polymer({
         });
 
     },
-
-    doPost: function(new_values_arr) {
-    	$.post( this.path, new_values_arr)
-		  .done(function( data ) {
-		    //popular tela
-		});
-    }
 
 
 });

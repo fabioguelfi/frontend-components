@@ -73,6 +73,14 @@ qa-editable .edit_input {
     vertical-align: top;
 }
 
+qa-editable.full, qa-editable.full .edit_wrapper {
+    width: 96%;
+}
+
+qa-editable.full .edit_input {
+    width: 100%;
+}
+
 qa-editable iron-icon.done-icon {
     background-color: #32CC34;
 }
