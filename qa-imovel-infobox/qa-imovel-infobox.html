@@ -7,6 +7,7 @@
 						<div class="item" on-click="itemClick">
 							<template is="dom-if" if="{{imovel.capa}}">
 								<a target="_blank" href="{{imovel.urlImovel}}"><img src="{{imovel.capa}}" alt=""></a>
+								<span class$="{{statusImovelClass(imovel.status)}}">{{statusImovelText(imovel.status)}}</span>
 							</template>
 						</div>
 					</div>

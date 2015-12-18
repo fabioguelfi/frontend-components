@@ -53,5 +53,15 @@ Polymer(
 		else return "-"
 	},
 
+	statusImovelClass: function(status) {
+		if(status === "edicaoSemUsuario" || status === "edicaoUsuarioNaoConfirmado"){return "status_imovel edicao"}
+		else{return "status_imovel " + status;}
+	},
+
+	statusImovelText: function(status) {
+		if(status === "edicaoSemUsuario" || status === "edicaoUsuarioNaoConfirmado"){return "edição"}
+		else{return status}
+	},
+
 
 });

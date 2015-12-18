@@ -165,3 +165,39 @@ div.valores div.item:hover {
 div.valores div.item span {
     line-height: 21px;
 }
+
+/* Status imovel *****************************/
+span.status_imovel {
+    position: relative;
+    display: block;
+    width: 100%;
+    height: 22px;
+    left: 0;
+    bottom: 22px;
+    line-height: 22px;
+    text-transform: uppercase;
+    color: #fff;
+    cursor: pointer;
+}
+
+span.status_imovel.despublicado,
+span.status_imovel.suspenso {
+    background-color: #FFB400;
+}
+
+span.status_imovel.publicado {
+    background-color: #4FC326;
+}
+
+span.status_imovel.alugado {
+    background-color: #338417;
+}
+
+span.status_imovel.excluido {
+    background-color: #E03E2F;
+}
+
+span.status_imovel.edicao,
+span.status_imovel.aguardando_publicacao {
+    background-color: #008EE7;
+}
