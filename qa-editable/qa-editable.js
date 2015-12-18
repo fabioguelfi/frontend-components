@@ -53,12 +53,6 @@ ready
                         })
                         .append($(document.createElement('option'))
                             .attr({
-                                value: '',
-                                selected: (old_value === '-') ? true : false
-                            })
-                            .text('-'))
-                        .append($(document.createElement('option'))
-                            .attr({
                                 value: 'sim',
                                 selected: (old_value === 'sim') ? true : false
                             })
@@ -139,16 +133,10 @@ ready
             datatype = $(this).find('.edit_input').attr('datatype');
             value = $(this).find('.edit_input').val();
 
-            //verifica se campo é inexistente
-            if (!self.isNullField(value, datatype)) {
-                new_values_obj["op"] = "replace";
-                new_values_obj["value"] = self.formatValueJson(value, datatype);
-            } else {
-                new_values_obj["op"] = "remove";
-            }
+            new_values_obj["op"] = "replace";
+            new_values_obj["value"] = self.formatValueJson(value, datatype);
             new_values_obj["path"] = "/" + obj_send;
             new_values_arr.push(new_values_obj);
-
 
             //polular tela com novos dados
             wrapper = $(document.createElement('editable-field'))
@@ -162,19 +150,6 @@ ready
         });
 
         this.doPost(new_values_arr);
-
-    },
-
-    // Função de verificação se valor é inexistente
-    isNullField: function(val, datatype) {
-        switch (datatype) {
-            case 'boolean':
-                return (val === "-" || val.trim() === '') ? true : false;
-                break;
-            default:
-                return (val.trim() === '') ? true : false;
-                break;
-        }
 
     },
 
