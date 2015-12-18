@@ -89,7 +89,6 @@ Polymer(
 			$(self).find('.pObservation').show();
 			$(self).find('.dvForm').hide();
 			$(self).find('.btnEditObservation').show();
-			alert('ocorreu um erro');
 		});
 		$(self).find('.form-observacao').on("iron-form-response", function(response, status){
 			$(self).find('.pObservation').text($(self).find('.txtObservation').val())
