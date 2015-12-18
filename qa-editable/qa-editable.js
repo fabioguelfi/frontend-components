@@ -70,6 +70,32 @@ ready
                             })
                             .text('não'))
                     break;
+                case 'vagasTipo':
+                    input = $(document.createElement('select'))
+                        .attr({
+                            name: obj,
+                            class: 'edit_input',
+                            datatype: datatype
+                        })
+                        .append($(document.createElement('option'))
+                            .attr({
+                                value: 'Cobertas',
+                                selected: (old_value === 'Cobertas') ? true : false
+                            })
+                            .text('Cobertas'))
+                        .append($(document.createElement('option'))
+                            .attr({
+                                value: 'NaoCobertas',
+                                selected: (old_value === 'NaoCobertas') ? true : false
+                            })
+                            .text('Não Cobertas'))
+                        .append($(document.createElement('option'))
+                            .attr({
+                                value: 'Ambos',
+                                selected: (old_value === 'Ambos') ? true : false
+                            })
+                            .text('Ambos'))
+                    break;
                 default:
                     input = $(document.createElement('input'))
                         .attr({
