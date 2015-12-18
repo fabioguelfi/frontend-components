@@ -55,6 +55,14 @@ fieldset .titulo {
     font-weight: bold;
 }
 
+fieldset .titulo a {
+    color: #00A2F6;
+}
+
+fieldset .titulo a:hover {
+    text-decoration: underline;
+}
+
 fieldset .endereco {
     font-size: 16px;
     line-height: 20px;
