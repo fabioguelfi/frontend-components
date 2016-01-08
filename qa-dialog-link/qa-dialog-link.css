@@ -1,0 +1,32 @@
+/*
+ * Created by Willianson
+ * At 2015.08.26
+ */
+
+
+
+
+/* base
+---------------------------------------------------------------------------------------*/
+/*qa-dialog 									{ position:fixed; z-index:200; top:0; right:0; bottom:0; left:0; color:#FFF; background:rgba(0,0,0,0.85); }
+qa-dialog iframe 							{ display:none; position:relative; z-index:2; width:100%; height:100%; background:transparent; }
+qa-dialog.loading 							{ display:none; }
+qa-dialog.loading iframe 					{  }
+qa-dialog.loading.fullscreen a.close		{ display:none; }
+qa-dialog.fullscreen a.close				{ display:block; position:absolute; z-index:9; top:4%; right:4%; font-size:20px; color:#000; text-decoration:none; }
+qa-dialog.fullscreen a.close::before		{ margin-right:10px; }
+qa-dialog.fullscreen iframe 				{  }
+*/
+
+
+
+/* small
+---------------------------------------------------------------------------------------*/
+/*qa-dialog section[mode="small"] > div.layout 	{ position:fixed; z-index:200; top:0; right:0; left:0; height:70px; color:#FFF; text-align:center; pointer-events:none; }*/
+
+
+
+
+/* full
+---------------------------------------------------------------------------------------*/
+/*qa-dialog section[mode="full"] > div.layout 	{ position:fixed; z-index:200; top:0; right:0; bottom:0; left:0; color:#FFF; text-align:center; background:rgba(0,0,0,0.85); }*/
