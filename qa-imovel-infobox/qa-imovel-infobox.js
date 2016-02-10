@@ -35,13 +35,14 @@ Polymer(
 		$.getJSON('/api/properties/' + self.imovelId, function(json, textStatus)
 		{
 
-			for(i=0; i<json.imovel.amenidades.length; i++){
-				if(json.imovel.amenidades[i].codigo === 'PODE_TER_ANIMAIS_DE_ESTIMACAO'){
-					json.imovel.caracteristicas.animais = self.formatInfo(json.imovel.amenidades[i].estadoImovel);
-				}
-			};
-
 			self.imovel = json.imovel;
+
+            //definição provisoria da permissao de animais
+            for(i=0; i<self.imovel.amenidades.length; i++){
+                if(self.imovel.amenidades[i].codigo === 'PODE_TER_ANIMAIS_DE_ESTIMACAO'){
+                    self.animais = json.imovel.amenidades[i].estadoImovel.toLowerCase();
+                }
+            };
 
 		});
 
