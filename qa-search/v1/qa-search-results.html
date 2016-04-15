@@ -1,0 +1,312 @@
+<link rel="import" href="../../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../../bower_components/paper-item/paper-item.html">
+<link rel="import" href="../../../bower_components/paper-item/paper-item-body.html">
+<link rel="import" href="../../../bower_components/paper-listbox/paper-listbox.html">
+<link rel="import" href="../../../bower_components/paper-spinner/paper-spinner.html">
+<link rel="import" href="../../qa-imovel-status/v1/qa-imovel-status.html">
+
+
+<dom-module id="qa-search-results">
+
+	<template>
+		<style include="iron-flex iron-flex-alignment"></style>
+		<style>
+		.dropdown-content {
+			background-color: white;
+			box-shadow: 0px 2px 6px #ccc;
+			min-height: 56px;
+			min-width: 299px;
+		}
+		.dropdown-content > div {
+			padding: 16px;
+			line-height: 20px;
+		}
+		.dropdown-content > div:not(:last-child) {
+			border-bottom: 1px solid #E8E6E6;
+		}
+		paper-listbox {
+			padding: 0 14px 0 16px;
+		}
+		paper-item {
+			font-size: 14px;
+			padding: 0;
+		}
+		paper-listbox > paper-item:not(:last-of-type) {
+			margin-bottom: 6px;
+		}
+		paper-item-body {
+			color: #898989;
+		}
+		paper-item-body > div:first-child {
+			font-weight: bold;
+		}
+		.secondary {
+			line-height: 16px;
+		}
+		div.badge {
+			color: white;
+			border-radius: 3px;
+			font-weight: bold;
+			width: 22px;
+			height: 22px;
+			text-align: center;
+			margin-right: 10px;
+			margin-top: 6px;
+		}
+		.proprietario {
+			background-color: #FF8500;
+		}
+		.inquilino {
+			background-color: #BF00B0;
+		}
+		paper-item-body strong {
+			color: #5a5a5a;
+		}
+		paper-item-body > * {
+			overflow: visible;
+			white-space: normal;
+			text-overflow: clip;
+		}
+		.imovel {
+			margin-bottom: 12px;
+		}
+
+		.imovel > paper-item:first-child {
+			padding-right: 32px;
+			width: 320px;
+		}
+
+		paper-item.values {
+			text-align: right;
+		}
+
+		paper-item.values div {
+			font-weight: normal;
+			font-size: 12px;
+			line-height: 26px;
+		}
+
+		paper-item.values .secondary {
+			line-height: 15px;
+		}
+
+		paper-item.values div:last-child {
+			line-height: 24px;
+		}
+		paper-item.not-found {
+			color: #898989;
+			text-align: center;
+		}
+
+		qa-imovel-status {
+			width: 100px;
+			margin-top: 6px;
+		}
+		</style>
+		<iron-dropdown id="results" horizontal-align="right" vertical-offset="36">
+			<div class="dropdown-content">
+				<template is="dom-if" if="{{showContent(waiting, show, 'users')}}">
+					<div class="layout horizontal">
+						<div>
+							<img src="assets/social10.png">
+						</div>
+						<paper-listbox class="layout vertical flex">
+							<template is="dom-repeat" items="{{users}}">
+								<paper-item class="layout horizontal start">
+									<div class="layout vertical">
+										<template is="dom-repeat" items="{{item.roles}}"
+											as="role" filter="{{filterRole(item.roles)}}" >
+											<div class$="layout center-justified flex badge {{role}}">
+												{{firstCaps(role)}}
+											</div>
+										</template>
+									</div>
+									<paper-item-body two-line>
+										<div>
+											<template is="dom-repeat" items="{{item.highlighted.name}}" as="name"><template is="dom-if" if="{{!isOdd(index)}}">{{name}}</template><template is="dom-if" if="{{isOdd(index)}}"><strong>{{name}}</strong></template></template>
+										</div>
+										<div class="secondary">
+											<template is="dom-repeat" items="{{item.highlighted.primary_email}}" as="primary_email"><template is="dom-if" if="{{!isOdd(index)}}">{{primary_email}}</template><template is="dom-if" if="{{isOdd(index)}}"><strong>{{primary_email}}</strong></template></template>
+											| <template is="dom-repeat" items="{{item.highlighted.primary_phone}}" as="primary_phone"><template is="dom-if" if="{{!isOdd(index)}}">{{primary_phone}}</template><template is="dom-if" if="{{isOdd(index)}}"><strong>{{primary_phone}}</strong></template></template>
+										</div>
+									</paper-item-body>
+								</paper-item>
+							</template>
+							<template is="dom-if" if="{{!users.length}}">
+								<paper-item class="not-found layout flex">
+									<div class="layout flex">
+										Sua busca - <strong>{{searchString}}</strong> - não encontrou clientes.
+									</div>
+								</paper-item>
+							</template>
+						</paper-listbox>
+					</div>
+				</template>
+				<template is="dom-if" if="{{showContent(waiting, show, 'imoveis')}}">
+					<div class="layout horizontal">
+						<div>
+							<img src="assets/office42.png">
+						</div>
+						<paper-listbox class="layout vertical flex">
+							<template is="dom-repeat" items="{{imoveis}}">
+								<div class="imovel layout horizontal">
+									<paper-item class="layout flex">
+										<paper-item-body three-line>
+											<div>{{item.id}} - {{item.translatedType}} de {{item.bedrooms}} dorm</div>
+											<div class="secondary layout wrap">
+												<template is="dom-repeat" items="{{item.highlighted.address}}" as="address"><template is="dom-if" if="{{!isOdd(index)}}">{{address}}</template><template is="dom-if" if="{{isOdd(index)}}"><strong>{{address}}</strong></template></template>
+												{{item.street_number}} - {{item.apartment}}
+												* <template is="dom-repeat" items="{{item.highlighted.region}}" as="region"><template is="dom-if" if="{{!isOdd(index)}}">{{region}}</template><template is="dom-if" if="{{isOdd(index)}}"><strong>{{region}}</strong></template></template>
+												* <template is="dom-repeat" items="{{item.highlighted.city}}" as="city"><template is="dom-if" if="{{!isOdd(index)}}">{{city}}</template><template is="dom-if" if="{{isOdd(index)}}"><strong>{{city}}</strong></template></template>
+											</div>
+											<qa-imovel-status status="{{item.status}}"></qa-imovel-status>
+										</paper-item-body>
+									</paper-item>
+									<paper-item class="values layout vertical start-justified">
+										<paper-item-body three-line>
+											<div>Aluguel R$ {{item.rent}}</div>
+											<div class="secondary">Condo. R$ {{item.condo_fee}}</div>
+											<div>IPTU R$ {{item.iptu}}</div>
+										</paper-item-body>
+									</paper-item>
+								</div>
+							</template>
+							<template is="dom-if" if="{{!imoveis.length}}">
+								<paper-item class="not-found layout flex">
+									<div class="layout flex">
+										Sua busca - <strong>{{searchString}}</strong> - não encontrou imóveis.
+									</div>
+								</paper-item>
+							</template>
+						</paper-listbox>
+					</div>
+				</template>
+				<template is="dom-if" if="{{waiting}}">
+					<div class="layout vertical flex center justified">
+						<paper-spinner active="{{waiting}}"></paper-spiner>
+					</div>
+				</template>
+			</div>
+		</iron-dropdown>
+	</template>
+
+	<script>
+
+	Polymer({
+
+		is: "qa-search-results",
+
+		properties: {
+			searchString: {
+				type: String,
+				observer: '_searchStringChanged'
+			},
+			show: {
+				type: String,
+				observer: 'showChanged'
+			},
+			imoveis: {
+				type: Array,
+				value: function() {
+					return [];
+				}
+			},
+			users: {
+				type: Array,
+				value: function() {
+					return [];
+				}
+			},
+			enabled: {
+				type: Boolean,
+				value: true
+			},
+			waiting: {
+				type: Boolean,
+				value: false
+			}
+		},
+
+		observers: [
+			'imovelAddedOrRemoved(imoveis.splices)',
+			'userAddedOrRemoved(users.splices)'
+		],
+
+		showContent: function(waiting, value, content) {
+			var result = !waiting && (value == 'all' || value == content);
+			return result;
+		},
+
+		open: function() {
+			if (this.enabled) {
+				this.$.results.open();
+			}
+		},
+
+		highlightItems: function(self, path, index, count, fields) {
+			var re = new RegExp('(' + self.searchString + ')', 'ig');
+			var items = self[path];
+			for (var i = 0; i < count; i++) {
+				var item = items[i + index];
+				item.highlighted = item.highlighted || {};
+				fields.forEach(function(field) {
+					self.set(path + '.' + i + '.highlighted.' + field,
+							(item[field] || '').replace(re, '<#>$1<#>').split('<#>'));
+				});
+			}
+		},
+
+		highlightUsers: function(self, index, count) {
+			var fields = ['name', 'primary_phone', 'primary_email'];
+			this.highlightItems(self, 'users', index, count, fields);
+		},
+
+		highlightImoveis: function(self, index, count) {
+			var fields = ['address', 'city', 'region'];
+			this.highlightItems(self, 'imoveis', index, count, fields);
+		},
+
+		filterRole: function() {
+			return function(role) {
+				return ['proprietario', 'inquilino'].indexOf(role) >= 0;
+			};
+		},
+
+		firstCaps: function(text) {
+			return text.charAt(0).toUpperCase();
+		},
+
+		_searchStringChanged: function(newString, oldString) {
+			if (this.searchString.length && this.enabled) {
+				this.$.results.open();
+			} else {
+				this.$.results.close();
+			}
+		},
+
+		isOdd: function(value) {
+			return value % 2;
+		},
+
+		imovelAddedOrRemoved: function(changeRecord) {
+			changeRecord && changeRecord.indexSplices.forEach(function(items) {
+				this.highlightImoveis(this, items.index, items.addedCount);
+			}, this);
+		},
+
+		userAddedOrRemoved: function(changeRecord) {
+			changeRecord && changeRecord.indexSplices.forEach(function(items) {
+				this.highlightUsers(this, items.index, items.addedCount);
+			}, this);
+		},
+
+		showChanged: function() {
+			if (this.searchString.length && this.enabled) {
+				this.$.results.open();
+			}
+		}
+	});
+
+	</script>
+
+</dom-module>

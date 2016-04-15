@@ -1,0 +1,61 @@
+<link rel="import" href="../../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../../bower_components/iron-selector/iron-selector.html">
+
+<dom-module id="qa-pager">
+
+	<template>
+	<style include="iron-flex iron-flex-alignment"></style>
+	<style>
+	.page {
+		background-color: #008CE1;
+		border-radius: 3px;
+		text-align: center;
+		color: white;
+		width: 24px;
+		height: 24px;
+		display: table-cell;
+		vertical-align: middle;
+	}
+	.pages {
+		display: table;
+		border-spacing: 8px;
+		text-align: right;
+	}
+	.iron-selected {
+		color: #008CE1;
+		background-color: #DFEFF4;
+	}
+	</style>
+	<iron-selector selected="{{page}}" class="pages layout end-justified horizontal">
+		<template is="dom-repeat" items="{{pageArray}}">
+			<div class="page">{{item}}</div>
+		</template>
+	</iron-selector>
+	</template>
+
+	<script>
+
+	Polymer({
+		is: "qa-pager",
+		properties: {
+			pages: {
+				type: Number,
+				value: 10
+			},
+			page: {
+				type: Number,
+				value: 1,
+				notify: true
+			},
+			pageArray: {
+				computed: 'getPageArray(pages)'
+			}
+		},
+		getPageArray: function(pages) {
+			return Array.apply(null, Array(pages)).map(function(item, index) {
+				return index + 1;
+			});
+		}
+	});
+	</script>
+</dom-module>

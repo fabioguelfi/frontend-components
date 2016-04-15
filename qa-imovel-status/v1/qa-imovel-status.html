@@ -1,0 +1,56 @@
+<link rel="import" href="../../../bower_components/polymer/polymer.html">
+
+<dom-module id="qa-imovel-status">
+
+	<template>
+
+	<style>
+
+	.status {
+		text-align: center;
+		text-transform: uppercase;
+		font-size: 10px;
+		color: #fff;
+		line-height: 18px;
+	}
+
+	.status.despublicado,
+	.status.suspenso {
+		background-color: #FFB400;
+	}
+
+	.status.publicado {
+		background-color: #4FC326;
+	}
+
+	.status.alugado {
+		background-color: #338417;
+	}
+
+	.status.excluido {
+		background-color: #E03E2F;
+	}
+
+	.status.edicao,
+	.status.aguardando_publicacao {
+		background-color: #008EE7;
+	}
+
+	</style>
+	<div class$="status {{status}}">{{status}}</div>
+	</template>
+
+	<script>
+	Polymer({
+
+		is: "qa-imovel-status",
+
+		properties: {
+			status: {
+				type: String,
+				value: ''
+			}
+		}
+	});
+	</script>
+</dom-module>

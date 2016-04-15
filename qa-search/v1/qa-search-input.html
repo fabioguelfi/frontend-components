@@ -1,0 +1,164 @@
+<link rel="import" href="../../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../../bower_components/iron-icons/iron-icons.html">
+<link rel="import" href="../../../bower_components/iron-icon/iron-icon.html">
+<link rel="import" href="../../../bower_components/paper-menu/paper-menu.html">
+<link rel="import" href="../../../bower_components/paper-menu-button/paper-menu-button.html">
+<link rel="import" href="../../../bower_components/paper-icon-button/paper-icon-button.html">
+<link rel="import" href="../../../bower_components/paper-item/paper-item.html">
+<link rel="import" href="../../../bower_components/iron-ajax/iron-ajax.html">
+
+<link rel="import" href="qa-search-results.html">
+
+<dom-module id="qa-search-input">
+
+	<template>
+		<style include="iron-flex iron-flex-alignment"></style>
+		<style>
+
+		::-webkit-input-placeholder { /* WebKit, Blink, Edge */
+			color: #86B3CB;
+		}
+		:-moz-placeholder { /* Mozilla Firefox 4 to 18 */
+			opacity:  1;
+			color: #86B3CB;
+		}
+		::-moz-placeholder { /* Mozilla Firefox 19+ */
+			opacity:  1;
+			color: #86B3CB;
+		}
+		:-ms-input-placeholder { /* Internet Explorer 10-11 */
+			color: #86B3CB;
+		}
+
+		#search {
+			background-color: #0092DE;
+		}
+		#search input {
+			font-size: 16px;
+			padding-left: 10px;
+			padding-right: 10px;
+			width: 225px;
+			border: 0;
+			color: #fff;
+			background-color: inherit;
+		}
+		paper-menu-button {
+			padding: 0px;
+			background-color: #0066AA;
+		}
+		iron-icon {
+			margin-left: -6px;
+			color: #86B3CB;
+		}
+		#button {
+			padding-left: 14px;
+			padding-right: 2px;
+		}
+		paper-item {
+			--paper-item-min-height: 40px;
+			font-style: normal;
+			font-size: 15px;
+			color: #898989;
+			width: 200px;
+		}
+		paper-item img {
+			padding-right: 10px;
+		}
+		paper-menu {
+			border-radius: 0;
+			padding: 0;
+		}
+		</style>
+		<div id="search" class="layout horizontal">
+			<paper-menu-button vertical-offset="36">
+				<div id="button" class="dropdown-trigger fit layout vertical center-justified" style="height: 36px">
+					<div class="layout horizontal flex">
+						<div class="fit layout vertical center-justified">
+							<img src$="{{selected.image}}">
+						</div>
+						<iron-icon icon="icons:arrow-drop-down"></iron-icon>
+					</div>
+				</div>
+				<paper-menu id="selector" on-iron-select="typeSelected" selected="{{selectedIndex}}" class="dropdown-content">
+					<template is="dom-repeat" items="{{searchable}}">
+						<paper-item>
+							<img src$="{{item.image}}">
+							{{item.title}}
+						</paper-item>
+					</template>
+				</paper-menu>
+			</paper-menu-button>
+			<input value="{{searchString::input}}" placeholder="{{selected.placeholder}}"></input>
+			<content></content>
+		</div>
+	</template>
+
+	<script>
+
+	Polymer({
+		is: "qa-search-input",
+		properties: {
+			selected: {
+				type: Object
+			},
+			selectedIndex: {
+				type: Number,
+				value: 0
+			},
+			selectedType: {
+				type: String,
+				notify: true
+			},
+			searchString: {
+				type: String,
+				value: '',
+				notify: true
+			},
+			searchable: {
+				type: Array,
+				value: function() {
+					return [];
+				}
+			}
+		},
+
+		ready: function() {
+
+			var items = [{
+				title: 'Tudo',
+				image: this.resolveUrl('assets/magnifier12.png'),
+				placeholder: 'Buscar...',
+				type: 'all'
+			}, {
+				title: 'Clientes',
+				image: this.resolveUrl('assets/social10.png'),
+				placeholder: 'Buscar clientes...',
+				type: 'users'
+			}, {
+				title: 'Imóveis',
+				image: this.resolveUrl('assets/office42.png'),
+				placeholder: 'Buscar imóveis...',
+				type: 'imoveis'
+			}];
+
+			this.splice.apply(this, ['searchable', 0, items.length].concat(items));
+
+			items.forEach(function(item, index) {
+				if (item.type === this.selectedType) {
+					this.selectedIndex = index;
+				}
+			}, this);
+
+		},
+
+		typeSelected: function() {
+			var selected = this.searchable[this.selectedIndex];
+			this.set('selectedType', selected.type);
+			this.set('selected', selected);
+		}
+
+	});
+
+	</script>
+
+</dom-module>

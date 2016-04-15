@@ -1,0 +1,107 @@
+<link rel="import" href="../../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../../bower_components/iron-ajax/iron-ajax.html">
+
+<dom-module id="qa-search-data">
+
+	<template>
+		<iron-ajax
+			id="searcher"
+			auto="{{searchString}}"
+			url="/api/search"
+		    params="{{searchParams}}"
+			handle-as="json"
+			on-response="handleResponse"
+			debounce-duration="300"
+		    loading="{{loading}}"
+			with-credentials>
+		</iron-ajax>
+	</template>
+
+	<script>
+
+	Polymer({
+
+		is: 'qa-search-data',
+
+		properties: {
+			searchString: {
+				type: String,
+				value: ''
+			},
+			page: {
+				type: Number,
+				value: 0
+			},
+			pageSize: {
+				type: Number,
+				value: 10
+			},
+			loading: {
+				type: Boolean
+			},
+			waiting: {
+				type: Boolean,
+				notify: true
+			},
+			searchParams: {
+				computed: 'buildSearchParams(searchString, page, pageSize)'
+			},
+			users: {
+				type: Array,
+				notify: true
+			},
+			imoveis: {
+				type: Array,
+				notify: true
+			}
+		},
+
+		observers: [
+			'paramsChanged(searchString, page, pageSize)'
+		],
+
+		paramsChanged: function(searchString, page, pageSize) {
+			this.set('waiting', !!searchString.length);
+		},
+
+		buildSearchParams: function(searchString, page, pageSize) {
+			return {
+				query: encodeURIComponent(searchString),
+				offset: page * pageSize,
+				size: pageSize
+			};
+		},
+
+		translateType: function(type) {
+			switch (type) {
+			   case 'Apartamento':
+				   return 'Apto';
+				default:
+				   return type;
+			}
+		},
+
+		handleResponse: function(e) {
+
+			var CloudFrontUrl = new Polymer.IronMetaQuery({ key: 'CloudFrontUrl'}).value;
+
+			if (!CloudFrontUrl) {
+				console.error('IronMeta:CloudFrontUrl is required');
+			}
+
+			this.set('waiting', this.loading);;
+			var users = e.detail.response.users.items;
+			var imoveis = e.detail.response.properties.items;
+
+			imoveis.forEach(function(imovel) {
+				imovel.translatedType = this.translateType(imovel.property_type);
+				imovel.foto_capa = [CloudFrontUrl, imovel.foto_capa].join('/');
+			}, this);
+
+			this.splice.apply(this, ['users', 0, this.users.length].concat(users));
+			this.splice.apply(this, ['imoveis', 0, this.imoveis.length].concat(imoveis));
+		}
+	});
+	</script>
+
+</dom-module>
