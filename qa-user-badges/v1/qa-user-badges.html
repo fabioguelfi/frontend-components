@@ -1,0 +1,76 @@
+<link rel="import" href="../../../bower_components/polymer/polymer.html">
+
+<dom-module id="qa-user-badges">
+
+  <template>
+    <style include="iron-flex iron-flex-alignment"></style>
+    <style is="custon-style">
+    :host {
+      @apply(--layout-horizontal);
+    }
+    :host > div:not(:last-child) {
+      margin: 2px;
+    }
+    div.badge {
+      color: white;
+      background-color: #2BC3FF;
+      border-radius: 3px;
+      font-weight: bold;
+      max-width: 22px;
+      max-height: 22px;
+      text-align: center;
+      text-transform: uppercase;
+    }
+    div.proprietario {
+      background-color: #FF8500;
+    }
+    div.inquilino {
+      background-color: #BF00B0;
+    }
+    </style>
+    <template is="dom-repeat" items="{{roles}}" filter="{{filterRole()}}" >
+      <div class$="layout center-justified flex badge {{item}}">
+        {{firstChar(item)}}
+      </div>
+    </template>
+  </template>
+	<script>
+
+	Polymer({
+
+		is: "qa-user-badges",
+
+		properties: {
+			roles: {
+				type: Array,
+				value: function() {
+					return [];
+				}
+			}
+		},
+
+		filterRole: function() {
+      var showOnly = [
+        'proprietario',
+        'inquilino',
+        'afiliado',
+        'agente',
+        'fotografo'
+      ];
+			return function(role) {
+				return showOnly.indexOf(role) >= 0;
+			};
+		},
+
+		firstChar: function(text) {
+      switch (text) {
+        case 'agente': text = 'corretor'; break;
+      }
+			return text.charAt(0);
+		},
+
+
+	});
+	</script>
+</dom-module>
+
