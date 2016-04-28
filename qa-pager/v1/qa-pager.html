@@ -5,7 +5,10 @@
 
 	<template>
 	<style include="iron-flex iron-flex-alignment"></style>
-	<style>
+	<style is="custom-style">
+	iron-selector {
+		margin: 16px 0px;
+	}
 	.page {
 		background-color: #008CE1;
 		border-radius: 3px;
@@ -13,13 +16,9 @@
 		color: white;
 		width: 24px;
 		height: 24px;
-		display: table-cell;
-		vertical-align: middle;
 	}
-	.pages {
-		display: table;
-		border-spacing: 8px;
-		text-align: right;
+	.page:not(:last-of-type) {
+		margin-right: 4px;
 	}
 	.iron-selected {
 		color: #008CE1;
@@ -28,7 +27,7 @@
 	</style>
 	<iron-selector selected="{{page}}" class="pages layout end-justified horizontal">
 		<template is="dom-repeat" items="{{pageArray}}">
-			<div class="page">{{item}}</div>
+			<div class="page layout vertical center-justified">{{item}}</div>
 		</template>
 	</iron-selector>
 	</template>
