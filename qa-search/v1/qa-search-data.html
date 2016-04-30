@@ -1,9 +1,11 @@
 <link rel="import" href="../../../bower_components/polymer/polymer.html">
 <link rel="import" href="../../../bower_components/iron-ajax/iron-ajax.html">
+<link rel="import" href="../../qa-config/v1/qa-config.html">
 
 <dom-module id="qa-search-data">
 
 	<template>
+		<qa-config config="{{config}}"></qa-config>
 		<iron-ajax
 			id="searcher"
 			auto="{{searchString}}"
@@ -24,6 +26,14 @@
 		is: 'qa-search-data',
 
 		properties: {
+			config: {
+				type: Object,
+				value: function() {
+					return {
+						CloudFrontUrl: undefined
+					};
+				}
+			},
 			searchString: {
 				type: String,
 				value: ''
@@ -83,19 +93,13 @@
 
 		handleResponse: function(e) {
 
-			var CloudFrontUrl = new Polymer.IronMetaQuery({ key: 'CloudFrontUrl'}).value;
-
-			if (!CloudFrontUrl) {
-				console.error('IronMeta:CloudFrontUrl is required');
-			}
-
 			this.set('waiting', this.loading);;
 			var users = e.detail.response.users.items;
 			var imoveis = e.detail.response.properties.items;
 
 			imoveis.forEach(function(imovel) {
 				imovel.translatedType = this.translateType(imovel.property_type);
-				imovel.foto_capa = [CloudFrontUrl, imovel.foto_capa].join('/');
+				imovel.foto_capa = [this.config.CloudFrontUrl, imovel.foto_capa].join('/');
 			}, this);
 
 			this.splice.apply(this, ['users', 0, this.users.length].concat(users));
