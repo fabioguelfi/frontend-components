@@ -1,0 +1,68 @@
+<link rel="import" href="../../../bower_components/polymer/polymer.html">
+
+<dom-module id="qa-config">
+
+	<template></template>
+
+	<script src="../../../bower_components/jwt-decode/build/jwt-decode.min.js"></script>
+
+	<script>
+		Polymer({
+
+			is: "qa-config",
+
+			properties: {
+				config: {
+					type: Object,
+					observer: 'configChanged'
+				}
+			},
+
+			getUser: function(_default) {
+				var token = document.cookie.replace(/(?:(?:^|.*;\s*)5AJWT_AUTH\s*\=\s*([^;]*).*$)|^.*$/, "$1");
+				var user = _default;
+				try {
+					user = jwt_decode(token);
+				} catch (err) {
+					console.warn('Usuário não definido.');
+				}
+				return user;
+			},
+
+			getIronMeta: function(key, _default) {
+				var value = new Polymer.IronMetaQuery({ key: key }).value;
+				if (value === undefined) {
+					if (_default !== undefined) {
+						value = _default;
+					} else {
+						var owner = Polymer.dom(this).getOwnerRoot().host;
+						var msg = 'IronMeta:{0} is required by {1}'
+								.replace('{0}', key)
+								.replace('{1}', owner.localName);
+						console.error(msg);
+					}
+				}
+				return value;
+			},
+
+			configChanged: function(config) {
+
+				Object.keys(config).forEach(function(key) {
+
+					var value = config[key];
+
+					switch (key) {
+						case 'User':
+							value = this.getUser(value);
+							break;
+						default:
+							value = this.getIronMeta(key, value);
+							break;
+					}
+
+					config[key] = value;
+				}, this);
+			}
+		});
+	</script>
+</dom-module>
