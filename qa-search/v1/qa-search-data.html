@@ -30,7 +30,9 @@
 				type: Object,
 				value: function() {
 					return {
-						CloudFrontUrl: undefined
+						CloudFrontUrl: undefined,
+						ImovelViewUrl: undefined,
+						UserViewUrl: undefined
 					};
 				}
 			},
@@ -97,9 +99,14 @@
 			var users = e.detail.response.users.items;
 			var imoveis = e.detail.response.properties.items;
 
+			users.forEach(function(user) {
+				user.viewUrl = this.config.UserViewUrl.replace(':id', user.id);
+			}, this);
+
 			imoveis.forEach(function(imovel) {
 				imovel.translatedType = this.translateType(imovel.property_type);
 				imovel.foto_capa = [this.config.CloudFrontUrl, imovel.foto_capa].join('/');
+				imovel.viewUrl = this.config.ImovelViewUrl.replace(':id', imovel.id);
 			}, this);
 
 			this.splice.apply(this, ['users', 0, this.users.length].concat(users));

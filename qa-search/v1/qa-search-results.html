@@ -112,7 +112,7 @@
 						</div>
 						<paper-listbox class="layout vertical flex">
 							<template is="dom-repeat" items="{{users}}">
-								<paper-item class="layout horizontal start">
+								<paper-item class="layout horizontal start" on-tap="handleTap">
 									<div class="layout vertical">
 										<template is="dom-repeat" items="{{item.roles}}"
 											as="role" filter="{{filterRole(item.roles)}}" >
@@ -149,7 +149,7 @@
 						</div>
 						<paper-listbox class="layout vertical flex">
 							<template is="dom-repeat" items="{{imoveis}}">
-								<div class="imovel layout horizontal">
+								<div class="imovel layout horizontal" on-tap="handleTap">
 									<paper-item class="layout flex">
 										<paper-item-body three-line>
 											<div>{{item.id}} - {{item.translatedType}} de {{item.bedrooms}} dorm</div>
@@ -304,6 +304,10 @@
 			if (this.searchString.length && this.enabled) {
 				this.$.results.open();
 			}
+		},
+
+		handleTap: function(e) {
+			window.open(e.model.item.viewUrl, '_blank');
 		}
 	});
 
