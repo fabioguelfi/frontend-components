@@ -1,12 +1,10 @@
 <link rel="import" href="../../../bower_components/polymer/polymer.html">
 <link rel="import" href="../../../bower_components/paper-header-panel/paper-header-panel.html">
 <link rel="import" href="../../../bower_components/paper-toolbar/paper-toolbar.html">
-<link rel="import" href="../../qa-config/v1/qa-config.html">
 
 <dom-module id="qa-header">
 
 	<template>
-		<qa-config config="{{config}}"></qa-config>
 		<style include="iron-flex iron-flex-alignment"></style>
 		<style>
 		paper-toolbar {
@@ -34,8 +32,8 @@
 				<div class="layout end-justified horizontal center flex">
 					<content select=".header"></content>
 					<div id="user" class="">
-						<div>{{config.User.name}}</div>
-						<div>{{config.User.email}}</div>
+						<div>{{user.name}}</div>
+						<div>{{user.email}}</div>
 					</div>
 				</div>
 			</paper-toolbar>
@@ -43,20 +41,24 @@
 		</paper-header-panel>
 	</template>
 
+	<script src="../../../bower_components/jwt-decode/build/jwt-decode.min.js"> </script>
+
 	<script>
 
 	Polymer({
 		is: "qa-header",
 		properties: {
-			config: {
-				type: Object,
-				value: function() {
-					return {
-						User: {}
-					};
-				}
-			}
+			user: Object
 		},
+		ready: function() {
+			var token = document.cookie.replace(/(?:(?:^|.*;\s*)5AJWT_AUTH\s*\=\s*([^;]*).*$)|^.*$/, "$1");
+			try {
+				this.user = jwt_decode(token);
+			} catch (err) {
+				this.user = {};
+			}
+
+		}
 	});
 
 	</script>

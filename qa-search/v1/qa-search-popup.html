@@ -6,7 +6,7 @@
 <link rel="import" href="../../qa-imovel-status/v1/qa-imovel-status.html">
 
 
-<dom-module id="qa-search-results">
+<dom-module id="qa-search-popup">
 
 	<template>
 		<style include="iron-flex iron-flex-alignment"></style>
@@ -93,8 +93,8 @@
 		paper-item.values div:last-child {
 			line-height: 24px;
 		}
-		paper-item.not-found {
-			color: #898989;
+		paper-item.footer {
+			color: #00B7F9;
 			text-align: center;
 		}
 
@@ -132,13 +132,16 @@
 									</paper-item-body>
 								</paper-item>
 							</template>
-							<template is="dom-if" if="{{!users.length}}">
-								<paper-item class="not-found layout flex">
-									<div class="layout flex">
+							<paper-item class="footer layout flex" on-tap="showAllUsersResults">
+								<div class="layout flex">
+									<template is="dom-if" if="{{users.length}}">
+										Ver todos os resultados de clientes
+									</template>
+									<template is="dom-if" if="{{!users.length}}">
 										Sua busca - <strong>{{searchString}}</strong> - não encontrou clientes.
-									</div>
-								</paper-item>
-							</template>
+									</template>
+								</div>
+							</paper-item>
 						</paper-listbox>
 					</div>
 				</template>
@@ -171,13 +174,16 @@
 									</paper-item>
 								</div>
 							</template>
-							<template is="dom-if" if="{{!imoveis.length}}">
-								<paper-item class="not-found layout flex">
-									<div class="layout flex">
+							<paper-item class="footer layout flex" on-tap="showAllImoveisResults">
+								<div class="layout flex">
+									<template is="dom-if" if="{{imoveis.length}}">
+										Ver todos os resultados de imoveis
+									</template>
+									<template is="dom-if" if="{{!imoveis.length}}">
 										Sua busca - <strong>{{searchString}}</strong> - não encontrou imóveis.
-									</div>
-								</paper-item>
-							</template>
+									</template>
+								</div>
+							</paper-item>
 						</paper-listbox>
 					</div>
 				</template>
@@ -194,7 +200,7 @@
 
 	Polymer({
 
-		is: "qa-search-results",
+		is: "qa-search-popup",
 
 		properties: {
 			searchString: {
@@ -308,6 +314,16 @@
 
 		handleTap: function(e) {
 			window.open(e.model.item.viewUrl, '_blank');
+		},
+
+		showAllImoveisResults: function(e) {
+			var url = ['@@PROPERTIES_URL', 'busca?query=' + this.searchString].join('/');
+			window.open(url, '_blank');
+		},
+
+		showAllUsersResults: function(e) {
+			var url = ['@@ACCOUNTS_URL', 'busca?query=' + this.searchString].join('/');
+			window.open(url, '_blank');
 		}
 	});
 

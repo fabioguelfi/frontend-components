@@ -1,11 +1,9 @@
 <link rel="import" href="../../../bower_components/polymer/polymer.html">
 <link rel="import" href="../../../bower_components/iron-ajax/iron-ajax.html">
-<link rel="import" href="../../qa-config/v1/qa-config.html">
 
 <dom-module id="qa-search-data">
 
 	<template>
-		<qa-config config="{{config}}"></qa-config>
 		<iron-ajax
 			id="searcher"
 			auto="{{searchString}}"
@@ -28,13 +26,6 @@
 		properties: {
 			config: {
 				type: Object,
-				value: function() {
-					return {
-						CloudFrontUrl: undefined,
-						ImovelViewUrl: undefined,
-						UserViewUrl: undefined
-					};
-				}
 			},
 			searchString: {
 				type: String,
@@ -100,13 +91,13 @@
 			var imoveis = e.detail.response.properties.items;
 
 			users.forEach(function(user) {
-				user.viewUrl = this.config.UserViewUrl.replace(':id', user.id);
+				user.viewUrl = ['@@ACCOUNTS_URL', 'usuarios', user.id].join('/');
 			}, this);
 
 			imoveis.forEach(function(imovel) {
 				imovel.translatedType = this.translateType(imovel.property_type);
-				imovel.foto_capa = [this.config.CloudFrontUrl, imovel.foto_capa].join('/');
-				imovel.viewUrl = this.config.ImovelViewUrl.replace(':id', imovel.id);
+				imovel.foto_capa = ['@@CLOUDFRONT_URL', imovel.foto_capa].join('/');
+				imovel.viewUrl = ['@@PROPERTIES_URL', 'imoveis', imovel.id].join('/');
 			}, this);
 
 			this.splice.apply(this, ['users', 0, this.users.length].concat(users));
