@@ -10,12 +10,12 @@
 
 	<template>
 		<style include="iron-flex iron-flex-alignment"></style>
-		<style>
+		<style is="custom-style">
 		.dropdown-content {
 			background-color: white;
 			box-shadow: 0px 2px 6px #ccc;
 			min-height: 56px;
-			min-width: 299px;
+			min-width: var(--qa-search-width, 360px);
 		}
 		.dropdown-content > div {
 			padding: 16px;

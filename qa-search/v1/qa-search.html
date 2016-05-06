@@ -1,0 +1,38 @@
+<link rel="import" href="../../../bower_components/polymer/polymer.html">
+<link rel="import" href="./qa-search-input.html">
+<link rel="import" href="./qa-search-popup.html">
+<link rel="import" href="./qa-search-data.html">
+
+<dom-module id="qa-search">
+
+	<template>
+		<style include="iron-flex iron-flex-alignment"></style>
+		<style is="custom-style">
+		</style>
+		<qa-search-input
+			selected-type="{{selectedType}}"
+			search-string="{{searchString}}">
+			<qa-search-popup
+				users="{{users}}"
+				imoveis="{{imoveis}}"
+				search-string="{{searchString}}"
+				show="{{selectedType}}"
+				waiting="{{waiting}}">
+			</qa-search-popup>
+			<qa-search-data
+				users="{{users}}"
+				imoveis="{{imoveis}}"
+				search-string="{{searchString}}"
+				waiting="{{waiting}}">
+			</qa-search-data>
+		</qa-search-input>
+	</template>
+	<script>
+
+		Polymer({
+			is: "qa-search"
+		});
+
+	</script>
+</dom-module>
+

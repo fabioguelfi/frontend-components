@@ -13,7 +13,7 @@
 
 	<template>
 		<style include="iron-flex iron-flex-alignment"></style>
-		<style>
+		<style is="custom-style">
 
 		::-webkit-input-placeholder { /* WebKit, Blink, Edge */
 			color: #86B3CB;
@@ -31,13 +31,14 @@
 		}
 
 		#search {
+			width: var(--qa-search-width, 360px);
 			background-color: #0092DE;
 		}
 		#search input {
 			font-size: 16px;
 			padding-left: 10px;
 			padding-right: 10px;
-			width: 225px;
+			width: 100%;
 			border: 0;
 			color: #fff;
 			background-color: inherit;

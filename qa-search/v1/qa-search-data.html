@@ -37,7 +37,7 @@
 			},
 			pageSize: {
 				type: Number,
-				value: 10
+				value: 3
 			},
 			loading: {
 				type: Boolean
@@ -51,11 +51,17 @@
 			},
 			users: {
 				type: Array,
-				notify: true
+				notify: true,
+				value: function() {
+					return [];
+				}
 			},
 			imoveis: {
 				type: Array,
-				notify: true
+				notify: true,
+				value: function() {
+					return [];
+				}
 			}
 		},
 
