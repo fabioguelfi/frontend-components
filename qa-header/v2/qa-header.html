@@ -1,0 +1,68 @@
+<link rel="import" href="../../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../../bower_components/paper-toolbar/paper-toolbar.html">
+<link rel="import" href="../../../bower_components/iron-image/iron-image.html">
+<link rel="import" href="../../qa-search/v1/qa-search.html">
+
+<dom-module id="qa-header">
+
+	<template>
+		<style include="iron-flex iron-flex-alignment"></style>
+		<style is="custom-style">
+
+			:host {
+				--qa-search-width: 480px;
+				--paper-toolbar-background: #50a0f0;
+				--paper-toolbar-content: {
+					margin-right: 12px;
+				}
+				--paper-toolbar-title: {
+					margin: 0px;
+				}
+			}
+
+			.user {
+				font-size: 13px;
+				text-align: right;
+			}
+
+			.user div:first-child {
+				opacity: 0.8;
+				font-size: 18px;
+			}
+
+		</style>
+		<paper-toolbar justify="justified">
+			<iron-image alt="Quinto Andar" src="https://d406l28ic3dl5.cloudfront.net/5a-logo.svg"></iron-image>
+			<qa-search></qa-search>
+			<div class="user">
+				<div>{{user.name}}</div>
+				<div>{{user.email}}</div>
+			</div>
+		</paper-toolbar>
+	</template>
+
+	<script src="../../../bower_components/jwt-decode/build/jwt-decode.min.js"></script>
+
+	<script>
+
+		Polymer({
+			is: "qa-header",
+			properties: {
+				user: Object
+			},
+			ready: function() {
+				var token = document.cookie
+					.replace(/(?:(?:^|.*;\s*)5AJWT_AUTH\s*\=\s*([^;]*).*$)|^.*$/, "$1");
+				try {
+					this.user = jwt_decode(token);
+				} catch (err) {
+					this.user = {};
+				}
+
+			}
+		});
+
+	</script>
+
+</dom-module>
+
