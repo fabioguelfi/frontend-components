@@ -1,6 +1,7 @@
 <link rel="import" href="../../../bower_components/polymer/polymer.html">
 <link rel="import" href="../../../bower_components/paper-toolbar/paper-toolbar.html">
 <link rel="import" href="../../../bower_components/iron-image/iron-image.html">
+<link rel="import" href="../../../bower_components/iron-ajax/iron-ajax.html">
 <link rel="import" href="../../qa-search/v1/qa-search.html">
 
 <dom-module id="qa-header">
@@ -30,15 +31,40 @@
 				font-size: 18px;
 			}
 
+			.views {
+				font-weight: bold;
+				margin-left: 24px;
+				max-width: 360px;
+			}
+
+			.views .selected {
+				color: #dcdcdc;
+			}
+
 		</style>
 		<paper-toolbar justify="justified">
 			<iron-image alt="Quinto Andar" src="https://d406l28ic3dl5.cloudfront.net/5a-logo.svg"></iron-image>
+			<div class="layout flex">
+				<div class="views layout horizontal justified">
+					<template is="dom-repeat" items="[[views]]">
+						<div class$="{{isSelected(item.id, selectedView)}}">
+							{{item.label}}
+						</div>
+					</template>
+				</div>
+			</div>
 			<qa-search></qa-search>
 			<div class="user">
 				<div>{{user.name}}</div>
 				<div>{{user.email}}</div>
 			</div>
 		</paper-toolbar>
+		<iron-ajax
+			auto
+			url="@@USTASKS_URL/views.json"
+			last-response="{{views}}"
+			with-credentials>
+		</iron-ajax>
 	</template>
 
 	<script src="../../../bower_components/jwt-decode/build/jwt-decode.min.js"></script>
@@ -48,7 +74,17 @@
 		Polymer({
 			is: "qa-header",
 			properties: {
-				user: Object
+				user: Object,
+				selectedView: String,
+				views: {
+					type: Array,
+					value: function() {
+						return [];
+					}
+				}
+			},
+			isSelected: function(viewId, selectedView) {
+				return viewId == selectedView ? 'selected' : '';
 			},
 			ready: function() {
 				var token = document.cookie
@@ -58,7 +94,6 @@
 				} catch (err) {
 					this.user = {};
 				}
-
 			}
 		});
 
