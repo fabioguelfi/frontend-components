@@ -39,12 +39,12 @@
 			.views {
 				font-weight: bold;
 				margin-left: 24px;
-				max-width: 360px;
 				color: #dcdcdc;
 			}
 
 			.views > div {
 				cursor: pointer;
+				margin-right: 16px;
 			}
 
 			.views .selected {
@@ -67,18 +67,18 @@
 			}
 
 		</style>
-		<paper-toolbar class="medium-tall" justify="justified">
+		<paper-toolbar class="medium-tall">
 			<iron-image alt="Quinto Andar" src="https://d406l28ic3dl5.cloudfront.net/5a-logo.svg"></iron-image>
-			<div class="layout flex">
-				<div class="views layout horizontal justified">
-					<template is="dom-repeat" items="[[views]]">
-						<div class$="{{isSelected(item.id, selectedView)}}" on-tap="handleViewTap">
-							{{item.label}}
-						</div>
-					</template>
-				</div>
+			<div class="views layout horizontal justified">
+				<template is="dom-repeat" items="[[views]]">
+					<div class$="{{isSelected(item.id, selectedView)}}" on-tap="handleViewTap">
+						{{item.label}}
+					</div>
+				</template>
 			</div>
-			<qa-search></qa-search>
+			<div class="layout horizontal flex center-justified">
+				<qa-search></qa-search>
+			</div>
 			<div class="user">
 				<div>{{user.name}}</div>
 				<div>{{user.email}}</div>
