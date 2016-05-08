@@ -12,13 +12,18 @@
 
 			:host {
 				--qa-search-width: 480px;
+			}
+
+			paper-toolbar {
 				--paper-toolbar-background: #50a0f0;
+				--paper-toolbar-height: 50px;
 				--paper-toolbar-content: {
 					margin-right: 12px;
 				}
 				--paper-toolbar-title: {
 					margin: 0px;
 				}
+				padding-top: 12px;
 			}
 
 			.user {
@@ -35,6 +40,7 @@
 				font-weight: bold;
 				margin-left: 24px;
 				max-width: 360px;
+				color: #dcdcdc;
 			}
 
 			.views > div {
@@ -42,11 +48,26 @@
 			}
 
 			.views .selected {
+				color: #ffffff;
+			}
+
+			.tabs > div {
 				color: #dcdcdc;
+				cursor: pointer;
+				margin: 0px 12px;
+				padding: 2px 8px;
+				text-transform: uppercase;
+				border-bottom: 4px solid transparent;
+			}
+
+			.tabs > div:hover,
+			.tabs > div.selected {
+				border-color: white;
+				color: white;
 			}
 
 		</style>
-		<paper-toolbar justify="justified">
+		<paper-toolbar class="medium-tall" justify="justified">
 			<iron-image alt="Quinto Andar" src="https://d406l28ic3dl5.cloudfront.net/5a-logo.svg"></iron-image>
 			<div class="layout flex">
 				<div class="views layout horizontal justified">
@@ -61,6 +82,13 @@
 			<div class="user">
 				<div>{{user.name}}</div>
 				<div>{{user.email}}</div>
+			</div>
+			<div class="tabs bottom layout horizontal self-end">
+				<template is="dom-repeat" items="[[tabs]]">
+					<div class$="{{isSelected(item.id, selectedTab)}}" on-tap="handleTabTap">
+						{{item.label}}
+					</div>
+				</template>
 			</div>
 		</paper-toolbar>
 		<iron-ajax
@@ -85,13 +113,23 @@
 					value: function() {
 						return [];
 					}
+				},
+				selectedTab: String,
+				tabs: {
+					type: Array,
+					value: function() {
+						return [];
+					}
 				}
 			},
-			isSelected: function(viewId, selectedView) {
-				return viewId == selectedView ? 'selected' : '';
+			isSelected: function(itemId, selectedId) {
+				return itemId == selectedId ? 'selected' : '';
 			},
 			handleViewTap: function(e) {
 				window.open(e.model.item.url, '_blank');
+			},
+			handleTabTap: function(e) {
+				this.set('selectedTab', e.model.item.id);
 			},
 			ready: function() {
 				var token = document.cookie
