@@ -298,12 +298,14 @@
 			changeRecord && changeRecord.indexSplices.forEach(function(items) {
 				this.highlightImoveis(this, items.index, items.addedCount);
 			}, this);
+			this.$.results.notifyResize();
 		},
 
 		userAddedOrRemoved: function(changeRecord) {
 			changeRecord && changeRecord.indexSplices.forEach(function(items) {
 				this.highlightUsers(this, items.index, items.addedCount);
 			}, this);
+			this.$.results.notifyResize();
 		},
 
 		showChanged: function() {
