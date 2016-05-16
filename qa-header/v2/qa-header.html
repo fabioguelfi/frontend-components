@@ -114,7 +114,10 @@
 						return [];
 					}
 				},
-				selectedTab: String,
+				selectedTab: {
+					type: String,
+					notify: true
+				},
 				tabs: {
 					type: Array,
 					value: function() {
