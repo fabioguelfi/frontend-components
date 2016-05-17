@@ -1,0 +1,37 @@
+<link rel="import" href="../../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../../qa-styles/v1/qa-styles.html">
+
+<dom-module id="qa-button">
+
+	<template>
+		<style include="iron-flex iron-flex-alignment"></style>
+		<style include="qa-styles"></style>
+		<style is="custom-style">
+		</style>
+		<paper-button on-tap="handleTap">
+			<content></content>
+		</paper-button>
+	</template>
+	<script>
+
+		Polymer({
+			is: 'qa-button',
+			properties: {
+				form: Object
+			},
+			observers: [
+				'onChange(form)'
+			],
+			onChange: function(form) {
+				form.registerSubmitButton(this);
+			},
+			handleTap: function(e) {
+				if (this.form) {
+					this.form.submit();
+				}
+			}
+		});
+
+	</script>
+</dom-module>

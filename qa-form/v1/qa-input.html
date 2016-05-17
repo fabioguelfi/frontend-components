@@ -1,0 +1,43 @@
+<link rel="import" href="../../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../../bower_components/paper-input/paper-input.html">
+<link rel="import" href="../../qa-styles/v1/qa-styles.html">
+
+<dom-module id="qa-input">
+
+	<template>
+		<style include="iron-flex iron-flex-alignment"></style>
+		<style include="qa-styles"></style>
+		<style is="custom-style">
+			paper-input {
+				--paper-input-container-underline: {
+					background-color: var(--qa-light-divider-color);
+				};
+				--paper-input-container-underline-focus: {
+					background-color: var(--qa-light-accent-color);
+				};
+				--paper-input-container-label-focus: {
+					color: var(--qa-light-accent-color);
+				};
+				--paper-input-container-label-floating: {
+					color: var(--qa-light-accent-color);
+				};
+			}
+		</style>
+		<paper-input name="[[name]]" label="[[label]]" value="{{value}}"></paper-input>
+	</template>
+	<script>
+
+		Polymer({
+			is: 'qa-input',
+			properties: {
+				name: String,
+				label: String,
+				value: {
+					type: String,
+					notify: true
+				}
+			}
+		});
+
+	</script>
+</dom-module>

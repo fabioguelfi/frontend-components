@@ -1,0 +1,69 @@
+<link rel="import" href="../../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../../bower_components/iron-form/iron-form.html">
+
+<dom-module id="qa-form">
+
+	<template>
+		<style include="iron-flex iron-flex-alignment"></style>
+		<style is="custom-style">
+		</style>
+		<form
+			id="form"
+			is="iron-form"
+			action="[[action]]"
+			method="POST"
+			content-type="[[contentType]]">
+			<content></content>
+		</form>
+	</template>
+	<script>
+
+		Polymer({
+			is: 'qa-form',
+			properties: {
+				action: String,
+				method: {
+					type: String,
+					value: 'POST'
+				},
+				form: {
+					type: Object,
+					notify: true
+				},
+				contentType: {
+					type: String,
+					value: 'application/json'
+				}
+			},
+			ready: function() {
+				this.set('form', this);
+			},
+			submit: function() {
+				this.$.form.submit();
+			},
+			registerSubmitButton: function(button) {
+				var self = this;
+
+				this.$.form.addEventListener('iron-form-presubmit', function() {
+
+					var items = self.$.form.queryAllEffectiveChildren('[name]');
+
+					var params = items.reduce(function(params, item) {
+						params[item.name] = item.value;
+						return params;
+					}, {});
+
+					this.request.method = 'put';
+					this.request.body = params;
+				});
+				this.$.form.addEventListener('iron-form-error', function(e) {
+					self.fire('qa-form-error', e.detail.error);
+				});
+				this.$.form.addEventListener('iron-form-response', function(e) {
+					self.fire('qa-form-success', {});
+				});
+			}
+		});
+
+	</script>
+</dom-module>
