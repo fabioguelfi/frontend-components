@@ -1,0 +1,66 @@
+<link rel="import" href="../../../bower_components/polymer/polymer.html">
+
+<dom-module id="qa-badge">
+
+	<template>
+		<style include="iron-flex iron-flex-alignment"></style>
+		<style is="custon-style">
+			:host {
+				@apply(--layout-horizontal);
+			}
+			:host > div:not(:last-child) {
+				margin: var(--qa-badge-margin, 2px);
+			}
+			div.badge {
+				color: white;
+				background-color: #2BC3FF;
+				border-radius: 3px;
+				font-weight: bold;
+				font-size: var(--qa-badge-font-size, inherit);
+				min-width: var(--qa-badge-size, 22px);
+				min-height: var(--qa-badge-size, 22px);
+				max-width: var(--qa-badge-size, 22px);
+				max-height: var(--qa-badge-size, 22px);
+				text-align: center;
+				text-transform: uppercase;
+			}
+			div.proprietario {
+				background-color: #FF8500;
+			}
+			div.inquilino {
+				background-color: #BF00B0;
+			}
+		</style>
+		<div class$="layout center-justified flex badge ">
+			{{badge}}
+		</div>
+	</template>
+	<script>
+
+		Polymer({
+
+			is: "qa-badge",
+
+			properties: {
+				label: {
+					type: String
+				},
+				firstLetter: {
+					type: Boolean
+				},
+				badge: {
+					computed: 'getBadge(label, firstLetter)'
+				}
+			},
+
+			getBadge: function(label, firstLetter) {
+				if (firstLetter) {
+					return label.charAt(0);
+				}
+				return label;
+			}
+
+		});
+	</script>
+</dom-module>
+
