@@ -13,25 +13,25 @@
 			}
 			div.badge {
 				color: white;
-				background-color: #2BC3FF;
+				background-color: var(--qa-badge-color, #2BC3FF);
 				border-radius: 3px;
 				font-weight: bold;
-				font-size: var(--qa-badge-font-size, inherit);
-				min-width: var(--qa-badge-size, 22px);
-				min-height: var(--qa-badge-size, 22px);
-				max-width: var(--qa-badge-size, 22px);
-				max-height: var(--qa-badge-size, 22px);
+				font-size: var(--qa-badge-size, 14px);
+				min-width: var(--qa-badge-size, 20px);
+				min-height: var(--qa-badge-size, 20px);
+				max-width: var(--qa-badge-size, 20px);
+				max-height: var(--qa-badge-size, 20px);
 				text-align: center;
 				text-transform: uppercase;
 			}
 			div.proprietario {
 				background-color: #FF8500;
 			}
-			div.inquilino {
+			div.inquilino { 
 				background-color: #BF00B0;
 			}
 		</style>
-		<div class$="layout center-justified flex badge ">
+		<div class="layout center-justified flex badge ">
 			{{badge}}
 		</div>
 	</template>
