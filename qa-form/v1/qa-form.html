@@ -61,7 +61,9 @@
 						params[key] = statics[key];
 					}
 
-					this.request.method = self.method;
+					if (['PATCH', 'PUT', 'DELETE', 'GET'].indexOf(self.method) >= 0) {
+						this.request.method = self.method;
+					}
 					this.request.body = params;
 				});
 				this.$.form.addEventListener('iron-form-error', function(e) {
