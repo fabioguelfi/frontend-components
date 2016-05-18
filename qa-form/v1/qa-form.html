@@ -11,7 +11,7 @@
 			id="form"
 			is="iron-form"
 			action="[[action]]"
-			method="POST"
+			method="[[method]]"
 			content-type="[[contentType]]">
 			<content></content>
 		</form>
@@ -36,7 +36,17 @@
 				}
 			},
 			ready: function() {
-				this.set('form', this);
+
+				var self = this;
+				this.set('form', self);
+
+				this.$.form.addEventListener('iron-form-error', function(e) {
+					self.fire('qa-form-error', e.detail.error);
+				});
+
+				this.$.form.addEventListener('iron-form-response', function(e) {
+					self.fire('qa-form-success', {});
+				});
 			},
 			submit: function() {
 				this.$.form.submit();
@@ -64,13 +74,8 @@
 					if (['PATCH', 'PUT', 'DELETE', 'GET'].indexOf(self.method) >= 0) {
 						this.request.method = self.method;
 					}
+
 					this.request.body = params;
-				});
-				this.$.form.addEventListener('iron-form-error', function(e) {
-					self.fire('qa-form-error', e.detail.error);
-				});
-				this.$.form.addEventListener('iron-form-response', function(e) {
-					self.fire('qa-form-success', {});
 				});
 			}
 		});
