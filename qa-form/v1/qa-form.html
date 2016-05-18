@@ -53,7 +53,15 @@
 						return params;
 					}, {});
 
-					this.request.method = 'put';
+					var action = button.action || {};
+					var data = action.data || {};
+					var statics = data.static || {};
+
+					for (var key in statics) {
+						params[key] = statics[key];
+					}
+
+					this.request.method = self.method;
 					this.request.body = params;
 				});
 				this.$.form.addEventListener('iron-form-error', function(e) {

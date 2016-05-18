@@ -18,17 +18,22 @@
 		Polymer({
 			is: 'qa-button',
 			properties: {
-				form: Object
+				form: Object,
+				action: Object
 			},
 			observers: [
-				'onChange(form)'
+				'onChange(form, action)'
 			],
-			onChange: function(form) {
-				form.registerSubmitButton(this);
+			onChange: function(form, action) {
+				form.registerSubmitButton(this, action);
 			},
 			handleTap: function(e) {
-				if (this.form) {
+				if (this.form && this.action) {
 					this.form.submit();
+				} else {
+					var msg = 'action and form are required';
+					console.log(msg);
+					alert(msg);
 				}
 			}
 		});
