@@ -1,0 +1,92 @@
+<link rel="import" href="../../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../../bower_components/paper-spinner/paper-spinner.html">
+
+<dom-module id="qa-loading">
+
+	<template>
+		<style include="iron-flex iron-flex-alignment"></style>
+		<style is="custom-style">
+			:host {
+				@apply(--layout-vertical);
+				@apply(--layout-flex);
+			}
+			#spinner, #message {
+				text-align: center;
+				padding: 16px;
+			}
+		</style>
+		<template is="dom-if" if="[[loading]]">
+			<div id="spinner">
+				<paper-spinner active="[[loading]]"></paper-spiner>
+			</div>
+		</template>
+		<template is="dom-if" if="[[!loading]]">
+			<div>
+				<template is="dom-if" if="[[!message]]">
+					<content></content>
+				</template>
+				<template is="dom-if" if="[[message]]">
+					<div id="message">
+						<div>{{message}}</div>
+						<template is="dom-if" if="[[error]]">
+							<a href$="{{loader.url}}" target="_blank">{{error}}</a>
+						</template>
+					</div>
+				</template>
+			</div>
+		</template>
+	</template>
+
+	<script>
+
+		Polymer({
+			is: "qa-loading",
+			properties: {
+				loader: {
+					type: HTMLElement,
+					observer: 'onLoaderChange'
+				},
+				loading: {
+					type: Boolean,
+					notify: true
+				},
+				message: {
+					type: String,
+					notify: true
+				}
+			},
+			onLoaderChange: function(loader) {
+				if (this._oldLoader) {
+					this.unlisten(loader, 'request', 'onRequest');
+					this.unlisten(loader, 'response', 'onResponse');
+					this.unlisten(loader, 'error', 'onError');
+					delete this._oldLoader;
+				}
+				if (typeof loader === 'string') {
+					this.set('loader', this.domHost.$[loader]);
+					return;
+				}
+				if (loader) {
+					this.listen(loader, 'request', 'onRequest');
+					this.listen(loader, 'response', 'onResponse');
+					this.listen(loader, 'error', 'onError');
+					this._oldLoader = loader;
+				}
+			},
+			onRequest: function(e) {
+				this.set('message', '');
+				this.set('error', '');
+				this.set('loading', true);
+			},
+			onResponse: function(e) {
+				this.set('loading', false);
+			},
+			onError: function(e) {
+				this.set('message', 'Ocorreu uma falha');
+				this.set('error', e.detail.error.message);
+				this.set('loading', false);
+			}
+		});
+	</script>
+
+</dom-module>
