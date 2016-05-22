@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<link rel="stylesheet" type="text/css" href='http://fonts.googleapis.com/css?family=Open+Sans:400,300,600,700,800'>
+		<script src="../../../bower_components/webcomponentsjs/webcomponents-lite.js"></script>
+		<link rel="import" href="../../../bower_components/polymer/polymer.html">
+		<link rel="import" href="../../../bower_components/iron-flex-layout/iron-flex-layout-classes.html">
+		<link rel="import" href="../../../bower_components/iron-ajax/iron-ajax.html">
+		<link rel="import" href="../../qa-badge/v1/qa-badge.html">
+		<link rel="import" href="./qa-styles.html">
+
+		<title>qaStyles</title>
+
+		<style>
+			* {
+				font-family: 'open sans';
+			}
+			body {
+				margin: 24px;
+			}
+		</style>
+	</head>
+	<body>
+		<dom-module id="main-document">
+			<style include="iron-flex iron-flex-alignment"></style>
+			<style include="qa-styles"></style>
+			<style is="custom-style">
+			</style>
+			<template>
+				<h3 class="theme--qa">All</h3>
+				<div class="layout horizontal wrap">
+					<template is="dom-repeat" items="[[classes]]">
+						<qa-badge label="{{getClasses(item)}}" full></qa-badge>
+					</template>
+				</div>
+				<h3>Phases</h3>
+				<div class="layout horizontal wrap">
+					<template is="dom-repeat" items="[[phases]]">
+						<qa-badge label="{{getClasses(item)}}" full></qa-badge>
+					</template>
+				</div>
+				<h3>Roles</h3>
+				<div class="layout horizontal wrap">
+					<template is="dom-repeat" items="[[roles]]">
+						<qa-badge label="{{getClasses(item)}}" full></qa-badge>
+					</template>
+				</div>
+				<h3>Themes</h3>
+				<div class="layout vertical">
+					<template is="dom-repeat" items="[[themes]]" as="theme">
+						<h4>{{theme}}</h4>
+						<div class="layout horizontal">
+							<template is="dom-repeat" items='["-light", "", "-dark", "-darker"]'>
+								<div class$="{{color(theme, item)}}" style="margin: 8px; padding: 16px; min-width: 236px;">
+									<div><strong>{{color(theme, item)}}</strong></div>
+									<template is="dom-repeat" items='["-text", "-secondary", "-disabled", "-divider", "-error"]' as="field">
+										<div class$="{{color(theme, field)}}">
+											{{color(theme, field)}}
+										</div>
+									</template>
+								</div>
+							</template>
+						</div>
+					</template>
+				</div>
+				<iron-ajax
+					auto
+					handle-as="text"
+					on-response="handleResponse"
+					url="./qa-styles.html">
+				</iron-ajax>
+			</template>
+			<script>
+				HTMLImports.whenReady(function () {
+					Polymer({
+						is: 'main-document',
+						properties: {
+							classes: Array,
+							phases: Array,
+							roles: Array,
+							themes: Array
+						},
+						color: function(theme, item) {
+							return [theme, item, '-color'].join('');
+						},
+						handleResponse: function(e) {
+							var response = e.detail.response;
+							var classes = response.match(/^\s+[^}{:]+\s{.*$/gm);
+
+							var phases = classes.filter(function(item) {
+								return item.indexOf('@phase') >= 0;
+							});
+
+							var roles = classes.filter(function(item) {
+								return item.indexOf('@role') >= 0;
+							});
+
+							var themes = response.match(/@theme.*$/gm).map(function(theme) {
+								return theme.replace(/\s+/g, ' ').split(' ')[1];
+							});
+
+							this.set('classes', classes);
+							this.set('phases', phases);
+							this.set('roles', roles);
+							this.set('themes', themes);
+
+							var self = this;
+							var styles = [];
+
+							themes.forEach(function(theme) {
+								function val(prop, field) {
+									var value = self._styleProperties[theme + field] ||
+										'inherit; text-decoration: line-through';
+									return prop + ': ' + value + '; ' ;
+								}
+								function pushStyle(color, background) {
+									var id = '.' + theme + (background ? background : color);
+									background = background ? val('background-color', background) : '';
+									styles.push(id + ' { ' + val('color', color) + background + '}');
+								}
+								pushStyle('-text-color', '-light-color');
+								pushStyle('-text-color', '-color');
+								pushStyle('-text-color', '-dark-color');
+								pushStyle('-text-color', '-darker-color');
+								pushStyle('-text-color');
+								pushStyle('-secondary-color');
+								pushStyle('-disabled-color');
+								pushStyle('-divider-color');
+								pushStyle('-error-color');
+							});
+
+							var style = document.createElement('style');
+							style.type = 'text/css';
+							style.innerHTML = styles.join('\n');
+							Polymer.dom(this.root).appendChild(style);
+						},
+						getClasses: function(item) {
+							return item
+							.replace(/^\s+|\s*{.*$/g, '')
+							.replace(/[.,]/g, '');
+						}
+					});
+				});
+			</script>
+		</dom-module>
+		<main-document></main-document>
+	</body>
+</html>
+

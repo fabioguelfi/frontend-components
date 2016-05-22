@@ -1,65 +1,47 @@
 <link rel="import" href="../../../bower_components/polymer/polymer.html">
 
+<link rel="import" href="../../qa-styles/v1/qa-styles.html">
+
 <dom-module id="qa-badge">
 
 	<template>
 		<style include="iron-flex iron-flex-alignment"></style>
+		<style include="qa-styles"></style>
 		<style is="custon-style">
-			:host {
-				@apply(--layout-horizontal);
-			}
-			:host > div:not(:last-child) {
-				margin: var(--qa-badge-margin, 2px);
-			}
-			div.badge {
+			:host > div {
+				@apply(--layout-center-justified);
+				@apply(--layout-vertical);
+				background-color: var(--paper-grey-500);
 				color: white;
-				background-color: var(--qa-badge-color, #2BC3FF);
-				border-radius: 3px;
-				font-weight: bold;
-				font-size: var(--qa-badge-size, 14px);
-				min-width: var(--qa-badge-size, 20px);
-				min-height: var(--qa-badge-size, 20px);
-				max-width: var(--qa-badge-size, 20px);
-				max-height: var(--qa-badge-size, 20px);
 				text-align: center;
-				text-transform: uppercase;
+				font-weight: 600;
+				border-radius: 3px;
+				min-width: 1.5em;
+				min-height: 1.5em;
+				margin-right: 0.4em;
+				margin-bottom: 0.4em;
 			}
-			div.proprietario {
-				background-color: #FF8500;
-			}
-			div.inquilino { 
-				background-color: #BF00B0;
+			:host[full] > div {
+				padding: 0 0.5em;
 			}
 		</style>
-		<div class="layout center-justified flex badge ">
-			{{badge}}
+		<div class$={{label}}>
+			{{getBadge(label, full)}}
 		</div>
 	</template>
 	<script>
-
 		Polymer({
-
 			is: "qa-badge",
-
 			properties: {
-				label: {
-					type: String
-				},
-				firstLetter: {
-					type: Boolean
-				},
-				badge: {
-					computed: 'getBadge(label, firstLetter)'
+				label: String,
+				full: {
+					type: Boolean,
+					value: false
 				}
 			},
-
-			getBadge: function(label, firstLetter) {
-				if (firstLetter) {
-					return label.charAt(0);
-				}
-				return label;
+			getBadge: function(label, full) {
+				return full ? label.replace(/([A-Z])/g, ' $1') : label.charAt(0);
 			}
-
 		});
 	</script>
 </dom-module>
