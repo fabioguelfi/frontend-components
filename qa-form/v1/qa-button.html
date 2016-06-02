@@ -9,7 +9,7 @@
 		<style include="qa-styles"></style>
 		<style is="custom-style">
 		</style>
-		<paper-button on-tap="handleTap">
+		<paper-button disabled="[[disabled]]" on-tap="handleTap">
 			<content></content>
 		</paper-button>
 	</template>
@@ -19,7 +19,12 @@
 			is: 'qa-button',
 			properties: {
 				form: Object,
-				action: Object
+				action: Object,
+				disabled: {
+					type: Boolean,
+					notify: true,
+					value: false
+				}
 			},
 			observers: [
 				'onChange(form, action)'
