@@ -6,19 +6,19 @@
 		<div class="fotos clearfix">
 						<div class="item" on-click="itemClick">
 							<template is="dom-if" if="{{imovel.capa}}">
-								<a href="/imoveis/{{imovel.imovelId}}"><img src="{{imovel.capa}}" alt=""></a>
+								<a href="[[imovelViewHref(imovel.id)]]"><img src="{{imovel.capa}}" alt=""></a>
 								<span class$="{{statusImovelClass(imovel.status)}}">{{statusImovelText(imovel.status)}}</span>
 							</template>
 						</div>
 					</div>
 					<div class="descricao">
-						<div class="titulo">							
+						<div class="titulo">
 							<qa-editable path="/api/properties/{{imovel.imovelId}}">
-								<span><a href="/imoveis/{{imovel.imovelId}}">{{imovel.imovelId}}</a></span> - <editable-field obj="imovel.titulo" datatype="string">{{imovel.titulo}}</editable-field>
+								<span><a href="[[imovelViewHref(imovel.id)]]">{{imovel.imovelId}}</a></span> - <editable-field obj="imovel.titulo" datatype="string">{{imovel.titulo}}</editable-field>
 								<template is="dom-if" if="{{imovel.urlImovel}}">
 									<a  class="veranuncio" target="_blank"	href="{{imovel.urlImovel}}"><i class="fa fa-eye"></i>Ver anúncio</a>
 								</template>
-							</qa-editable>							
+							</qa-editable>
 						</div>
 						<qa-editable path="/api/properties/{{imovel.imovelId}}">
 							<div class="endereco">

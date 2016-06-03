@@ -11,7 +11,8 @@ Polymer(
 		imovelId: {
 			type: Object,
 			observer: '_imovelIdChanged'
-		}
+		},
+		imovelOpenUrl: String
 	},
 
 	_imovelIdChanged: function() {
@@ -63,6 +64,10 @@ Polymer(
 		if(status === "edicaoSemUsuario" || status === "edicaoUsuarioNaoConfirmado"){return "edição"}
 		else{return status}
 	},
+	
+	imovelViewHref: function(id){
+		return (this.imovelOpenUrl || ("/imoveis/"+id))
+	}
 
 
 });
