@@ -1,0 +1,42 @@
+<link rel="import" href="../../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../../bower_components/paper-input/paper-input.html">
+
+<link rel="import" href="./qa-input-styles.html">
+<link rel="import" href="./qa-input-behavior.html">
+
+<dom-module id="qa-input-phone">
+	<style include="qa-input-styles"></style>
+	<template>
+		<paper-input
+			name$="[[name]]"
+			label="[[label]]"
+			placeholder="{{format}}">
+		</paper-input>
+	</template>
+	<script>
+		Polymer({
+			is: 'qa-input-phone',
+			properties: {
+				name: String,
+				label: {
+					type: String,
+					value: 'Data'
+				},
+				format: {
+					type: String,
+					computed: 'getFormat(value)'
+				},
+				separatorsPattern: {
+					type: String,
+					value: '[ \(\)-]'
+				}
+			},
+			behaviors: [ qaInputBehavior ],
+			getFormat: function(value) {
+				var len = this.getRawValue(value).length;
+				return len < 11 ? '(99) 9999-9999 ' : '(99) 99999-9999'
+			}
+		});
+	</script>
+</dom-module>
+
