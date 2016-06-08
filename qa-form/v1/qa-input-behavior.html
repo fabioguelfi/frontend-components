@@ -42,7 +42,7 @@
 		getFormattedStart: function(target, value) {
 			var index = this.getFormattedIndex(target);
 			var allowed = new RegExp(this.allowedPattern, 'g');
-			return value.split(allowed, index).join('#').length;
+			return (value || '').split(allowed, index).join('#').length;
 		},
 		onChange: function(value) {
 
