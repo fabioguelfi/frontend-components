@@ -1,0 +1,49 @@
+<link rel="import" href="../../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../../bower_components/paper-input/paper-input.html">
+
+<link rel="import" href="./qa-input-styles.html">
+<link rel="import" href="./qa-input-behavior.html">
+
+<dom-module id="qa-input-currency">
+	<style include="qa-input-styles"></style>
+	<template>
+		<paper-input
+			name$="[[name]]"
+			label="[[label]]"
+			always-float-label>
+		</paper-input>
+	</template>
+	<script>
+		Polymer({
+			is: 'qa-input-currency',
+			properties: {
+				name: String,
+				label: {
+					type: String,
+					value: 'Data'
+				},
+				format: {
+					type: String,
+					value: '',
+					computed: 'getFormat(value)'
+				},
+				separatorsPattern: {
+					type: String,
+					value: '[\.]'
+				}
+			},
+			behaviors: [ qaInputBehavior ],
+			getFormattedValue: function(value) {
+				if (value == undefined || value == '') {
+					return value;
+				}
+				var rawValue = String(value).replace(/^0+|[^\d]/g, '');
+				return rawValue.replace(/(\d)(?=(?:[0-9]{3})+\b)/gm, '$1.');
+			},
+			getFormat: function(value) {
+				return this.getFormattedValue('9' + (value || ''));
+			}
+		});
+	</script>
+</dom-module>
+

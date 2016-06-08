@@ -1,0 +1,25 @@
+<link rel="import" href="../../../bower_components/polymer/polymer.html">
+<link rel="import" href="./qa-input-behavior.html">
+
+<script src="../../../bower_components/moment/moment.js"></script>
+
+<script>
+	/** @polymerBehavior */
+	var qaInputDateTimeBehaviorImpl = {
+		ready: function() {
+			var input = this.$$('paper-input');
+			this.listen(input, 'change', '_onChange');
+		},
+		_onChange: function(event) {
+			var target = event.target;
+			var value = target.value;
+			var format = this.format;
+			var invalid = value && value != moment(value, format).format(format);
+			target.invalid = Boolean(invalid);
+		}
+	};
+
+	/** @polymerBehavior */
+	qaInputDateTimeBehavior = [ qaInputBehavior, qaInputDateTimeBehaviorImpl ];
+</script>
+
