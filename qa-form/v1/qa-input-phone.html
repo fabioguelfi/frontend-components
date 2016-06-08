@@ -28,13 +28,21 @@
 				},
 				separatorsPattern: {
 					type: String,
-					value: '[ \(\)-]'
+					value: '[ \(\)\+\-]'
 				}
 			},
 			behaviors: [ qaInputBehavior ],
 			getFormat: function(value) {
 				var len = this.getRawValue(value).length;
-				return len < 11 ? '(99) 9999-9999 ' : '(99) 99999-9999'
+				if (len > 12) {
+					return '+99 (99) 99999-9999';
+				} else if (len > 11) {
+					return '+99 (99) 9999-9999';
+				} else if (len > 10) {
+					return '(99) 99999-9999';
+				} else {
+					return '(99) 9999-9999 ';
+				}
 			}
 		});
 	</script>
