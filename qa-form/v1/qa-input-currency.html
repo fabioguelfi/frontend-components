@@ -35,7 +35,7 @@
 			behaviors: [ qaInputBehavior ],
 			getFormattedValue: function(value) {
 				if (value == undefined || value == '') {
-					return value;
+					return '';
 				}
 				var rawValue = String(value).replace(/^0+|[^\d]/g, '');
 				return rawValue.replace(/(\d)(?=(?:[0-9]{3})+\b)/gm, '$1.');
