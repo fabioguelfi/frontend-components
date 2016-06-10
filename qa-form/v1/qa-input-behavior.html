@@ -18,6 +18,7 @@
 			this.input = this.$$('paper-input').$$('input');
 			this.listen(this.input, 'keydown', 'onKeydown');
 			this.listen(this.input, 'input', 'onInput');
+			this.listen(this.input, 'blur', 'onBlur');
 			this.set('value', this.getFormattedValue(this.value));
 		},
 		getRawValue: function(value) {
@@ -54,9 +55,17 @@
 				this.input.value = formatted;
 				this.input.selectionStart = this.input.selectionEnd = start;
 			});
+
+			this._changed = false;
 		},
 		onInput: function(event) {
 			this.set('value', event.target.value);
+			this._changed = true;
+		},
+		onBlur: function(event) {
+			if (this._changed) {
+				this.fire('change', event);
+			}
 		},
 		onKeydown: function(event) {
 
