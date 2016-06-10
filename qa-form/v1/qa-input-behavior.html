@@ -19,7 +19,9 @@
 			this.listen(this.input, 'keydown', 'onKeydown');
 			this.listen(this.input, 'input', 'onInput');
 			this.listen(this.input, 'blur', 'onBlur');
-			this.set('value', this.getFormattedValue(this.value));
+			this.async(function() {
+				this.set('value', this.getFormattedValue(this.value));
+			});
 		},
 		getRawValue: function(value) {
 			var notAllowed = new RegExp(this.allowedPattern.replace('[', '[^'), 'g');
@@ -52,7 +54,7 @@
 
 			var start = this.getFormattedStart(this.input, formatted);
 			this.async(function() {
-				this.input.value = formatted;
+				this.$$('paper-input').set('value', formatted);
 				this.input.selectionStart = this.input.selectionEnd = start;
 			});
 
