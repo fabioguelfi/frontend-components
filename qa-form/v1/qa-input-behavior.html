@@ -54,6 +54,7 @@
 
 			var start = this.getFormattedStart(this.input, formatted);
 			this.async(function() {
+				this.value = formatted;
 				this.$$('paper-input').set('value', formatted);
 				this.input.selectionStart = this.input.selectionEnd = start;
 			});
