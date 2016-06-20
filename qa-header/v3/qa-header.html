@@ -1,0 +1,99 @@
+<link rel="import" href="../../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../../bower_components/paper-tabs/paper-tabs.html">
+<link rel="import" href="../../../bower_components/paper-tabs/paper-tab.html">
+<link rel="import" href="../../../bower_components/iron-image/iron-image.html">
+<link rel="import" href="../../../bower_components/iron-ajax/iron-ajax.html">
+<link rel="import" href="../../qa-search/v1/qa-search.html">
+<link rel="import" href="../../qa-styles/v1/qa-styles.html">
+
+<dom-module id="qa-header">
+
+	<template>
+		<style include="iron-flex iron-flex-alignment"></style>
+		<style include="qa-styles"></style>
+		<style is="custom-style">
+			:host {
+				@apply(--layout-horizontal);
+				@apply(--layout-center);
+				@apply(--layout-flex);
+				@apply(--layout-wrap);
+			}
+			qa-search {
+				--qa-search-width: 480px;
+			}
+			.user {
+				font-size: 13px;
+				text-align: right;
+			}
+			.user div:first-child {
+				opacity: 0.8;
+				font-size: 18px;
+			}
+			paper-tab {
+				--paper-tab-ink: var(--qa-text-color);
+				--paper-tab: {
+					font-size: 15px;
+					font-weight: bold;
+					color: var(--qa-text-color);
+				};
+			}
+		</style>
+		<iron-image alt="Quinto Andar" src="https://d406l28ic3dl5.cloudfront.net/5a-logo.svg"></iron-image>
+		<paper-tabs selected="{{selectedIndex}}" no-bar>
+			<template is="dom-repeat" items="[[views]]">
+				<paper-tab>{{item.label}}</paper-tab>
+			</template>
+		</paper-tabs>
+		<div class="layout horizontal flex center-justified">
+			<qa-search></qa-search>
+		</div>
+		<div class="user">
+			<div>{{user.name}}</div>
+			<div>{{user.email}}</div>
+		</div>
+		<iron-ajax
+			auto
+			url="@@USTASKS_URL/views.json"
+			last-response="{{views}}"
+			with-credentials>
+		</iron-ajax>
+	</template>
+
+	<script src="../../../bower_components/jwt-decode/build/jwt-decode.min.js"></script>
+
+	<script>
+
+		Polymer({
+			is: "qa-header",
+			properties: {
+				user: Object,
+				selectedView: String,
+				selectedIndex: {
+					type: Number,
+					observer: 'onSelect'
+				},
+				views: {
+					type: Array,
+					value: function() {
+						return [];
+					}
+				}
+			},
+			onSelect: function(index) {
+				window.open(this.views[index].url, '_blank');
+			},
+			ready: function() {
+				var token = document.cookie
+				.replace(/(?:(?:^|.*;\s*)5AJWT_AUTH\s*\=\s*([^;]*).*$)|^.*$/, "$1");
+				try {
+					this.user = jwt_decode(token);
+				} catch (err) {
+					this.user = {};
+				}
+			}
+		});
+
+	</script>
+
+</dom-module>
+
