@@ -1,0 +1,154 @@
+<link rel="import" href="../../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../../bower_components/paper-listbox/paper-listbox.html">
+<link rel="import" href="../../../bower_components/iron-ajax/iron-ajax.html">
+<link rel="import" href="../../../bower_components/iron-dropdown/iron-dropdown.html">
+<link rel="import" href="../../../bower_components/paper-item/paper-item-body.html">
+<link rel="import" href="../../../bower_components/paper-item/paper-item.html">
+<link rel="import" href="../../../bower_components/paper-icon-button/paper-icon-button.html">
+
+<link rel="import" href="../../qa-loading/v1/qa-loading.html">
+<link rel="import" href="./qa-input-styles.html">
+
+<dom-module id="qa-input-user">
+
+	<template>
+		<style include="iron-flex iron-flex-alignment"></style>
+		<style include="qa-input-styles"></style>
+		<style is="custom-style">
+			:host {
+				color: var(--qa-light-color);
+			}
+			paper-icon-button[icon="check"] {
+				color: green;
+			}
+			.dropdown-content {
+				@apply(--shadow-elevation-2dp);
+				border-radius: 2px;
+				background: white;
+			}
+		</style>
+		<paper-input
+			id="name"
+			on-input="doSearch"
+			label="[[label]]"
+			readonly="[[readonly]]"
+			value="{{userName}}">
+			<template is="dom-if" if="[[!readonly]]">
+				<paper-icon-button icon="search" on-tap="doSearch" suffix>
+				</paper-icon-button>
+			</template>
+		</paper-input>
+		<input type="hidden" name$="[[name]]" value$="[[value]]">
+		<iron-dropdown id="results" no-overlap dynamic-align>
+			<qa-loading
+				class="dropdown-content"
+				message="[[message]]"
+				loader="ajax">
+				<paper-listbox selected-item="{{userItem}}">
+					<template is="dom-repeat" items="[[results]]">
+						<paper-item>
+							<paper-item-body two-line>
+								<div>{{item.name}}</div>
+								<div secondary>{{item.primary_email}}</div>
+							</paper-item-body>
+						</paper-item>
+					</template>
+				</paper-listbox>
+			</qa-loading>
+		</iron-dropdown>
+		<iron-ajax
+			id="ajax"
+			url="/api/search"
+			params="{{buildParams(userName, roles)}}"
+			handle-as="json"
+			on-response="handleResponse"
+			on-error="handleError"
+			debounce-duration="300">
+		</iron-ajax>
+	</template>
+	<script>
+
+		Polymer({
+			is: 'qa-input-user',
+			properties: {
+				label: String,
+				value: {
+					type: Number,
+					notify: true
+				},
+				userName: {
+					type: String,
+					notify: true
+				},
+				readonly: {
+					type: Boolean,
+					value: false
+				},
+				roles: {
+					type: Array,
+					notify: true,
+					value: function() {
+						return [ 'admin' ];
+					}
+				},
+				results: {
+					type: Array,
+					value: function() {
+						return [];
+					}
+				},
+				userItem: {
+					type: Object,
+					observer: 'onSelectUserItem'
+				},
+				message: {
+					type: String,
+					notify: true
+				}
+			},
+			doSearch: function(event) {
+
+				var input = this.$.name.$$('input');
+				var value = input.value || '';
+				this.set('message', '');
+
+				if (event.target == input) {
+					this.$$('paper-icon-button').setAttribute('icon', 'search');
+					this.set('value', undefined);
+				}
+
+				if (event.target != input || value.length >= 3) {
+					this.$.ajax.generateRequest();
+					this.$.results.notifyResize();
+					this.$.results.open();
+				} else {
+					this.$.results.close();
+				}
+			},
+			handleResponse: function(event) {
+				var results = event.detail.response.users.items;
+				this.set('results', results);
+				if (!this.results.length) {
+					this.set('message', 'Nenhum usuário encontrado');
+				}
+				this.$$('paper-listbox').select(null);
+				this.$.results.notifyResize();
+			},
+			handleError: function(event) {
+				this.$.results.notifyResize();
+			},
+			buildParams: function(userName, roles) {
+				return { size: 10, query: userName , roles: roles };
+			},
+			onSelectUserItem: function(item) {
+				if (!item) return;
+				var user = item.dataHost.dataHost.modelForElement(item).__data__.item;
+				this.$$('paper-icon-button').setAttribute('icon', 'check');
+				this.set('userName', user.name);
+				this.set('value', user.id);
+				this.$.results.close();
+			}
+		});
+
+	</script>
+</dom-module>
