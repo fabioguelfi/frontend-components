@@ -9,9 +9,7 @@
 	<template>
 		<paper-input
 			value="[[value]]"
-			name$="[[name]]"
-			label="[[label]]"
-			always-float-label>
+			name$="[[name]]">
 		</paper-input>
 	</template>
 	<script>
@@ -19,10 +17,6 @@
 			is: 'qa-input-currency',
 			properties: {
 				name: String,
-				label: {
-					type: String,
-					value: 'Data'
-				},
 				format: {
 					type: String,
 					value: '',
