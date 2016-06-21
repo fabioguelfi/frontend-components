@@ -8,6 +8,11 @@ Polymer(
 	properties: {
 		legend: String,
 		targetId: String,
+		collapseId: String,
+		iconClass: {
+			type: String,
+			value: "ico"
+		}
 	},
 
 
@@ -16,17 +21,16 @@ Polymer(
 
 	
 	ready: function() {
-		this.target = "#" + this.targetId;
-
+		this.set("collapseId","collapse-" + this.targetId)
 	},
 
 
 	/* methods
 	---------------------------------------------------------------------------*/
 
-	toggle: function(e) {
-	    $(e.target.getAttribute('data-target')).toggle();
-	    $(e.target).find('.ico').toggleClass('open');
-	},
+	toggle: function() {
+	  this.$$("iron-collapse").toggle()
+		this.set("iconClass",this.iconClass == "ico"?"ico open":"ico");
+	}
 
 });

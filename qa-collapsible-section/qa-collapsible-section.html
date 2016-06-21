@@ -4,11 +4,10 @@
     <template>
     	<div class="collapsibles">
 			<section>
-				<button class="heading" on-click="toggle" data-target$="{{target}}"><span class="ico"><i class="fa fa-chevron-down"></i> </span>{{legend}}</button>
-			
-			    <iron-collapse id$="{{targetId}}">
-			    	<div class="content"><content></content></div>
-			    </iron-collapse>
+				<button class="heading" on-click="toggle"><span class$="{{iconClass}}"><i class="fa fa-chevron-down"></i> </span>{{legend}}</button>
+		    <iron-collapse id$="{{collapseId}}">
+		    	<div class="content"><content></content></div>
+		    </iron-collapse>
 			</section>
 		</div>
 		</template>
