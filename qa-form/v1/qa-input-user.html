@@ -74,7 +74,8 @@
 				label: String,
 				value: {
 					type: Number,
-					notify: true
+					notify: true,
+					observer: 'onChangeValue'
 				},
 				userName: {
 					type: String,
@@ -113,7 +114,6 @@
 				this.set('message', '');
 
 				if (event.target == input) {
-					this.$$('paper-icon-button').setAttribute('icon', 'search');
 					this.set('value', undefined);
 				}
 
@@ -147,6 +147,11 @@
 				this.set('userName', user.name);
 				this.set('value', user.id);
 				this.$.results.close();
+			},
+			onChangeValue: function(value) {
+				if (!value) {
+					this.$$('paper-icon-button').setAttribute('icon', 'search');
+				}
 			}
 		});
 
