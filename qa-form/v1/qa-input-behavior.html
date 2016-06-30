@@ -8,11 +8,18 @@
 				type: String,
 				value: '[0-9]'
 			},
+			label: {
+				type: Object,
+				observer: 'onChangeLabel'
+			},
 			value: {
 				type: String,
 				notify: true,
 				observer: 'onChange'
 			}
+		},
+		onChangeLabel: function(label) {
+			this.$$('paper-input').set('label', label);
 		},
 		ready: function() {
 			this.input = this.$$('paper-input').$$('input');

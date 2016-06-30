@@ -10,30 +10,33 @@
 				@apply(--layout-vertical);
 				@apply(--layout-flex);
 			}
-			#spinner, #message {
+			paper-spinner, .message {
+				@apply(--layout-self-center);
 				text-align: center;
-				padding: 16px;
+				margin: 16px;
+			}
+			.message a {
+				font-size: 0.86em;
 			}
 		</style>
 		<template is="dom-if" if="[[loading]]">
-			<div id="spinner">
-				<paper-spinner active="[[loading]]"></paper-spiner>
-			</div>
+			<paper-spinner active="[[loading]]"></paper-spiner>
 		</template>
 		<template is="dom-if" if="[[!loading]]">
-			<div>
-				<template is="dom-if" if="[[!message]]">
+			<template is="dom-if" if="[[!isEmpty]]">
+				<div>
 					<content></content>
-				</template>
-				<template is="dom-if" if="[[message]]">
-					<div id="message">
-						<div>{{message}}</div>
-						<template is="dom-if" if="[[error]]">
-							<a href$="{{loader.url}}" target="_blank">{{error}}</a>
-						</template>
-					</div>
-				</template>
-			</div>
+				</div>
+			</template>
+			<template is="dom-if" if="[[isEmpty]]">
+				<div class="message">{{messageForEmptyState}}</div>
+			</template>
+			<template is="dom-if" if="[[error]]">
+				<div class="message">
+					<div>Ocorreu uma falha</div>
+					<a href$="{{loader.url}}" target="_blank">{{error}}</a>
+				</div>
+			</template>
 		</template>
 	</template>
 
@@ -48,12 +51,30 @@
 				},
 				loading: {
 					type: Boolean,
-					notify: true
+					value: false
 				},
 				message: {
 					type: String,
-					notify: true
+					value: '',
+					observer: 'messageIsDeprecated'
+				},
+				messageForEmptyState: {
+					type: String,
+					value: ''
+				},
+				isEmpty: {
+					type: Boolean,
+					value: false
+				},
+				error: {
+					type: String,
+					value: ''
 				}
+			},
+			messageIsDeprecated: function(message) {
+				console.log('qa-loading.message is deprecated');
+				this.set('messageForEmptyState', message);
+				this.set('isEmpty', Boolean(message.length));
 			},
 			onLoaderChange: function(loader) {
 				if (this._oldLoader) {
@@ -74,7 +95,6 @@
 				}
 			},
 			onRequest: function(e) {
-				this.set('message', '');
 				this.set('error', '');
 				this.set('loading', true);
 			},
@@ -82,7 +102,6 @@
 				this.set('loading', false);
 			},
 			onError: function(e) {
-				this.set('message', 'Ocorreu uma falha');
 				this.set('error', e.detail.error.message);
 				this.set('loading', false);
 			}

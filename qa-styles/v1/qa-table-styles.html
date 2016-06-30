@@ -1,0 +1,58 @@
+<link rel="import" href="../../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../../bower_components/paper-styles/color.html">
+
+<dom-module id="qa-table-styles">
+	<template>
+		<style include="iron-flex iron-flex-alignment"></style>
+		<style is="custom-style">
+			table {
+				border-collapse: collapse;
+				width: 100%;
+			}
+			thead {
+				font-size: 12px;
+				font-weight: 600;
+				color: var(--qa-light-secondary-color);
+			}
+			thead > tr {
+				height: 56px;
+			}
+			tbody {
+				font-size: 13px;
+				color: var(--qa-light-text-color);
+			}
+			tbody > tr {
+				height: 48px;
+			}
+			tbody > tr:hover {
+				background-color: var(--qa-grey-color);
+			}
+			tbody > tr[selected] {
+				background-color: var(--qa-grey-light-color);
+			}
+			tbody > tr[disabled] {
+				color: var(--qa-light-disabled-color);
+			}
+			td {
+				border-top: 1px solid var(--qa-light-divider-color);
+			}
+			td, th {
+				padding-right: 0px;
+				padding-left: 24px;
+				text-align: left;
+			}
+			td:last-of-type, th:last-of-type {
+				padding-right: 24px;
+			}
+
+			paper-checkbox {
+				--paper-checkbox-label-spacing: 0px;
+			}
+
+			paper-toggle-button {
+				--paper-toggle-button-label-spacing: 0px;
+			}
+
+		</style>
+	</template>
+</dom-module>

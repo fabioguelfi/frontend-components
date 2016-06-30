@@ -10,7 +10,6 @@
 		<paper-input
 			value="[[value]]"
 			name$="[[name]]"
-			label="[[label]]"
 			placeholder="{{getPlaceHolder(format)}}"
 			error-message="Esta não é uma data válida">
 		</paper-input>
@@ -20,10 +19,6 @@
 			is: 'qa-input-date',
 			properties: {
 				name: String,
-				label: {
-					type: String,
-					value: 'Data'
-				},
 				format: {
 					type: String,
 					value: 'DD/MM/YY'

@@ -11,10 +11,10 @@
 				--qa-light-color: white;
 				--qa-light-dark-color: var(--qa-grey-color);
 				--qa-light-darker-color: var(--qa-grey-dark-color);
-				--qa-light-text-color: rgba(33, 33, 33, 1);
-				--qa-light-secondary-color: rgba(33, 33, 33, 0.54);
-				--qa-light-disabled-color: rgba(33, 33, 33, 0.38);
-				--qa-light-divider-color: var(--qa-light-disabled-color);
+				--qa-light-text-color: #212121;
+				--qa-light-secondary-color: #868686;
+				--qa-light-disabled-color: #A5A5A5;
+				--qa-light-divider-color: #E0E0E0;
 				--qa-light-accent-color: var(--paper-light-blue-500);
 				--qa-light-error-color: var(--paper-red-900);
 
@@ -130,6 +130,20 @@
 				background-color: var(--qa-apolice-color);
 				color: rgba(255, 255, 255, 0.7);
 			}
+
+			paper-checkbox {
+				--paper-checkbox-unchecked-color: var(--qa-light-secondary-color);
+				--paper-checkbox-unchecked-ink-color: var(--paper-checkbox-unchecked-color);
+				--paper-checkbox-checked-color: var(--qa-dark-color);
+			}
+
+			paper-toggle-button {
+				--paper-toggle-button-unchecked-bar-color: var(--qa-light-secondary-color);
+				--paper-toggle-button-checked-bar-color: var(--qa-dark-color);
+				--paper-toggle-button-checked-button-color: var(--qa-dark-color);
+				--paper-toggle-button-checked-ink-color: var(--qa-dark-color);
+			}
+
 		</style>
 	</template>
 </dom-module>

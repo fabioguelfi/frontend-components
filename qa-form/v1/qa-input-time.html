@@ -10,7 +10,6 @@
 		<paper-input
 			value="[[value]]"
 			name$="[[name]]"
-			label="[[label]]"
 			placeholder="{{getPlaceHolder(format)}}"
 			error-message="Esta não é um horário válido">
 		</paper-input>
@@ -20,10 +19,6 @@
 			is: 'qa-input-time',
 			properties: {
 				name: String,
-				label: {
-					type: String,
-					value: 'Hora'
-				},
 				format: {
 					type: String,
 					value: 'HH:mm'
