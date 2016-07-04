@@ -160,3 +160,25 @@
 		</style>
 	</template>
 </dom-module>
+
+<dom-module id="qa-input-style">
+	<template>
+		<style include="qa-styles">
+			[qa-style], .qa-style {
+				--paper-input-container-underline: {
+					background-color: var(--qa-light-divider-color);
+				};
+				--paper-input-container-underline-focus: {
+					background-color: var(--qa-dark-color);
+				};
+				--paper-input-container-label-focus: {
+					color: var(--qa-dark-color);
+				};
+				--paper-input-container-label-floating: {
+					color: var(--qa-dark-color);
+				};
+			}
+		</style>
+	</template>
+</dom-module>
+

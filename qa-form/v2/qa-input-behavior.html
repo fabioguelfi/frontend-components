@@ -1,0 +1,81 @@
+<link rel="import" href="../../../bower_components/polymer/polymer.html">
+
+<script>
+
+	window.QuintoAndar = window.QuintoAndar || {};
+
+	/** @polymerBehavior */
+	QuintoAndar.InputBehaviorImpl = {
+		observers: [ '_onValueChange(value, allowedPattern, separatorsPattern)' ],
+		listeners: { keydown: '_onKeydown' },
+		_onValueChange: function(value) {
+			var formatted = this._getFormattedValue(value);
+			if (value == formatted) return;
+
+			var start = this._getFormattedStart(this.$.input, formatted);
+			this.async(function() {
+				this.$.input.value = formatted;
+				this.$.input.selectionStart = this.$.input.selectionEnd = start;
+			});
+		},
+		_onKeydown: function(event) {
+
+			var target = event.target;
+			var allowed = new RegExp(this.allowedPattern, 'g');
+			this.isSelection = target.selectionStart != target.selectionEnd;
+
+			if (this.isSelection || event.metaKey || event.ctrlKey || event.altKey) {
+				return;
+			}
+
+			var value = target.value;
+			var index = this._getFormattedIndex(target);
+			var start = this._getFormattedStart(target, value);
+
+			if (event.key == 'Backspace') {
+				target.selectionStart = index ?
+					value.split(allowed, index - 1).join('#').length : start;
+			} else if (event.key == 'Delete') {
+				target.selectionEnd = start < value.length ?
+					value.split(allowed, index + 1).join('#').length : start;
+			} else if (event.key.match(allowed)) {
+				if (start < value.length && value.length >= (this.format || '').length) {
+					target.selectionEnd = value.split(allowed, index + 1).join('#').length;
+				}
+			} else if (target._isPrintable(event)) {
+				return event.preventDefault();
+			}
+		},
+		_getRawValue: function(value) {
+			var notAllowed = new RegExp(this.allowedPattern.replace('[', '[^'), 'g');
+			return (value || '').replace(notAllowed, '');
+		},
+		_getFormattedValue: function(value) {
+			var notSeparators = new RegExp(this.separatorsPattern.replace('[', '[^'), 'g');
+			var result = (this.format || '').replace(notSeparators, '#');
+			value = this._getRawValue(value).split('');
+			while (value.length) {
+				result = result.replace(/#|$/, value.shift());
+			}
+			result = result.replace(/#.*$/, '').trim();
+			return this._getRawValue(result) ? result : '';
+		},
+		_getFormattedIndex: function(target) {
+			var begin = target.value.substring(0, target.selectionStart);
+			var allowed = new RegExp(this.allowedPattern, 'g');
+			return (begin.match(allowed) || []).length + 1;
+		},
+		_getFormattedStart: function(target, value) {
+			var index = this._getFormattedIndex(target);
+			var allowed = new RegExp(this.allowedPattern, 'g');
+			return (value || '').split(allowed, index).join('#').length;
+		},
+	};
+
+	/** @polymerBehavior */
+	QuintoAndar.InputBehavior = [
+		QuintoAndar.InputBehaviorImpl,
+		Polymer.IronFormElementBehavior,
+		Polymer.PaperInputBehavior
+	];
+</script>
