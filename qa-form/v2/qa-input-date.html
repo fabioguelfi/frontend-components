@@ -1,6 +1,12 @@
 <link rel="import" href="../../../bower_components/polymer/polymer.html">
-<link rel="import" href="../../../bower_components/paper-input/paper-input.html">
+<link rel="import" href="../../../bower_components/paper-input/paper-input-char-counter.html">
+<link rel="import" href="../../../bower_components/paper-input/paper-input-container.html">
+<link rel="import" href="../../../bower_components/paper-input/paper-input-error.html">
+<link rel="import" href="../../../bower_components/paper-icon-button/paper-icon-button.html">
+<link rel="import" href="../../../bower_components/iron-dropdown/iron-dropdown.html">
+<link rel="import" href="../../../bower_components/iron-icons/iron-icons.html">
 
+<link rel="import" href="./qa-datepicker.html">
 <link rel="import" href="./qa-input-behavior.html">
 <link rel="import" href="./datetime-validator.html">
 
@@ -25,6 +31,11 @@
 
 			input:-ms-input-placeholder {
 				color: var(--paper-input-container-color, --secondary-text-color);
+			}
+
+			.dropdown-content {
+				@apply(--shadow-elevation-6dp);
+				border-radius: 2px;
 			}
 		</style>
 
@@ -75,7 +86,7 @@
 			accept$="[[accept]]"
 			multiple$="[[multiple]]">
 
-			<content select="[suffix]"></content>
+			<paper-icon-button suffix icon="today" on-tap="_handleTap"></paper-icon-button>
 
 			<template is="dom-if" if="[[errorMessage]]">
 				<paper-input-error>[[errorMessage]]</paper-input-error>
@@ -86,6 +97,15 @@
 			</template>
 
 		</paper-input-container>
+
+		<iron-dropdown no-overlap dynamic-align>
+			<qa-datepicker
+				value="{{value}}"
+				format="[[format]]"
+				class="dropdown-content">
+			</qa-datepicker>
+		</iron-dropdown>
+
 	</template>
 	<script>
 		Polymer({
@@ -104,7 +124,20 @@
 					value: '[\/]'
 				}
 			},
-			behaviors: [ QuintoAndar.InputBehavior ]
+			behaviors: [ QuintoAndar.InputBehavior ],
+			listeners: {
+				'qa-datepicker-selected': '_handleClose',
+				'qa-datepicker-canceled': '_handleClose'
+			},
+			_handleTap: function(event) {
+				this.$$('iron-dropdown').toggle();
+			},
+			_handleClose: function(event) {
+				this.$$('iron-dropdown').close();
+			},
+			_getElement: function(element) {
+				return this.$$(element);
+			}
 		});
 	</script>
 </dom-module>
