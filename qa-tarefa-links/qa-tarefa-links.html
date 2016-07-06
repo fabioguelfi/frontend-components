@@ -14,7 +14,7 @@
 					<button type="submit" class="{{item.class}}" id="{{item.rel}}">
 						{{item.title}}
 					</button>
-				</form>
+				<form>
 			</template>
 			<template is="dom-if" if$="{{isUpload(item)}}">
 				<file-upload target$="{{item.uri}}" method="POST" droppable$=false raised$=false progressHidden$=true accept$="{{item.fileType}}" headers$={{authHeader()}}>{{item.title}}</file-upload>
@@ -255,6 +255,10 @@
 						if (qaTarefaLista) {
 							qaTarefaLista.reset();
 							qaTarefaLista.load();
+						}
+						var qaImovelVisitas = $('qa-imovel-visitas')[0];
+						if (qaImovelVisitas) {
+							qaImovelVisitas.refreshVisits();
 						}
 					},
 					error: function(response) {
