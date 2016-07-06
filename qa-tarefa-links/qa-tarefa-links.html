@@ -1,0 +1,30 @@
+<dom-module id="qa-tarefa-links">
+	<template>
+		<template is="dom-repeat" items$="{{links}}">
+			<template is="dom-if" if$="{{isDialog(item)}}">
+				<qa-dialog-link class$="action {{item.rel}} {{item.class}}" href="{{getUri(item)}}" params$="{{stringifyParams(item)}}">
+					{{item.title}}
+				</qa-dialog-link>
+			</template>
+			<template is="dom-if" if$="{{isPost(item)}}">
+				<form id="post-{{item.rel}}" action="{{getAction(item)}}" method="POST" enctype="application/json" >
+					<template is="dom-repeat" items="{{getGetFields(item)}}" as="input">
+						<input type="hidden" name="{{input.name}}" value="{{input.value}}"/>
+					</template>
+					<button type="submit" class="{{item.class}}" id="{{item.rel}}">
+						{{item.title}}
+					</button>
+				</form>
+			</template>
+			<template is="dom-if" if$="{{isUpload(item)}}">
+				<file-upload target$="{{item.uri}}" method="POST" droppable$=false raised$=false progressHidden$=true accept$="{{item.fileType}}" headers$={{authHeader()}}>{{item.title}}</file-upload>
+			</template>
+			<template is="dom-if" if="{{isGet(item)}}">
+				<button href$="{{item.uri}}" class="{{item.class}}" rel$="{{item.rel}}" target="_blank" on-click="handleClick" closes$="{{item.closes}}" >
+					{{item.title}}
+				</button>
+			</template>
+		</template>
+	</template>
+	<script type="text/javascript" src="qa-tarefa-links.js"></script>
+</dom-module>
