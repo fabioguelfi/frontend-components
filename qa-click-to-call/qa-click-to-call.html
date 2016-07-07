@@ -1,0 +1,19 @@
+<dom-module id="qa-click-to-call">
+	<template>
+		<a href="sip:{{phonenumber}}"><i class="fa fa-phone"></i></a>
+	</template>
+	<script>
+		Polymer({
+			is: 'qa-click-to-call',
+			properties: {
+				'phonenumber': String, 
+				'sipphonenumber' : {
+					'computed': 'calculateSipPhoneNumber(phonenumber)'
+				}
+			},
+			calculateSipPhoneNumber: function(phonenumber) {
+				return (phonenumber || '').replace(new RegExp("[^0-9]","g"),'');
+			}
+		});
+	</script>
+</dom-module>
