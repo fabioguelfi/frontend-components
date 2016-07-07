@@ -1,0 +1,235 @@
+<link rel="import" href="../../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../../../qa-components/qa-styles/v1/qa-styles.html">
+
+<dom-module id="qa-timepicker">
+	<template>
+		<style include="iron-flex iron-flex-alignment"></style>
+		<style include="qa-styles"></style>
+		<style is="custom-style">
+			:host {
+				@apply(--layout-horizontal);
+				max-height: 256px;
+			}
+			.clock {
+				background-color: var(--qa-dark-color);
+				color: var(--qa-secondary-color);
+				font-weight: 600;
+				font-size: 36px;
+				padding: 16px;
+				width: 3.3em;
+			}
+			.clock .editing {
+				color: var(--qa-text-color);
+			}
+			.panel {
+				background-color: var(--qa-light-light-color);
+				min-width: 6em;
+			}
+			.selector {
+				color: var(--qa-light-secondary-color);
+				overflow: auto;
+				font-size: 16px;
+				height: 12em;
+			}
+			.selector .selected {
+				color: var(--qa-dark-color);
+				font-weight: 600;
+				background-color: rgba(79, 195, 247, 0.2);
+			}
+			.selector .editing {
+				color: var(--qa-light-text-color);
+				font-weight: 600;
+			}
+			.selector > div {
+				margin: 0px 0px 0px 16px;
+				cursor: pointer;
+				padding: 8px 0px;
+				border-radius: 2px;
+			}
+			.selector > div:hover {
+				background-color: var(--qa-grey-color);
+			}
+			.selector .half {
+				@apply(--layout-horizontal);
+				width: 5em;
+			}
+			.selector .half:first-of-type > div {
+				@apply(--layout-flex);
+				text-align: right;
+			}
+			#shadow {
+				transition: opacity 0.5s;
+				height: 6px;
+				box-shadow: inset 0px -5px 6px -4px rgba(0,0,0,0.4);
+				position: absolute;
+				top: -6px;
+				left: 0;
+				right: 0;
+				opacity: 1;
+				pointer-events: none;
+			}
+			.buttons {
+				position: relative;
+				font-size: 14px;
+				font-weight: 600;
+				color: var(--qa-dark-color);
+				padding: 8px 8px 8px 24px;
+				@apply(--layout-horizontal);
+				@apply(--layout-end);
+			}
+		</style>
+		<div class="clock layout horizontal center">
+			<div on-tap="_editHour" class$="{{_isEditing('hour', editing)}}">
+				{{_getHour(selected)}}
+			</div>
+			<div>:</div>
+			<div on-tap="_editMinuteTens" class$="{{_isEditing('minuteTens', editing)}}">
+				{{_getMinuteTens(selected)}}
+			</div>
+			<div on-tap="_editMinuteUnit" class$="{{_isEditing('minuteUnit', editing)}}">
+				{{_getMinuteUnit(selected)}}
+			</div>
+		</div>
+		<div class="panel">
+			<div id="selector" class="selector">
+				<template is="dom-repeat" items="{{_getItems(editing, selected)}}">
+					<div on-tap="_handleSelect" class$="layout horizontal {{_isSelected(item, selected)}}">
+						<div class="half">
+							<div class$="{{_isEditing('hour', editing)}}">
+								{{_getHour(item)}}
+							</div>
+						</div>
+						<div>:</div>
+						<div class="half">
+							<div class$="{{_isEditing('minuteTens', editing)}}">
+								{{_getMinuteTens(item)}}
+							</div>
+							<div class$="{{_isEditing('minuteUnit', editing)}}">
+								{{_getMinuteUnit(item)}}
+							</div>
+						</div>
+					</div>
+				</template>
+			</div>
+			<div class="buttons">
+				<div id="shadow"></div>
+				<paper-button on-tap="_handleCancel">Cancelar</paper-button>
+				<paper-button on-tap="_handleOk">Ok</paper-button>
+			</div>
+		</div>
+	</template>
+	<script src="../../../bower_components/moment/moment.js"></script>
+	<script src="../../../bower_components/moment/locale/pt-br.js"></script>
+	<script>
+		Polymer({
+			is: 'qa-timepicker',
+			properties: {
+				value: {
+					type: String,
+					notify: true
+				},
+				format: {
+					type: String,
+					value: 'HH:mm'
+				},
+				selected: {
+					type: String,
+					readOnly: true
+				},
+				editing: {
+					type: String,
+					readOnly: true,
+					value: 'hour'
+				}
+			},
+			observers: [ '_onChangeValue(value, format)' ],
+			_onChangeValue: function(value, format) {
+				moment.locale('pt-br');
+				var date = moment(value, format);
+				if (date.isValid()) {
+					this._setSelected(date.format());
+					this._setEditing('hour');
+				}
+			},
+			_isEditing: function(part, editing) {
+				return editing == part ? 'editing' : '';
+			},
+			_editHour: function(event) {
+				this._setEditing('hour');
+			},
+			_editMinuteTens: function(event) {
+				this._setEditing('minuteTens');
+			},
+			_editMinuteUnit: function(event) {
+				this._setEditing('minuteUnit');
+			},
+			_handleSelect: function(event) {
+				var selected = event.model.item;
+				this._setSelected(selected);
+				switch (this.editing) {
+					case 'hour': this._editMinuteTens(); break;
+					case 'minuteTens': this._editMinuteUnit(); break;
+				}
+			},
+			_getHour: function(date) {
+				moment.locale('pt-br');
+				return moment(date).hour();
+			},
+			_getMinuteTens: function(date) {
+				moment.locale('pt-br');
+				return Math.floor(moment(date).minute() / 10);
+			},
+			_getMinuteUnit: function(date) {
+				moment.locale('pt-br');
+				return moment(date).minute() % 10;
+			},
+			_getItems: function(editing, selected) {
+				moment.locale('pt-br');
+				var current = moment(selected);
+				var items = [];
+				switch (editing) {
+					case 'hour':
+						var minutes = current.minutes();
+						current.startOf('day');
+						current.add(minutes, 'minutes');
+						for (var i = 0; i < 24; i++) {
+							items.push(current.format());
+							current.add(1, 'hour');
+						}
+						break;
+					case 'minuteTens':
+						var unit = this._getMinuteUnit(current);
+						current.startOf('hour');
+						current.add(unit, 'minutes');
+						for (var i = 0; i < 60; i += 10) {
+							items.push(current.format());
+							current.add(10, 'minutes');
+						}
+						break;
+					case 'minuteUnit':
+						var tens = this._getMinuteTens(current);
+						current.startOf('hour');
+						current.add(tens * 10, 'minutes');
+						for (var i = 0; i < 10; i++) {
+							items.push(current.format());
+							current.add(1, 'minutes');
+						}
+						break;
+				}
+				return items;
+			},
+			_isSelected: function(date, selected) {
+				return selected == date ? 'selected' : '';
+			},
+			_handleOk: function(event) {
+				moment.locale('pt-br');
+				this.set('value', moment(this.selected).format(this.format));
+				this.fire('qa-timepicker-selected', this.selected);
+			},
+			_handleCancel: function(event) {
+				this.fire('qa-timepicker-canceled');
+			}
+		});
+	</script>
+</dom-module>
