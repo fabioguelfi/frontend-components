@@ -1,14 +1,8 @@
 <link rel="import" href="../../../bower_components/polymer/polymer.html">
-<link rel="import" href="../../../bower_components/paper-icon-button/paper-icon-button.html">
-<link rel="import" href="../../../bower_components/iron-dropdown/iron-dropdown.html">
-<link rel="import" href="../../../bower_components/iron-icons/iron-icons.html">
 <link rel="import" href="../../../bower_components/iron-input/iron-input.html">
-
-<link rel="import" href="./qa-timepicker.html">
 <link rel="import" href="./qa-input-behavior.html">
-<link rel="import" href="./datetime-validator.html">
 
-<dom-module id="qa-input-time">
+<dom-module id="qa-input-currency">
 	<template>
 		<style>
 			:host {
@@ -30,14 +24,7 @@
 			input:-ms-input-placeholder {
 				color: var(--paper-input-container-color, --secondary-text-color);
 			}
-
-			.dropdown-content {
-				@apply(--shadow-elevation-6dp);
-				border-radius: 2px;
-			}
 		</style>
-
-		<datetime-validator format="{{format}}"></datetime-validator>
 
 		<paper-input-container
 			no-label-float="[[noLabelFloat]]"
@@ -58,7 +45,7 @@
 			bind-value="{{value}}"
 			invalid="{{invalid}}"
 			prevent-invalid-input="[[preventInvalidInput]]"
-			validator="datetime-validator"
+			validator="[[validator]]"
 			type$="[[type]]"
 			pattern$="[[pattern]]"
 			required$="[[required]]"
@@ -84,7 +71,7 @@
 			accept$="[[accept]]"
 			multiple$="[[multiple]]">
 
-			<paper-icon-button suffix icon="schedule" on-tap="_handleTap"></paper-icon-button>
+			<content select="[suffix]"></content>
 
 			<template is="dom-if" if="[[errorMessage]]">
 				<paper-input-error>[[errorMessage]]</paper-input-error>
@@ -95,45 +82,35 @@
 			</template>
 
 		</paper-input-container>
-
-		<iron-dropdown no-overlap dynamic-align>
-			<qa-timepicker
-				value="{{value}}"
-				format="[[format]]"
-				class="dropdown-content">
-			</qa-timepicker>
-		</iron-dropdown>
-
 	</template>
+
 	<script>
 		Polymer({
-			is: 'qa-input-time',
+			is: 'qa-input-currency',
 			properties: {
 				format: {
 					type: String,
-					value: 'HH:mm'
+					value: '',
+					computed: '_getFormat(value)'
 				},
 				separatorsPattern: {
 					type: String,
-					value: '[:]'
+					value: '[\.]'
 				}
 			},
 			behaviors: [ QuintoAndar.InputBehavior ],
-			listeners: {
-				'qa-timepicker-selected': '_handleClose',
-				'qa-timepicker-canceled': '_handleClose'
+			_getFormattedValue: function(value) {
+				if (value == undefined || value == '') {
+					return '';
+				}
+				var rawValue = String(value).replace(/^0+|[^\d]/g, '');
+				var formatted = rawValue.replace(/(\d)(?=(?:[0-9]{3})+\b)/gm, '$1.');
+				return formatted;
 			},
-			_handleTap: function(event) {
-				this.$$('iron-dropdown').toggle();
-			},
-			_handleClose: function(event) {
-				this.$$('iron-dropdown').close();
-			},
-			_getElement: function(element) {
-				return this.$$(element);
+			_getFormat: function(value) {
+				return this._getFormattedValue('9' + (value || ''));
 			}
 		});
 	</script>
 </dom-module>
-
 
