@@ -1,6 +1,8 @@
 <dom-module id="qa-click-to-call">
 	<template>
-		<a href="sip:{{phonenumber}}"><i class="fa fa-phone"></i></a>
+		<template is="dom-if" if="{{phonenumber}}">
+			<a href="sip:[[phonenumber]]"><i class="fa fa-phone"></i></a>
+		</template>
 	</template>
 	<script>
 		Polymer({
