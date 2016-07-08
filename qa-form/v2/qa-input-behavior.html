@@ -18,7 +18,20 @@
 			},
 		},
 		observers: [ '_onValueChange(value, allowedPattern, separatorsPattern)' ],
-		listeners: { keydown: '_onKeydown' },
+		listeners: {
+			keydown: '_onKeydown',
+			input: '_onInput',
+			blur: '_onBlur'
+		},
+		_onInput: function(event) {
+			this._hasChange = true;
+		},
+		_onBlur: function(event) {
+			if (this._hasChange) {
+				this.fire('change');
+				this._hasChange = false;
+			}
+		},
 		_onValueChange: function(value) {
 			var formatted = this._getFormattedValue(value);
 			if (value == formatted) return;
@@ -32,16 +45,16 @@
 		_onKeydown: function(event) {
 
 			var target = event.target;
-			var allowed = new RegExp(this.allowedPattern, 'g');
-			this.isSelection = target.selectionStart != target.selectionEnd;
+			var isSelection = target.selectionStart != target.selectionEnd;
 
-			if (this.isSelection || event.metaKey || event.ctrlKey || event.altKey) {
+			if (isSelection || event.metaKey || event.ctrlKey || event.altKey) {
 				return;
 			}
 
 			var value = target.value;
 			var index = this._getFormattedIndex(target);
 			var start = this._getFormattedStart(target, value);
+			var allowed = new RegExp(this.allowedPattern, 'g');
 
 			if (event.key == 'Backspace') {
 				target.selectionStart = index ?
