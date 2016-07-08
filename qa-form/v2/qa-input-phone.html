@@ -1,0 +1,116 @@
+<link rel="import" href="../../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../../bower_components/iron-input/iron-input.html">
+<link rel="import" href="./qa-input-behavior.html">
+
+<dom-module id="qa-input-phone">
+	<template>
+		<style>
+			:host {
+				display: block;
+			}
+
+			input::-webkit-input-placeholder {
+				color: var(--paper-input-container-color, --secondary-text-color);
+			}
+
+			input:-moz-placeholder {
+				color: var(--paper-input-container-color, --secondary-text-color);
+			}
+
+			input::-moz-placeholder {
+				color: var(--paper-input-container-color, --secondary-text-color);
+			}
+
+			input:-ms-input-placeholder {
+				color: var(--paper-input-container-color, --secondary-text-color);
+			}
+		</style>
+
+		<paper-input-container
+			no-label-float="[[noLabelFloat]]"
+			always-float-label="[[_computeAlwaysFloatLabel(alwaysFloatLabel,placeholder)]]"
+			auto-validate$="[[autoValidate]]"
+			disabled$="[[disabled]]"
+			invalid="[[invalid]]">
+
+			<content select="[prefix]"></content>
+
+			<label hidden$="[[!label]]">[[label]]</label>
+
+			<input is="iron-input" id="input"
+			aria-labelledby$="[[_ariaLabelledBy]]"
+			aria-describedby$="[[_ariaDescribedBy]]"
+			disabled$="[[disabled]]"
+			title$="[[title]]"
+			bind-value="{{value}}"
+			invalid="{{invalid}}"
+			prevent-invalid-input="[[preventInvalidInput]]"
+			validator="[[validator]]"
+			type$="[[type]]"
+			pattern$="[[pattern]]"
+			required$="[[required]]"
+			autocomplete$="[[autocomplete]]"
+			autofocus$="[[autofocus]]"
+			inputmode$="[[inputmode]]"
+			minlength$="[[minlength]]"
+			maxlength$="[[maxlength]]"
+			min$="[[min]]"
+			max$="[[max]]"
+			step$="[[step]]"
+			name$="[[name]]"
+			placeholder$="[[placeholder]]"
+			readonly$="[[readonly]]"
+			list$="[[list]]"
+			size$="[[size]]"
+			autocapitalize$="[[autocapitalize]]"
+			autocorrect$="[[autocorrect]]"
+			on-change="_onChange"
+			tabindex$="[[tabindex]]"
+			autosave$="[[autosave]]"
+			results$="[[results]]"
+			accept$="[[accept]]"
+			multiple$="[[multiple]]">
+
+			<content select="[suffix]"></content>
+
+			<template is="dom-if" if="[[errorMessage]]">
+				<paper-input-error>[[errorMessage]]</paper-input-error>
+			</template>
+
+			<template is="dom-if" if="[[charCounter]]">
+				<paper-input-char-counter></paper-input-char-counter>
+			</template>
+
+		</paper-input-container>
+	</template>
+
+	<script>
+		Polymer({
+			is: 'qa-input-phone',
+			properties: {
+				format: {
+					type: String,
+					computed: '_getFormat(value)'
+				},
+				separatorsPattern: {
+					type: String,
+					value: '[ \(\)\+\-]'
+				}
+			},
+			behaviors: [ QuintoAndar.InputBehavior ],
+			_getFormat: function(value) {
+				var len = this._getRawValue(value).length;
+				if (len > 12) {
+					return '+99 (99) 99999-9999';
+				} else if (len > 11) {
+					return '+99 (99) 9999-9999';
+				} else if (len > 10) {
+					return '(99) 99999-9999';
+				} else {
+					return '(99) 9999-9999 ';
+				}
+			}
+		});
+	</script>
+</dom-module>
+
