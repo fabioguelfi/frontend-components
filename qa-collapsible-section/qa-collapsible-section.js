@@ -29,8 +29,14 @@ Polymer(
 	---------------------------------------------------------------------------*/
 
 	toggle: function() {
+		var open = this.iconClass == "ico";
 	  this.$$("iron-collapse").toggle()
-		this.set("iconClass",this.iconClass == "ico"?"ico open":"ico");
+		this.set("iconClass",open?"ico open":"ico");
+		this.fire("qa.collapse."+(open?"open":close));
+		if (open && !this.get("firstOpen")) {
+			this.fire("qa.collapse.firstOpen");
+			this.set("firstOpen",true)
+		}
 	}
 
 });
