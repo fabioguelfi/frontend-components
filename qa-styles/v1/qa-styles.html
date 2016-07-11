@@ -182,3 +182,37 @@
 	</template>
 </dom-module>
 
+<dom-module id="qa-toolbar-style">
+	<template>
+		<style include="qa-styles">
+			paper-toolbar.qa-grey-style, paper-toolbar[qa-grey-style] {
+				--paper-toolbar-background: var(--qa-grey-dark-color);
+				color: var(--qa-grey-secondary-color);
+				font-weight: 600;
+			}
+			paper-toolbar.qa-style paper-tabs, paper-toolbar[qa-style] paper-tabs {
+				--paper-tabs-selection-bar-color: var(--qa-grey-text-color);
+			}
+			paper-toolbar.qa-style paper-tab, paper-toolbar[qa-style] paper-tab {
+				--paper-tab-ink: var(--qa-grey-text-color);
+				--paper-tab: {
+					color: var(--qa-grey-text-color);
+				};
+			}
+			paper-toolbar.qa-style, paper-toolbar[qa-style] {
+				--paper-toolbar-background: var(--qa-color);
+				color: var(--qa-text-color);
+				font-weight: 600;
+			}
+			paper-toolbar.qa-style paper-tabs, paper-toolbar[qa-style] paper-tabs {
+				--paper-tabs-selection-bar-color: var(--qa-text-color);
+			}
+			paper-toolbar.qa-style paper-tab, paper-toolbar[qa-style] paper-tab {
+				--paper-tab-ink: var(--qa-text-color);
+				--paper-tab: {
+					font-weight: 600;
+				};
+			}
+		</style>
+	</template>
+</dom-module>
