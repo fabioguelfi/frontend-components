@@ -40,16 +40,16 @@
 				--qa-divider-color: var(--qa-disabled-color);
 				--qa-error-color: var(--qa-light-error-color);
 
-				--qa-captacao-color: var(--paper-red-700);
-				--qa-proprietario-color: var(--paper-pink-700);
-				--qa-fup-color: var(--paper-purple-700);
+				--qa-captacao-color: var(--paper-pink-700);
+				--qa-proprietario-color: var(--paper-red-700);
+				--qa-fup-color: var(--paper-green-700);
 				--qa-chaves-color: var(--paper-deep-purple-700);
 				--qa-agendamento-color: var(--paper-indigo-700);
 				--qa-afiliado-color: var(--paper-blue-700);
 				--qa-pre-proposta-color: var(--paper-light-blue-700);
 				/* --qa-fase-color: var(--paper-cyan-700); */
 				--qa-negociacao-color: var(--paper-teal-700);
-				--qa-inquilino-color: var(--paper-green-700);
+				--qa-inquilino-color: var(--paper-purple-700);
 				--qa-documentacao-color: var(--paper-light-green-700);
 				/* --qa-fase-color: var(--paper-lime-700); */
 				--qa-vistoria-color: var(--paper-yellow-700);
@@ -61,7 +61,7 @@
 				--qa-apolice-color: var(--paper-blue-grey-700);
 			}
 
-			.Proprietário { /* @role - for doc purposes */
+			.Proprietário, .Proprietario { /* @role - for doc purposes */
 				background-color: var(--qa-proprietario-color);
 				color: rgba(255, 255, 255, 0.7);
 			}
@@ -156,6 +156,62 @@
 				text-transform: none;
 				color: var(--qa-text-color);
 				background-color: var(--qa-color);
+			}
+		</style>
+	</template>
+</dom-module>
+
+<dom-module id="qa-input-style">
+	<template>
+		<style include="qa-styles">
+			[qa-style], .qa-style {
+				--paper-input-container-underline: {
+					background-color: var(--qa-light-divider-color);
+				};
+				--paper-input-container-underline-focus: {
+					background-color: var(--qa-dark-color);
+				};
+				--paper-input-container-label-focus: {
+					color: var(--qa-dark-color);
+				};
+				--paper-input-container-label-floating: {
+					color: var(--qa-dark-color);
+				};
+			}
+		</style>
+	</template>
+</dom-module>
+
+<dom-module id="qa-toolbar-style">
+	<template>
+		<style include="qa-styles">
+			paper-toolbar.qa-grey-style, paper-toolbar[qa-grey-style] {
+				--paper-toolbar-background: var(--qa-grey-dark-color);
+				color: var(--qa-grey-secondary-color);
+				font-weight: 600;
+			}
+			paper-toolbar.qa-style paper-tabs, paper-toolbar[qa-style] paper-tabs {
+				--paper-tabs-selection-bar-color: var(--qa-grey-text-color);
+			}
+			paper-toolbar.qa-style paper-tab, paper-toolbar[qa-style] paper-tab {
+				--paper-tab-ink: var(--qa-grey-text-color);
+				--paper-tab: {
+					color: var(--qa-grey-text-color);
+				};
+			}
+			paper-toolbar.qa-style, paper-toolbar[qa-style] {
+				--paper-toolbar-background: var(--qa-color);
+				color: var(--qa-text-color);
+				font-weight: 600;
+			}
+			paper-toolbar.qa-style paper-tabs, paper-toolbar[qa-style] paper-tabs {
+				--paper-tabs-selection-bar-color: var(--qa-text-color);
+			}
+			paper-toolbar.qa-style paper-tab, paper-toolbar[qa-style] paper-tab {
+				--paper-tab-ink: var(--qa-text-color);
+				--paper-tab: {
+					font-weight: 600;
+				};
 			}
 		</style>
 	</template>

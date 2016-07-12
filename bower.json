@@ -31,6 +31,7 @@
     "paper-tooltip": "PolymerElements/paper-tooltip#^1.1.2",
     "paper-dialog": "^1.0.4",
     "paper-dropdown-menu": "^1.2.1",
-    "paper-tabs": "PolymerElements/paper-tabs#^1.6.2"
+    "paper-tabs": "PolymerElements/paper-tabs#^1.6.2",
+    "iron-dropdown": "PolymerElements/iron-dropdown#^1.4.1"
   }
 }
