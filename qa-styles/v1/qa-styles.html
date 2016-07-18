@@ -221,3 +221,59 @@
 		</style>
 	</template>
 </dom-module>
+
+<dom-module id="qa-table-style">
+	<template>
+		<style is="custom-style">
+			table[qa-style] {
+				border-collapse: collapse;
+				width: 100%;
+			}
+			table[qa-style] thead {
+				font-size: 12px;
+				font-weight: 600;
+				color: var(--qa-light-secondary-color);
+			}
+			table[qa-style] > thead > tr {
+				height: 56px;
+			}
+			table[qa-style] > tbody {
+				font-size: 13px;
+				color: var(--qa-light-text-color);
+			}
+			table[qa-style] > tbody > tr {
+				height: 48px;
+			}
+			table[qa-style] > tbody > tr:hover {
+				background-color: var(--qa-grey-color);
+			}
+			table[qa-style] > tbody > tr[selected] {
+				background-color: var(--qa-grey-light-color);
+			}
+			table[qa-style] > tbody > tr[disabled] {
+				color: var(--qa-light-disabled-color);
+			}
+			table[qa-style] > tbody > tr > td {
+				border-top: 1px solid var(--qa-light-divider-color);
+			}
+			table[qa-style] > tbody > tr > td,
+			table[qa-style] > tbody > tr > th {
+				padding-right: 0px;
+				padding-left: 24px;
+				text-align: left;
+			}
+			table[qa-style] > tbody > tr > td:last-of-type,
+			table[qa-style] > tbody > tr > th:last-of-type {
+				padding-right: 24px;
+			}
+			table[qa-style] > tbody > tr > td > paper-checkbox,
+			table[qa-style] > tbody > tr > th > paper-checkbox {
+				--paper-checkbox-label-spacing: 0px;
+			}
+			table[qa-style] > tbody > tr > td > paper-toggle-button,
+			table[qa-style] > tbody > tr > th > paper-toggle-button {
+				--paper-toggle-button-label-spacing: 0px;
+			}
+		</style>
+	</template>
+</dom-module>
