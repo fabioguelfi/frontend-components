@@ -23,7 +23,7 @@
 			<paper-spinner active="[[loading]]"></paper-spiner>
 		</template>
 		<template is="dom-if" if="[[!loading]]">
-			<template is="dom-if" if="[[!isEmpty]]">
+			<template is="dom-if" if="[[showContent(isEmpty, error)]]">
 				<div>
 					<content></content>
 				</div>
@@ -104,6 +104,9 @@
 			onError: function(e) {
 				this.set('error', e.detail.error.message);
 				this.set('loading', false);
+			},
+			showContent: function(isEmpty, error) {
+				return !isEmpty && !Boolean(error);
 			}
 		});
 	</script>
