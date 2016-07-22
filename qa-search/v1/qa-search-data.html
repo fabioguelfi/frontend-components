@@ -75,7 +75,7 @@
 
 		buildSearchParams: function(searchString, page, pageSize) {
 			return {
-				query: encodeURIComponent(searchString),
+				query: searchString,
 				offset: page * pageSize,
 				size: pageSize
 			};
