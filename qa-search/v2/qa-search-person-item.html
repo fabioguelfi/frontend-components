@@ -1,0 +1,46 @@
+<link rel="import" href="../../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../qa-badge/v1/qa-badge.html">
+<link rel="import" href="./qa-search-item-styles.html">
+
+<dom-module id="qa-search-person-item">
+	<template strip-whitespace>
+		<style include="iron-flex iron-flex-alignment"></style>
+		<style include="qa-styles qa-search-item-styles"></style>
+		<style is="custom-style">
+			:host {
+				@apply(--layout-horizontal);
+			}
+			qa-badge {
+				--qa-badge: {
+					margin: 0.4em 0.6em 0 0 !important;
+				};
+			}
+			.badges {
+				@apply(--layout-vertical);
+			}
+		</style>
+		<div class="badges">
+			<template is="dom-repeat" items="[[item.roles]]" as="role">
+				<qa-badge label="[[role]]"></qa-badge>
+			</template>
+		</div>
+		<div>
+			<div class="label">{{item.name}}</div>
+			<div>
+				<span>{{item.primary_email}}</span>
+				<template is="dom-if" if="[[item.primary_phone]]">
+					<span> | {{item.primary_phone}}</span>
+				</template>
+			</div>
+		</div>
+	</template>
+	<script>
+		Polymer({
+			is: 'qa-search-person-item',
+			properties: {
+				item: Object
+			}
+		});
+	</script>
+</dom-module>
+

@@ -1,0 +1,71 @@
+<link rel="import" href="../../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../qa-badge/v1/qa-badge.html">
+<link rel="import" href="./qa-search-item-styles.html">
+
+<dom-module id="qa-search-property-item">
+	<template strip-whitespace>
+		<style include="iron-flex iron-flex-alignment"></style>
+		<style include="qa-styles qa-search-item-styles"></style>
+		<style is="custom-style">
+			:host {
+				@apply(--layout-horizontal);
+			}
+			:host > div:first-of-type {
+				@apply(--layout-flex);
+			}
+			:host > div:last-of-type {
+				text-align: right;
+				margin-left: 8px;
+				margin-top: 4px;
+			}
+			qa-badge {
+				--qa-badge: {
+					margin: 0.4em 0.4em 0 0 !important;
+				};
+			}
+		</style>
+		<div>
+			<div class="label">{{getTitle(item)}}</div>
+			<div>
+				<span>{{item.address}}</span>
+				<template is="dom-if" if="{{item.street_number}}">, </template>
+				<span>{{item.street_number}} </span>
+				<template is="dom-if" if="{{item.apartment}}">
+					<span>- {{item.apartment}}</span>
+				</template>
+				<template is="dom-if" if="{{item.region}}">
+					<span>* {{item.region}} </span>
+				</template>
+				<template is="dom-if" if="{{item.city}}">
+					<span>* {{item.city}} </span>
+				</template>
+			</div>
+			<qa-badge label="{{item.status}}" full></qa-badge>
+		</div>
+		<div>
+			<div>Aluguel R$ {{item.rent}}</div>
+			<div>Condo. R$ {{item.condo_fee}}</div>
+			<div>IPTU R$ {{item.iptu}}</div>
+		</div>
+	</template>
+	<script>
+		Polymer({
+			is: 'qa-search-property-item',
+			properties: {
+				item: Object
+			},
+			getTitle: function(item) {
+				var type = item.property_type
+					.replace(/([A-Z])/g, ' $1')
+					.replace('Apartamento', 'Apto');
+				var title = item.id + ' - ' + type;
+				var dorms = Number(item.bedrooms);
+				if (dorms) {
+					title += ' de ' + dorms + (dorms > 1 ? ' dorms' : ' dorm');
+				}
+				return title;
+			}
+		});
+	</script>
+</dom-module>
+

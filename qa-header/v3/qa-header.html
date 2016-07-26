@@ -3,7 +3,7 @@
 <link rel="import" href="../../../bower_components/paper-tabs/paper-tab.html">
 <link rel="import" href="../../../bower_components/iron-image/iron-image.html">
 <link rel="import" href="../../../bower_components/iron-ajax/iron-ajax.html">
-<link rel="import" href="../../qa-search/v1/qa-search.html">
+<link rel="import" href="../../qa-search/v2/qa-search.html">
 <link rel="import" href="../../qa-styles/v1/qa-styles.html">
 
 <dom-module id="qa-header">
@@ -18,9 +18,6 @@
 				@apply(--layout-flex);
 				@apply(--layout-wrap);
 			}
-			qa-search {
-				--qa-search-width: 480px;
-			}
 			.user {
 				font-size: 13px;
 				text-align: right;
@@ -28,6 +25,9 @@
 			.user div:first-child {
 				opacity: 0.8;
 				font-size: 18px;
+			}
+			qa-search {
+				width: 440px;
 			}
 			paper-tab {
 				--paper-tab-ink: var(--qa-text-color);
