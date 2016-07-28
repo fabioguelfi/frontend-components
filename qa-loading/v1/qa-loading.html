@@ -1,5 +1,5 @@
 <link rel="import" href="../../../bower_components/polymer/polymer.html">
-<link rel="import" href="../../../bower_components/paper-spinner/paper-spinner.html">
+<link rel="import" href="../../../bower_components/paper-spinner/paper-spinner-lite.html">
 
 <dom-module id="qa-loading">
 
@@ -10,17 +10,18 @@
 				@apply(--layout-vertical);
 				@apply(--layout-flex);
 			}
-			paper-spinner, .message {
-				@apply(--layout-self-center);
+			.message, .frame {
 				text-align: center;
-				margin: 16px;
+				padding: 16px;
 			}
 			.message a {
 				font-size: 0.86em;
 			}
 		</style>
 		<template is="dom-if" if="[[loading]]">
-			<paper-spinner active="[[loading]]"></paper-spiner>
+			<div class="frame">
+				<paper-spinner-lite active="[[loading]]"></paper-spinner-lite>
+			</div>
 		</template>
 		<template is="dom-if" if="[[!loading]]">
 			<template is="dom-if" if="[[showContent(isEmpty, error)]]">
@@ -99,7 +100,9 @@
 				this.set('loading', true);
 			},
 			onResponse: function(e) {
-				this.set('loading', false);
+				this.async(function() {
+					this.set('loading', false);
+				});
 			},
 			onError: function(e) {
 				this.set('error', e.detail.error.message);
