@@ -1,47 +1,57 @@
 <link rel="import" href="../../../bower_components/polymer/polymer.html">
-
+<link rel="import" href="../../qa-behavior/v1/qa-behavior.html">
 <link rel="import" href="../../qa-styles/v1/qa-styles.html">
 
 <dom-module id="qa-badge">
-
 	<template>
 		<style include="iron-flex iron-flex-alignment"></style>
 		<style include="qa-styles"></style>
 		<style is="custon-style">
-			:host > div {
-				@apply(--layout-center-justified);
-				@apply(--layout-vertical);
+			:host {
 				@apply(--qa-badge);
+				display: inline-block;
 				background-color: var(--paper-grey-500);
 				color: white;
-				text-align: center;
 				font-weight: 600;
 				border-radius: 3px;
 				min-width: 1.5em;
 				min-height: 1.5em;
 				margin-right: 0.4em;
 				margin-bottom: 0.4em;
+				text-transform: capitalize;
+			}
+			:host > div {
+				@apply(--layout-center-justified);
+				@apply(--layout-vertical);
+				text-align: center;
+				min-width: inherit;
 			}
 			:host[full] > div {
 				padding: 0 0.5em;
 			}
 		</style>
-		<div class$={{label}}>
-			{{getBadge(label, full)}}
-		</div>
+		<div>{{getBadge(label, full)}}</div>
 	</template>
 	<script>
 		Polymer({
 			is: "qa-badge",
 			properties: {
-				label: String,
+				label: {
+					type: String,
+					observer: 'onLabelChange'
+				},
 				full: {
 					type: Boolean,
 					value: false
 				}
 			},
+			behaviors: [ QuintoAndar.Behavior ],
+			onLabelChange: function(newLabel, oldLabel) {
+				if (newLabel) this.toggleClass(this.toClassName(newLabel), true);
+				if (oldLabel) this.toggleClass(this.toClassName(oldLabel), false);
+			},
 			getBadge: function(label, full) {
-				return full ? label.replace(/([A-Z])/g, ' $1') : label.charAt(0);
+				return full ? this.normalize(label) : label.charAt(0);
 			}
 		});
 	</script>
