@@ -1,0 +1,252 @@
+<link rel="import" href="../../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../../bower_components/iron-resizable-behavior/iron-resizable-behavior.html">
+<link rel="import" href="../../../bower_components/iron-input/iron-input.html">
+<link rel="import" href="../../../bower_components/iron-dropdown/iron-dropdown.html">
+<link rel="import" href="../../../bower_components/iron-ajax/iron-ajax.html">
+<link rel="import" href="../../../bower_components/iron-icon/iron-icon.html">
+<link rel="import" href="../../../bower_components/paper-item/paper-icon-item.html">
+<link rel="import" href="../../../bower_components/paper-menu/paper-menu.html">
+<link rel="import" href="../../../bower_components/paper-menu-button/paper-menu-button.html">
+<link rel="import" href="../../../bower_components/paper-icon-button/paper-icon-button.html">
+
+<link rel="import" href="../../qa-loading/v1/qa-loading.html">
+<link rel="import" href="../../qa-styles/v1/qa-styles.html">
+<link rel="import" href="../../qa-behavior/v1/qa-behavior.html">
+
+<link rel="import" href="./qa-search-property-item.html">
+<link rel="import" href="./qa-search-person-item.html">
+
+<dom-module id="qa-search">
+
+	<template>
+		<style include="iron-flex iron-flex-alignment"></style>
+		<style include="qa-styles"></style>
+		<style is="custom-style">
+			:host {
+				@apply(--layout-horizontal);
+				@apply(--layout-center);
+			}
+			#menu {
+				background-color: var(--qa-darker-color);
+				padding: 0px 8px 0px 0px;
+				position: relative;
+			}
+			#menu > iron-icon {
+				position: absolute;
+				color: #84b1ca;
+				right: 0px;
+			}
+			iron-icon:not(#arrow) {
+				--iron-icon-height: 20px;
+				--iron-icon-width: 20px;
+			}
+			paper-icon-button {
+				padding: 10px;
+			}
+			paper-menu-button {
+				padding: 0px;
+			}
+			paper-icon-item {
+				--paper-item-icon-width: 32px;
+			}
+			input {
+				@apply(--layout-vertical);
+				@apply(--layout-flex);
+				font-size: 16px;
+				border: 0px;
+				height: 100%;
+				padding: 0px 10px;
+				color: var(--qa-text-color);
+				background-color: var(--qa-dark-color);
+			}
+			input::-webkit-input-placeholder {
+				color: var(--qa-disabled-color);
+			}
+			input:-moz-placeholder {
+				color: var(--qa-disabled-color);
+			}
+			input::-moz-placeholder {
+				color: var(--qa-disabled-color);
+			}
+			input:-ms-input-placeholder {
+				color: var(--qa-disabled-color);
+			}
+			.dropdown-content {
+				@apply(--shadow-elevation-2dp);
+				border-radius: 2px;
+				background: white;
+			}
+			.footer {
+				color: var(--qa-dark-color);
+				padding: 2px 16px;
+				text-align: center;
+				font-weight: normal;
+				font-size: 12px;
+			}
+			.section {
+				@apply(--layout-horizontal);
+				padding: 8px 12px;
+			}
+			.section:not(:last-of-type) {
+				border-bottom: 1px solid var(--qa-light-divider-color);
+			}
+			.section > div {
+				@apply(--layout-flex);
+			}
+			.footer, .section > iron-icon {
+				margin: 12px 8px 12px 0px;
+			}
+		</style>
+		<div id="menu">
+			<iron-icon id="arrow" icon="arrow-drop-down"></iron-icon>
+			<paper-menu-button >
+				<paper-icon-button src="[[selectedType.icon]]" class="dropdown-trigger"></paper-icon-button>
+				<paper-menu class="dropdown-content" selected="{{selectedTypeIndex}}">
+					<template is="dom-repeat" items="[[types]]">
+						<paper-icon-item>
+							<iron-icon src="[[item.icon]]" item-icon></iron-icon>
+							{{item.label}}
+						</paper-icon-item>
+					</template>
+				</paper-menu>
+			</paper-menu-button>
+		</div>
+		<input is="iron-input" bind-value="{{value}}" on-keydown="onKeydown" on-input="onInput" placeholder="Buscar...">
+		<iron-dropdown id="dropdown" no-overlap dynamic-align allow-outside-scroll>
+			<qa-loading class="dropdown-content" loader="ajax">
+				<template is="dom-if" if="[[selectedType.showPeople]]">
+					<div class="section">
+						<iron-icon src="[[types.1.icon]]" item-icon></iron-icon>
+						<div>
+							<template is="dom-repeat" items="[[result.users.items]]">
+								<qa-search-person-item item="[[item]]" on-tap="onTap"></qa-search-person-item>
+							</template>
+							<div class="footer" on-tap="onAllPeopleTap">
+								{{getMessage('pessoas', value, result.users.count)}}
+							</div>
+						</div>
+					</div>
+				</template>
+				<template is="dom-if" if="[[selectedType.showProperties]]">
+					<div class="section">
+						<iron-icon src="[[types.2.icon]]" item-icon></iron-icon>
+						<div>
+							<template is="dom-repeat" items="[[result.properties.items]]">
+								<qa-search-property-item item="[[item]]" on-tap="onTap"></qa-search-property-item>
+							</template>
+							<div class="footer" on-tap="onAllPropertiesTap">
+								{{getMessage('imóveis', value, result.properties.count)}}
+							</div>
+						</div>
+					</div>
+				</template>
+			</qa-loading>
+		</iron-dropdown>
+		<iron-ajax
+			id="ajax"
+			auto="[[value]]"
+			url="/api/search"
+			params="[[getParams(value, selectedType)]]"
+			last-response="{{result}}"
+			on-request="onRequest"
+			on-response="onResponse"
+			on-error="onResponse"
+			with-credentials>
+		</iron-ajax>
+	</template>
+	<script>
+		Polymer({
+			is: 'qa-search',
+			properties: {
+				value: String,
+				result: Object,
+				selectedType: Object,
+				selectedTypeIndex: {
+					type: Number,
+					value: 0
+				},
+				types: {
+					type: Array,
+					value: function() {
+						return [{
+							size: 4,
+							label: 'Todos',
+							showPeople: true,
+							showProperties: true,
+							icon: this.resolveUrl('../v1/assets/magnifier12.png')
+						}, {
+							size: 10,
+							label: 'Pessoas',
+							showPeople: true,
+							showProperties: false,
+							icon: this.resolveUrl('../v1/assets/social10.png')
+						}, {
+							size: 10,
+							label: 'Imoveis',
+							showPeople: false,
+							showProperties: true,
+							icon: this.resolveUrl('../v1/assets/office42.png')
+						}];
+					}
+				}
+			},
+			behaviors: [ Polymer.IronResizableBehavior ],
+			listeners: {
+				'iron-resize': 'onResize'
+			},
+			observers: [ 'onSelectType(types, selectedTypeIndex, value)' ],
+			onSelectType: function(types, selectedTypeIndex, value) {
+				this.set('selectedType', types[selectedTypeIndex]);
+				if (value) {
+					this.$.ajax.generateRequest();
+				}
+			},
+			getParams: function(value, selectedType) {
+				return { query: value, size: selectedType.size };
+			},
+			onKeydown: function(event) {
+				if (event.target.value.length && event.keyCode == 13) {
+					this.$.ajax.generateRequest();
+				}
+			},
+			onInput: function(event) {
+				if (!event.target.value.length) {
+					this.$.dropdown.close();
+				}
+			},
+			onRequest: function() {
+				this.$.dropdown.open();
+			},
+			onResize: function() {
+				this.$$('paper-menu-button').verticalOffset = this.offsetHeight;
+				this.$.dropdown.style.minWidth = this.offsetWidth + 'px';
+			},
+			onResponse: function() {
+				this.async(function() {
+					this.$.dropdown.notifyResize();
+				});
+			},
+			getMessage: function(type, value, count) {
+				if (count) {
+					return 'Ver todos os resultados de ' + type;
+				} else {
+					return 'Sua busca - ' + value + ' - não encontrou ' + type;
+				}
+			},
+			onAllPeopleTap: function() {
+				var url = '@@ACCOUNTS_URL/busca?query=' + this.value;
+				window.open(url, '_blank');
+			},
+			onAllPropertiesTap: function() {
+				var url = '@@PROPERTIES_URL/busca?query=' + this.value;
+				window.open(url, '_blank');
+			},
+			onTap: function(event) {
+				window.open(event.model.item.viewUrl, '_blank');
+			}
+		});
+
+	</script>
+</dom-module>
+
+

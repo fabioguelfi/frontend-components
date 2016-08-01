@@ -27,24 +27,14 @@
 			<style is="custom-style">
 			</style>
 			<template>
-				<h3 class="theme--qa">All</h3>
-				<div class="layout horizontal wrap">
-					<template is="dom-repeat" items="[[classes]]">
-						<qa-badge label="{{getClasses(item)}}" full></qa-badge>
-					</template>
-				</div>
-				<h3>Phases</h3>
-				<div class="layout horizontal wrap">
-					<template is="dom-repeat" items="[[phases]]">
-						<qa-badge label="{{getClasses(item)}}" full></qa-badge>
-					</template>
-				</div>
-				<h3>Roles</h3>
-				<div class="layout horizontal wrap">
-					<template is="dom-repeat" items="[[roles]]">
-						<qa-badge label="{{getClasses(item)}}" full></qa-badge>
-					</template>
-				</div>
+				<template is="dom-repeat" items="[[groupTypes]]">
+					<h3 style="text-transform: capitalize;">{{item}}</h3>
+					<div class="layout horizontal wrap">
+						<template is="dom-repeat" items="[[getClasses(item)]]" as="klass">
+							<qa-badge label="[[klass]]" full></qa-badge>
+						</template>
+					</div>
+				</template>
 				<h3>Themes</h3>
 				<div class="layout vertical">
 					<template is="dom-repeat" items="[[themes]]" as="theme">
@@ -75,9 +65,18 @@
 					Polymer({
 						is: 'main-document',
 						properties: {
-							classes: Array,
-							phases: Array,
-							roles: Array,
+							groupTypes: {
+								type: Array,
+								value: function() {
+									return [];
+								}
+							},
+							groups: {
+								type: Object,
+								value: function() {
+									return {};
+								}
+							},
 							themes: Array
 						},
 						color: function(theme, item) {
@@ -85,7 +84,20 @@
 						},
 						handleResponse: function(e) {
 							var response = e.detail.response;
-							var classes = response.match(/^\s+[^}{:]+\s{.*$/gm);
+							var classes = response.match(/^\s+[^<\/}{:]+\s{.*@.*$/gm);
+
+							classes.forEach(function(klass) {
+								var group = klass.match(/@([\w_-]+)/)[1];
+								if (!(group in this.groups)) {
+									this.set('groups.' + group, []);
+									this.push('groupTypes', group);
+								}
+								klass.match(/\.[\w_-]+/g).forEach(function(k) {
+									this.push('groups.' + group, k.slice(1));
+								}, this);
+
+							}, this);
+							console.log(this.groups);
 
 							var phases = classes.filter(function(item) {
 								return item.indexOf('@phase') >= 0;
@@ -134,10 +146,8 @@
 							style.innerHTML = styles.join('\n');
 							Polymer.dom(this.root).appendChild(style);
 						},
-						getClasses: function(item) {
-							return item
-							.replace(/^\s+|\s*{.*$/g, '')
-							.replace(/[.,]/g, '');
+						getClasses: function(group) {
+							return this.groups[group];
 						}
 					});
 				});

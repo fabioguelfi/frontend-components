@@ -61,74 +61,101 @@
 				--qa-apolice-color: var(--paper-blue-grey-700);
 			}
 
-			.Proprietário, .Proprietario { /* @role - for doc purposes */
+			/* QuintoAndar.Behavior.toClassName() deve ser
+			 * usado para a padronização do nome da classe.
+			 * Comentários @XYZ definem o tipo, apenas para
+			 * fins de documentação */
+
+			.proprietario { /* @role */
 				background-color: var(--qa-proprietario-color);
 				color: rgba(255, 255, 255, 0.7);
 			}
 
-			.Afiliado { /* @role */
+			.afiliado { /* @role */
 				background-color: var(--qa-afiliado-color);
 				color: rgba(255, 255, 255, 0.7);
 			}
 
-			.Inquilino { /* @role */
+			.inquilino { /* @role */
 				background-color: var(--qa-inquilino-color);
 				color: rgba(255, 255, 255, 0.7);
 			}
 
-			.Captação { /* @phase */
+			.captacao { /* @phase */
 				background-color: var(--qa-captacao-color);
 				color: rgba(255, 255, 255, 0.7);
 			}
 
-			.FUP { /* @phase */
+			.fup { /* @phase */
 				background-color: var(--qa-fup-color);
 				color: rgba(255, 255, 255, 0.7);
 			}
 
-			.Chaves { /* @phase */
+			.chaves { /* @phase */
 				background-color: var(--qa-chaves-color);
 				color: rgba(255, 255, 255, 0.7);
 			}
 
-			.Agendamento { /* @phase */
+			.agendamento { /* @phase */
 				background-color: var(--qa-agendamento-color);
 				color: rgba(255, 255, 255, 0.7);
 			}
 
-			.Pré-proposta { /* @phase */
+			.pre-proposta { /* @phase */
 				background-color: var(--qa-pre-proposta-color);
 				color: rgba(255, 255, 255, 0.7);
 			}
 
-			.Vistoria { /* @phase */
+			.vistoria { /* @phase */
 				background-color: var(--qa-vistoria-color);
 				color: rgba(255, 255, 255, 0.7);
 			}
 
-			.Negociação { /* @phase */
+			.negociacao { /* @phase */
 				background-color: var(--qa-negociacao-color);
 				color: rgba(255, 255, 255, 0.7);
 			}
 
-			.Documentação { /* @phase */
+			.documentacao { /* @phase */
 				background-color: var(--qa-documentacao-color);
 				color: rgba(255, 255, 255, 0.7);
 			}
 
-			.Minuta { /* @phase */
+			.minuta { /* @phase */
 				background-color: var(--qa-minuta-color);
 				color: rgba(255, 255, 255, 0.7);
 			}
 
-			.Assinaturas { /* @phase */
+			.assinaturas { /* @phase */
 				background-color: var(--qa-assinaturas-color);
 				color: rgba(255, 255, 255, 0.7);
 			}
 
-			.Apólice { /* @phase */
+			.apolice { /* @phase */
 				background-color: var(--qa-apolice-color);
 				color: rgba(255, 255, 255, 0.7);
+			}
+
+			.despublicado,
+			.suspenso { /* @property-status */
+				background-color: #FFB400;
+			}
+
+			.publicado { /* @property-status */
+				background-color: #4FC326;
+			}
+
+			.alugado { /* @property-status */
+				background-color: #338417;
+			}
+
+			.excluido { /* @property-status */
+				background-color: #E03E2F;
+			}
+
+			.edicao,
+			.aguardando-publicacao { /* @property-status */
+				background-color: #008EE7;
 			}
 
 			paper-checkbox {

@@ -1,0 +1,26 @@
+<link rel="import" href="../../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../qa-styles/v1/qa-styles.html">
+
+<dom-module id="qa-search-item-styles">
+	<template>
+		<style include="qa-styles"></style>
+		<style is="custom-style">
+			:host {
+				color: var(--qa-light-secondary-color);
+				font-weight: normal;
+				font-size: 12px;
+				padding: 6px 8px 8px 8px;
+				border-radius: 2px;
+			}
+			:host(:hover) {
+				color: var(--qa-light-text-color);
+				background-color: var(--qa-grey-color);
+			}
+			.label {
+				font-weight: 600;
+				font-size: 14px;
+			}
+		</style>
+	</template>
+</dom-module>
+
