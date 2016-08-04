@@ -1,4 +1,5 @@
 <link rel="import" href="../../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../../bower_components/paper-tooltip/paper-tooltip.html">
 <link rel="import" href="../../qa-behavior/v1/qa-behavior.html">
 <link rel="import" href="../../qa-styles/v1/qa-styles.html">
 
@@ -9,6 +10,7 @@
 		<style is="custon-style">
 			:host {
 				@apply(--qa-badge);
+				position: relative;
 				display: inline-block;
 				background-color: var(--paper-grey-500);
 				color: white;
@@ -30,6 +32,9 @@
 				padding: 0 0.5em;
 			}
 		</style>
+		<template is="dom-if" if="[[!full]]">
+			<paper-tooltip fit-to-visible-bounds>{{label}}</paper-tooltip>
+		</template>
 		<div>{{getBadge(label, full)}}</div>
 	</template>
 	<script>
