@@ -4,6 +4,7 @@
 <link rel="import" href="../../../bower_components/iron-dropdown/iron-dropdown.html">
 <link rel="import" href="../../../bower_components/iron-ajax/iron-ajax.html">
 <link rel="import" href="../../../bower_components/iron-icon/iron-icon.html">
+<link rel="import" href="../../../bower_components/iron-icons/iron-icons.html">
 <link rel="import" href="../../../bower_components/paper-item/paper-icon-item.html">
 <link rel="import" href="../../../bower_components/paper-menu/paper-menu.html">
 <link rel="import" href="../../../bower_components/paper-menu-button/paper-menu-button.html">
@@ -25,6 +26,7 @@
 			:host {
 				@apply(--layout-horizontal);
 				@apply(--layout-center);
+				width: 480px;
 			}
 			#menu {
 				background-color: var(--qa-darker-color);
@@ -144,10 +146,9 @@
 		</iron-dropdown>
 		<iron-ajax
 			id="ajax"
-			auto="[[value]]"
 			url="/api/search"
-			params="[[getParams(value, selectedType)]]"
-			last-response="{{result}}"
+			params="[[getParams(value, delegating, page, size, selectedType)]]"
+			loading="{{isLoading}}"
 			on-request="onRequest"
 			on-response="onResponse"
 			on-error="onResponse"
@@ -158,7 +159,43 @@
 		Polymer({
 			is: 'qa-search',
 			properties: {
-				value: String,
+				value: {
+					type: String,
+					value: ''
+				},
+				delegateType: {
+					type: String,
+					value: ''
+				},
+				delegateValue: {
+					type: String,
+					observer: 'onDelegateValueChange',
+					notify: true
+				},
+				delegateResult: {
+					type: Object,
+					notify: true
+				},
+				delegating: {
+					type: Boolean,
+					computed: 'isDelegating(selectedType, delegateType)'
+				},
+				isLoading: Boolean,
+				loading: {
+					type: Boolean,
+					notify: true,
+					computed: 'getLoading(isLoading, delegating)'
+				},
+				page: {
+					type: Number,
+					notify: true,
+					value: 0,
+					observer: 'onPageChange'
+				},
+				size: {
+					type: Number,
+					value: 10
+				},
 				result: Object,
 				selectedType: Object,
 				selectedTypeIndex: {
@@ -169,18 +206,21 @@
 					type: Array,
 					value: function() {
 						return [{
+							id: 'all',
 							size: 4,
 							label: 'Todos',
 							showPeople: true,
 							showProperties: true,
 							icon: this.resolveUrl('../v1/assets/magnifier12.png')
 						}, {
+							id: 'users',
 							size: 10,
 							label: 'Pessoas',
 							showPeople: true,
 							showProperties: false,
 							icon: this.resolveUrl('../v1/assets/social10.png')
 						}, {
+							id: 'properties',
 							size: 10,
 							label: 'Imoveis',
 							showPeople: false,
@@ -194,37 +234,94 @@
 			listeners: {
 				'iron-resize': 'onResize'
 			},
-			observers: [ 'onSelectType(types, selectedTypeIndex, value)' ],
-			onSelectType: function(types, selectedTypeIndex, value) {
+			observers: [
+				'onDelegate(types, delegateType, page)',
+				'onSelectType(types, selectedTypeIndex)'
+			],
+			onSelectType: function(types, selectedTypeIndex) {
 				this.set('selectedType', types[selectedTypeIndex]);
-				if (value) {
-					this.$.ajax.generateRequest();
+				if (this.delegating && this.delegateValue) {
+					this.set('value', this.delegateValue);
+				} else {
+					this.doRequest();
 				}
 			},
-			getParams: function(value, selectedType) {
-				return { query: value, size: selectedType.size };
+			doRequest: function() {
+				if (this.value.length > 2) {
+					this.async(function() {
+						this.$.ajax.generateRequest();
+					});
+					return true;
+				} else {
+					return false;
+				}
+			},
+			onDelegate: function(types, delegateType, page) {
+				/* page is here to force the
+				 * delegated type on page change */
+				types.forEach(function(type, index) {
+					if (type.id == delegateType) {
+						this.set('selectedTypeIndex', index);
+					}
+				}, this);
+			},
+			onDelegateValueChange: function(value) {
+				if (this.value == value) {
+					return;
+				}
+				this.set('value', value);
+				this.doRequest();
+			},
+			getParams: function(value, delegating, page, size, selectedType) {
+				return {
+					query: value,
+					size: delegating ? size : selectedType.size,
+					page: delegating ? page : 0
+				};
+			},
+			onPageChange: function(page) {
+				this.doRequest();
+			},
+			isDelegating: function(selectedType, delegateType) {
+				return selectedType.id == delegateType;
+			},
+			getLoading: function(isLoading, delegating) {
+				return isLoading && delegating;
 			},
 			onKeydown: function(event) {
-				if (event.target.value.length && event.keyCode == 13) {
-					this.$.ajax.generateRequest();
+				if (event.keyCode == 13) {
+					this.doRequest();
 				}
 			},
 			onInput: function(event) {
-				if (!event.target.value.length) {
+				var value = event.target.value;
+				if (this.doRequest()) {
 					this.$.dropdown.close();
+				}
+				if (this.delegating) {
+					this.set('delegateValue', value);
+					this.set('page', 0);
 				}
 			},
 			onRequest: function() {
-				this.$.dropdown.open();
+				if (this.selectedType.id != this.delegateType) {
+					this.$.dropdown.open();
+				}
 			},
 			onResize: function() {
 				this.$$('paper-menu-button').verticalOffset = this.offsetHeight;
 				this.$.dropdown.style.minWidth = this.offsetWidth + 'px';
 			},
-			onResponse: function() {
-				this.async(function() {
-					this.$.dropdown.notifyResize();
-				});
+			onResponse: function(event) {
+				var response = event.detail.response;
+				if (this.delegating) {
+					this.set('delegateResult', response[this.selectedType.id]);
+				} else {
+					this.set('result', response);
+					this.async(function() {
+						this.$.dropdown.notifyResize();
+					});
+				}
 			},
 			getMessage: function(type, value, count) {
 				if (count) {
@@ -248,5 +345,4 @@
 
 	</script>
 </dom-module>
-
 
