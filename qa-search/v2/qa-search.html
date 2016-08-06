@@ -180,6 +180,11 @@
 					type: Boolean,
 					computed: 'isDelegating(selectedType, delegateType)'
 				},
+				minLength: {
+					type: Number,
+					notify: true,
+					value: 3
+				},
 				isLoading: Boolean,
 				loading: {
 					type: Boolean,
@@ -247,7 +252,7 @@
 				}
 			},
 			doRequest: function() {
-				if (this.value.length > 2) {
+				if (this.value.length >= this.minLength) {
 					this.async(function() {
 						this.$.ajax.generateRequest();
 					});
