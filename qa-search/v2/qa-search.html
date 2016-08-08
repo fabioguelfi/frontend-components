@@ -278,11 +278,9 @@
 				this.doRequest();
 			},
 			getParams: function(value, delegating, page, size, selectedType) {
-				return {
-					query: value,
-					size: delegating ? size : selectedType.size,
-					page: delegating ? page : 0
-				};
+				size = delegating ? size : selectedType.size;
+				var offset = size * (delegating ? page : 0);
+				return { query: value, size: size, offset: offset };
 			},
 			onPageChange: function(page) {
 				this.doRequest();
