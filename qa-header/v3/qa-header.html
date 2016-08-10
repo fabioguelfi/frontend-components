@@ -2,8 +2,6 @@
 <link rel="import" href="../../../bower_components/paper-tabs/paper-tabs.html">
 <link rel="import" href="../../../bower_components/paper-tabs/paper-tab.html">
 <link rel="import" href="../../../bower_components/iron-image/iron-image.html">
-<link rel="import" href="../../../bower_components/iron-ajax/iron-ajax.html">
-<link rel="import" href="../../qa-search/v2/qa-search.html">
 <link rel="import" href="../../qa-styles/v1/qa-styles.html">
 
 <dom-module id="qa-header">
@@ -26,9 +24,6 @@
 				opacity: 0.8;
 				font-size: 18px;
 			}
-			qa-search {
-				width: 440px;
-			}
 			paper-tab {
 				--paper-tab-ink: var(--qa-text-color);
 				--paper-tab: {
@@ -39,24 +34,18 @@
 			}
 		</style>
 		<iron-image alt="Quinto Andar" src="https://d406l28ic3dl5.cloudfront.net/5a-logo.svg"></iron-image>
-		<paper-tabs selected="{{selectedIndex}}" no-bar>
+		<paper-tabs no-bar>
 			<template is="dom-repeat" items="[[views]]">
-				<paper-tab>{{item.label}}</paper-tab>
+				<paper-tab on-tap="onTapTab">{{item.label}}</paper-tab>
 			</template>
 		</paper-tabs>
 		<div class="layout horizontal flex center-justified">
-			<qa-search></qa-search>
+			<content></content>
 		</div>
 		<div class="user">
 			<div>{{user.name}}</div>
 			<div>{{user.email}}</div>
 		</div>
-		<iron-ajax
-			auto
-			url="@@USTASKS_URL/views.json"
-			last-response="{{views}}"
-			with-credentials>
-		</iron-ajax>
 	</template>
 
 	<script src="../../../bower_components/jwt-decode/build/jwt-decode.min.js"></script>
@@ -67,20 +56,44 @@
 			is: "qa-header",
 			properties: {
 				user: Object,
-				selectedView: String,
-				selectedIndex: {
-					type: Number,
-					observer: 'onSelect'
+				selectedView: {
+					type: String,
+					value: ''
 				},
 				views: {
 					type: Array,
 					value: function() {
-						return [];
+						return [{
+							id: 'ustasks',
+							label: 'Tarefas',
+							url: '@@USTASKS_URL'
+						}, {
+							id: 'properties',
+							label: 'Imóveis',
+							url: '@@PROPERTIES_URL/busca'
+						}, {
+							id: 'accounts',
+							label: 'Clientes',
+							url: '@@ACCOUNTS_URL/busca'
+						}, {
+							id: 'reports',
+							label: 'Relatórios',
+							url: '@@USTASKS_URL/relatorios'
+						}];
 					}
 				}
 			},
-			onSelect: function(index) {
-				window.open(this.views[index].url, '_blank');
+			observers: [ 'selectView(selectedView, views)' ],
+			selectView: function() {
+				this.views.forEach(function(view, index) {
+					if (view.id == this.selectedView) {
+						this.$$('paper-tabs').select(index);
+					}
+				}, this);
+			},
+			onTapTab: function(event) {
+				window.open(event.model.item.url, '_blank');
+				this.async(this.selectView, 1);
 			},
 			ready: function() {
 				var token = document.cookie

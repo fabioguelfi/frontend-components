@@ -1,60 +1,55 @@
 <link rel="import" href="../../../bower_components/polymer/polymer.html">
 <link rel="import" href="../../../bower_components/iron-selector/iron-selector.html">
+<link rel="import" href="../../qa-styles/v1/qa-styles.html">
+<link rel="import" href="../../qa-badge/v1/qa-badge.html">
 
 <dom-module id="qa-pager">
 
 	<template>
-	<style include="iron-flex iron-flex-alignment"></style>
-	<style is="custom-style">
-	iron-selector {
-		margin: 16px 0px;
-	}
-	.page {
-		background-color: #008CE1;
-		border-radius: 3px;
-		text-align: center;
-		color: white;
-		width: 24px;
-		height: 24px;
-	}
-	.page:not(:last-of-type) {
-		margin-right: 4px;
-	}
-	.iron-selected {
-		color: #008CE1;
-		background-color: #DFEFF4;
-	}
-	</style>
-	<iron-selector selected="{{page}}" class="pages layout end-justified horizontal">
-		<template is="dom-repeat" items="{{pageArray}}">
-			<div class="page layout vertical center-justified">{{item}}</div>
-		</template>
-	</iron-selector>
+		<style include="iron-flex iron-flex-alignment"></style>
+		<style include="qa-styles"></style>
+		<style is="custom-style">
+			qa-badge {
+				cursor: pointer;
+				font-size: 12px;
+				min-width: 0px;
+				margin: 0 0 0 0.4em;
+				background-color: var(--qa-color);
+			}
+			qa-badge:hover {
+				background-color: var(--qa-light-color);
+			}
+			qa-badge.iron-selected {
+				background-color: var(--qa-dark-color);
+			}
+		</style>
+		<iron-selector selected="{{page}}" class="pages layout end-justified horizontal">
+			<template is="dom-repeat" items="[[getPageArray(pages)]]">
+				<qa-badge label="[[item]]" full></qa-badge>
+			</template>
+		</iron-selector>
 	</template>
 
 	<script>
 
-	Polymer({
-		is: "qa-pager",
-		properties: {
-			pages: {
-				type: Number,
-				value: 10
+		Polymer({
+			is: "qa-pager",
+			properties: {
+				pages: {
+					type: Number,
+					value: 0
+				},
+				page: {
+					type: Number,
+					notify: true,
+					value: 0
+				}
 			},
-			page: {
-				type: Number,
-				value: 1,
-				notify: true
-			},
-			pageArray: {
-				computed: 'getPageArray(pages)'
+			getPageArray: function(pages) {
+				return Array.apply(null, Array(pages)).map(function(item, index) {
+					return index + 1;
+				});
 			}
-		},
-		getPageArray: function(pages) {
-			return Array.apply(null, Array(pages)).map(function(item, index) {
-				return index + 1;
-			});
-		}
-	});
+		});
 	</script>
 </dom-module>

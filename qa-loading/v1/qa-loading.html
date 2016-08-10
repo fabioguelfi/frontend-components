@@ -9,6 +9,8 @@
 			:host {
 				@apply(--layout-vertical);
 				@apply(--layout-flex);
+				position: relative;
+				min-height: 32px;
 			}
 			.message, .frame {
 				text-align: center;
@@ -17,13 +19,17 @@
 			.message a {
 				font-size: 0.86em;
 			}
+			.overlay {
+				@apply(--layout-fit);
+				background-color: rgba(255, 255, 255, 0.5);
+			}
 		</style>
 		<template is="dom-if" if="[[loading]]">
-			<div class="frame">
+			<div class$="frame [[getOverlayClass(withOverlay)]]">
 				<paper-spinner-lite active="[[loading]]"></paper-spinner-lite>
 			</div>
 		</template>
-		<template is="dom-if" if="[[!loading]]">
+		<template is="dom-if" if="[[alwaysShowContent(loading, withOverlay)]]">
 			<template is="dom-if" if="[[showContent(isEmpty, error)]]">
 				<div>
 					<content></content>
@@ -46,6 +52,10 @@
 		Polymer({
 			is: "qa-loading",
 			properties: {
+				withOverlay: {
+					type: Boolean,
+					value: false
+				},
 				loader: {
 					type: HTMLElement,
 					observer: 'onLoaderChange'
@@ -76,6 +86,12 @@
 				console.log('qa-loading.message is deprecated');
 				this.set('messageForEmptyState', message);
 				this.set('isEmpty', Boolean(message.length));
+			},
+			alwaysShowContent: function(loading, withOverlay) {
+				return withOverlay || !loading;
+			},
+			getOverlayClass: function(withOverlay) {
+				return withOverlay ? 'overlay' : '';
 			},
 			onLoaderChange: function(loader) {
 				if (this._oldLoader) {
