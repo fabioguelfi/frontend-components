@@ -35,6 +35,7 @@
     "iron-dropdown": "PolymerElements/iron-dropdown#^1.4.1",
     "iron-validator-behavior": "PolymerElements/iron-validator-behavior#^1.0.1",
     "iron-resizable-behavior": "PolymerElements/iron-resizable-behavior#^1.0.4",
+    "paper-ripple": "PolymerElements/paper-ripple#^1.0.8",
     "paper-tooltip": "PolymerElements/paper-tooltip#^1.1.2"
   }
 }
