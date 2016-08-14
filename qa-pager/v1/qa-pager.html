@@ -1,6 +1,6 @@
 <link rel="import" href="../../../bower_components/polymer/polymer.html">
-<link rel="import" href="../../../bower_components/iron-icon/iron-icon.html">
 <link rel="import" href="../../../bower_components/iron-icons/iron-icons.html">
+<link rel="import" href="../../../bower_components/paper-icon-button/paper-icon-button.html">
 <link rel="import" href="../../qa-styles/v1/qa-styles.html">
 <link rel="import" href="../../qa-badge/v1/qa-badge.html">
 
@@ -27,23 +27,18 @@
 				background-color: var(--qa-grey-color);
 			}
 			qa-badge.selected {
-				cursor: default;
 				color: var(--qa-text-color);
 				background-color: var(--qa-dark-color);
 			}
-			iron-icon {
+			paper-icon-button[disabled] {
 				color: var(--qa-light-divider-color);
 			}
-			iron-icon.active {
-				cursor: pointer;
-				color: inherit;
-			}
 		</style>
-		<iron-icon
+		<paper-icon-button
 			icon="chevron-left"
 			on-tap="selectPrevious"
-			class$="[[isActive(1, page)]]">
-		</iron-icon>
+			disabled="[[isDisabled(1, page)]]">
+		</paper-icon-button>
 		<div class="layout horizontal center">
 			<template is="dom-repeat" items="[[getPager(page, pages, visiblePages)]]">
 				<qa-badge
@@ -53,11 +48,11 @@
 				</qa-badge>
 			</template>
 		</div>
-		<iron-icon
+		<paper-icon-button
 			icon="chevron-right"
 			on-tap="selectNext"
-			class$="[[isActive(pages, page)]]">
-		</iron-icon>
+			disabled="[[isDisabled(pages, page)]]">
+		</paper-icon-button>
 	</template>
 
 	<script>
@@ -88,8 +83,8 @@
 			selectPage: function(event) {
 				this.set('page', event.model.item.page);
 			},
-			isActive: function(item, page) {
-				return item != page + 1 ? 'active' : '';
+			isDisabled: function(item, page) {
+				return item == page + 1;
 			},
 			getPager: function(page, pages, visiblePages) {
 
