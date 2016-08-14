@@ -28,14 +28,14 @@
 				text-align: center;
 				min-width: inherit;
 			}
-			:host[full] > div {
+			:host[full] {
 				padding: 0 0.5em;
 			}
 		</style>
 		<template is="dom-if" if="[[!full]]">
 			<paper-tooltip fit-to-visible-bounds>{{label}}</paper-tooltip>
 		</template>
-		<div>{{getBadge(label, full)}}</div>
+		<div>&nbsp;{{getBadge(label, full)}}&nbsp;</div>
 	</template>
 	<script>
 		Polymer({
