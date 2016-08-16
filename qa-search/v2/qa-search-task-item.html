@@ -1,0 +1,113 @@
+<link rel="import" href="../../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../qa-badge/v1/qa-badge.html">
+<link rel="import" href="../../qa-behavior/v1/qa-behavior.html">
+<link rel="import" href="./qa-search-item-styles.html">
+
+<dom-module id="qa-search-task-item">
+	<template strip-whitespace>
+		<style include="iron-flex iron-flex-alignment"></style>
+		<style include="qa-styles qa-search-item-styles"></style>
+		<style is="custom-style">
+			:host {
+				@apply(--layout-vertical);
+			}
+			.badges qa-badge {
+				margin: 0 0 0 0.6em !important;
+			}
+			.info qa-badge {
+				margin: 0 0.6em 0 0 !important;
+			}
+			.info {
+				@apply(--layout-horizontal);
+				margin-top: 6px;
+			}
+			.info > div {
+				text-transform: capitalize;
+			}
+		</style>
+		<div class="layout horizontal justified">
+			<div class="label">{{normalize(item.type)}}</div>
+			<div class="badges">
+				<template is="dom-repeat" items="[[badges]]">
+					<qa-badge label="[[item]]" full></qa-badge>
+				</template>
+			</div>
+		</div>
+		<template is="dom-if" if="[[item.metadata.proprietario]]">
+			<div class="info">
+				<qa-badge label="Proprietario"></qa-badge>
+				<div>{{item.metadata.proprietario.nome}}</div>
+			</div>
+		</template>
+		<template is="dom-if" if="[[item.metadata.inquilino]]">
+			<div class="info">
+				<qa-badge label="Inquilino"></qa-badge>
+				<div>{{item.metadata.inquilino.nome}}</div>
+			</div>
+		</template>
+		<template is="dom-if" if="[[item.metadata.gerente]]">
+			<div class="info">
+				<qa-badge label="Gerente"></qa-badge>
+				<div>{{item.metadata.gerente.nome}}</div>
+			</div>
+		</template>
+		<template is="dom-if" if="[[imovelFullAddress]]">
+			<div class="info">
+				<div>{{imovelFullAddress}}</div>
+			</div>
+		</template>
+	</template>
+	<script>
+		Polymer({
+			is: 'qa-search-task-item',
+			properties: {
+				item: Object,
+				imovelFullAddress: {
+					type: String,
+					computed: 'getImovelFullAddress(item)'
+				},
+				badges: {
+					type: Array,
+					computed: 'getBadges(item)'
+				}
+			},
+			behaviors: [ QuintoAndar.Behavior ],
+			getImovelFullAddress: function(item) {
+				var base;
+				if (item.metadata.imovel) {
+					if (typeof item.metadata.imovel.endereco == 'string') {
+						base = item.metadata.imovel;
+					} else if (item.metadata.imovel.endereco) {
+						base = item.metadata.imovel.endereco;
+					}
+				} else if (item.metadata.endereco) {
+					base = item.metadata;
+				} else {
+					return false;
+				}
+
+				var address = base.endereco +
+					(base.numero ? ', ' + base.numero : ' ') +
+					(base.bairro ? '* ' + base.bairro : ' ') +
+					(base.cidade ? '* ' + base.cidade : ' ');
+
+				return address.toLowerCase();
+			},
+			getBadges: function(item) {
+				var badges = [];
+				var now = new Date();
+				if (now < new Date(item.dataInicio)) {
+					badges.push('Futura');
+				}
+				if (now < new Date(item.silenciadaAte)) {
+					badges.push('Agendada');
+				}
+				if (item.resolvida || item.realizadaEm) {
+					badges.push('Fechada');
+				}
+				return badges;
+			}
+		});
+	</script>
+</dom-module>
+
