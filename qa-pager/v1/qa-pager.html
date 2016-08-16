@@ -1,5 +1,6 @@
 <link rel="import" href="../../../bower_components/polymer/polymer.html">
-<link rel="import" href="../../../bower_components/iron-selector/iron-selector.html">
+<link rel="import" href="../../../bower_components/iron-icons/iron-icons.html">
+<link rel="import" href="../../../bower_components/paper-icon-button/paper-icon-button.html">
 <link rel="import" href="../../qa-styles/v1/qa-styles.html">
 <link rel="import" href="../../qa-badge/v1/qa-badge.html">
 
@@ -9,25 +10,49 @@
 		<style include="iron-flex iron-flex-alignment"></style>
 		<style include="qa-styles"></style>
 		<style is="custom-style">
+			:host {
+				@apply(--layout-horizontal);
+				@apply(--layout-end-justified);
+				color: var(--qa-light-disabled-color);
+				font-size: 14px;
+			}
 			qa-badge {
+				padding: 0 ;
+				color: inherit;
 				cursor: pointer;
-				font-size: 12px;
-				min-width: 0px;
 				margin: 0 0 0 0.4em;
-				background-color: var(--qa-color);
+				background-color: inherit;
 			}
-			qa-badge:hover {
-				background-color: var(--qa-light-color);
+			qa-badge:not(.selected):hover {
+				background-color: var(--qa-grey-color);
 			}
-			qa-badge.iron-selected {
+			qa-badge.selected {
+				color: var(--qa-text-color);
 				background-color: var(--qa-dark-color);
 			}
+			paper-icon-button[disabled] {
+				color: var(--qa-light-divider-color);
+			}
 		</style>
-		<iron-selector selected="{{page}}" class="pages layout end-justified horizontal">
-			<template is="dom-repeat" items="[[getPageArray(pages)]]">
-				<qa-badge label="[[item]]" full></qa-badge>
+		<paper-icon-button
+			icon="chevron-left"
+			on-tap="selectPrevious"
+			disabled="[[isDisabled(1, page)]]">
+		</paper-icon-button>
+		<div class="layout horizontal center">
+			<template is="dom-repeat" items="[[getPager(page, pages, visiblePages)]]">
+				<qa-badge
+					label$="[[item.label]]"
+					class$="[[item.selected]]"
+					on-tap="selectPage" full>
+				</qa-badge>
 			</template>
-		</iron-selector>
+		</div>
+		<paper-icon-button
+			icon="chevron-right"
+			on-tap="selectNext"
+			disabled="[[isDisabled(pages, page)]]">
+		</paper-icon-button>
 	</template>
 
 	<script>
@@ -37,18 +62,64 @@
 			properties: {
 				pages: {
 					type: Number,
-					value: 0
+					value: 1
 				},
 				page: {
 					type: Number,
 					notify: true,
 					value: 0
+				},
+				visiblePages: {
+					type: Number,
+					value: 9
 				}
 			},
-			getPageArray: function(pages) {
-				return Array.apply(null, Array(pages)).map(function(item, index) {
-					return index + 1;
+			selectNext: function(event) {
+				this.set('page', Math.min(this.page + 1, this.pages - 1));
+			},
+			selectPrevious: function(event) {
+				this.set('page', Math.max(0, this.page - 1));
+			},
+			selectPage: function(event) {
+				this.set('page', event.model.item.page);
+			},
+			isDisabled: function(item, page) {
+				return item == page + 1;
+			},
+			getPager: function(page, pages, visiblePages) {
+
+				function buildPage(label, index) {
+					return {
+						selected: page == index ? 'selected' : '',
+						label: label,
+						page: index
+					};
+				}
+
+				var pager = [];
+
+				pages = Math.max(1, pages);
+
+				var half = Math.ceil(visiblePages / 2);
+				var prev = Math.max(0, Math.min(1 + page - half, pages - visiblePages));
+				var next = Math.min(pages, Math.max(page + half, visiblePages));
+
+				var pager = Array.apply(null, Array(next - prev)).map(function(item, index) {
+					return buildPage(prev + index + 1, prev + index);
 				});
+
+				if (prev > 0) {
+					var index = Math.ceil((prev + 1) / 2);
+					pager.splice(0, 2, buildPage(1, 0), buildPage('…', index));
+				}
+
+				if (next < pages) {
+					var last = next - 2;
+					var ellipsis = Math.floor((pages - last) / 2 + last);
+					pager.splice(pager.length - 2, 2, buildPage('…', ellipsis), buildPage(pages, pages - 1));
+				}
+
+				return pager;
 			}
 		});
 	</script>
