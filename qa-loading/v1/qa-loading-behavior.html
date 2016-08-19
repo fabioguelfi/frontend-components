@@ -1,0 +1,61 @@
+<link rel="import" href="../../../bower_components/polymer/polymer.html">
+
+<script>
+
+	window.QuintoAndar = window.QuintoAndar || {};
+
+	/** @polymerBehavior */
+	QuintoAndar.qaLoadingBehavior = {
+		properties: {
+			loading: {
+				value: false,
+				type: Boolean,
+				observer: 'onLoadingChange'
+			},
+			loader: {
+				type: HTMLElement,
+				observer: 'onLoaderChange'
+			},
+			error: {
+				type: String,
+				value: ''
+			},
+			delay: {
+				type: Number,
+				value: 100
+			}
+		},
+		onLoaderChange: function(loader, old) {
+			var self = this;
+			function _do(action, elem) {
+				if (!elem) return;
+				self[action](elem, 'response', 'onResponse');
+				self[action](elem, 'request', 'onRequest');
+				self[action](elem, 'error', 'onError');
+			}
+			_do('unlisten', old);
+			if (typeof loader == 'string') {
+				this.set('loader', this.domHost.$[loader]);
+			} else {
+				_do('listen', loader);
+			}
+		},
+		onRequest: function(event) {
+			this.set('loading', true);
+			this.set('error', '');
+		},
+		onResponse: function(event) {
+			this.async(function() {
+				this.set('loading', false);
+			}, this.delay);
+		},
+		onError: function(event) {
+			this.set('error', event.detail.error.message);
+			this.set('loading', false);
+		},
+		onLoadingChange: function(loading) {
+			this.toggleClass('hidden', !this.error && !loading);
+		}
+	};
+
+</script>

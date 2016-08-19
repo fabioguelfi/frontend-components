@@ -1,0 +1,49 @@
+<link rel="import" href="../../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../../bower_components/paper-spinner/paper-spinner-lite.html">
+
+<link rel="import" href="./qa-loading-behavior.html">
+
+<dom-module id="qa-loading-overlay">
+	<template>
+		<style include="iron-flex iron-flex-alignment"></style>
+		<style is="custom-style">
+			:host {
+				@apply(--layout-vertical);
+				@apply(--layout-center);
+				@apply(--layout-fit);
+				background-color: inherit;
+				padding: 32px;
+			}
+			:host(.hidden) {
+				display: none;
+			}
+		</style>
+		<template is="dom-if" if="[[error]]">
+			<div>Ocorreu uma falha</div>
+			<a href$="{{loader.url}}" target="_blank">{{error}}</a>
+		</template>
+		<paper-spinner-lite active="[[loading]]"></paper-spinner-lite>
+	</template>
+	<script>
+		Polymer({
+			is: "qa-loading-overlay",
+			properties: {
+				scroller: {
+					type: Object,
+					observer: 'onScrollerChange'
+				}
+			},
+			behaviors: [ QuintoAndar.qaLoadingBehavior ],
+			onScrollerChange: function(scroller) {
+				if (typeof scroller == 'string') {
+					this.set('scroller', this.domHost.$[scroller]);
+				} else {
+					var sibling = scroller.nextSibling || null;
+					this.parentNode.removeChild(this);
+					scroller.parentNode.insertBefore(this, sibling);
+				}
+			}
+		});
+	</script>
+</dom-module>
+
