@@ -74,11 +74,15 @@
 				}
 			},
 			behaviors: [ QuintoAndar.qaLoadingBehavior ],
-			withOverlayIsDeprecated: function() {
-				console.log('qa-loading.withOverlay is deprecated');
+			withOverlayIsDeprecated: function(withOverlay) {
+				if (withOverlay) {
+					console.log('qa-loading.withOverlay is deprecated');
+				}
 			},
 			messageIsDeprecated: function(message) {
-				console.log('qa-loading.message is deprecated');
+				if (message) {
+					console.log('qa-loading.message is deprecated');
+				}
 				this.set('messageForEmptyState', message);
 				this.set('isEmpty', Boolean(message.length));
 			},
