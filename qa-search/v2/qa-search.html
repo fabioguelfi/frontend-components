@@ -317,7 +317,7 @@
 			},
 			onInput: function(event) {
 				var value = event.target.value;
-				if (this.doRequest()) {
+				if (!this.doRequest()) {
 					this.$.dropdown.close();
 				}
 				if (this.delegating) {
@@ -342,7 +342,7 @@
 					this.set('result', response);
 					this.async(function() {
 						this.$.dropdown.notifyResize();
-					});
+					}, 100);
 				}
 			},
 			getMessage: function(type, value, count) {

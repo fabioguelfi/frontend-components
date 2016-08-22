@@ -1,6 +1,8 @@
 <link rel="import" href="../../../bower_components/polymer/polymer.html">
 <link rel="import" href="../../../bower_components/paper-spinner/paper-spinner-lite.html">
 
+<link rel="import" href="./qa-loading-behavior.html">
+
 <dom-module id="qa-loading">
 
 	<template>
@@ -54,15 +56,8 @@
 			properties: {
 				withOverlay: {
 					type: Boolean,
-					value: false
-				},
-				loader: {
-					type: HTMLElement,
-					observer: 'onLoaderChange'
-				},
-				loading: {
-					type: Boolean,
-					value: false
+					value: false,
+					observer: 'withOverlayIsDeprecated'
 				},
 				message: {
 					type: String,
@@ -76,14 +71,18 @@
 				isEmpty: {
 					type: Boolean,
 					value: false
-				},
-				error: {
-					type: String,
-					value: ''
+				}
+			},
+			behaviors: [ QuintoAndar.qaLoadingBehavior ],
+			withOverlayIsDeprecated: function(withOverlay) {
+				if (withOverlay) {
+					console.log('qa-loading.withOverlay is deprecated');
 				}
 			},
 			messageIsDeprecated: function(message) {
-				console.log('qa-loading.message is deprecated');
+				if (message) {
+					console.log('qa-loading.message is deprecated');
+				}
 				this.set('messageForEmptyState', message);
 				this.set('isEmpty', Boolean(message.length));
 			},
@@ -92,37 +91,6 @@
 			},
 			getOverlayClass: function(withOverlay) {
 				return withOverlay ? 'overlay' : '';
-			},
-			onLoaderChange: function(loader) {
-				if (this._oldLoader) {
-					this.unlisten(loader, 'request', 'onRequest');
-					this.unlisten(loader, 'response', 'onResponse');
-					this.unlisten(loader, 'error', 'onError');
-					delete this._oldLoader;
-				}
-				if (typeof loader === 'string') {
-					this.set('loader', this.domHost.$[loader]);
-					return;
-				}
-				if (loader) {
-					this.listen(loader, 'request', 'onRequest');
-					this.listen(loader, 'response', 'onResponse');
-					this.listen(loader, 'error', 'onError');
-					this._oldLoader = loader;
-				}
-			},
-			onRequest: function(e) {
-				this.set('error', '');
-				this.set('loading', true);
-			},
-			onResponse: function(e) {
-				this.async(function() {
-					this.set('loading', false);
-				});
-			},
-			onError: function(e) {
-				this.set('error', e.detail.error.message);
-				this.set('loading', false);
 			},
 			showContent: function(isEmpty, error) {
 				return !isEmpty && !Boolean(error);
