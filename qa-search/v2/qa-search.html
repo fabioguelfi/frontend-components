@@ -5,6 +5,7 @@
 <link rel="import" href="../../../bower_components/iron-ajax/iron-ajax.html">
 <link rel="import" href="../../../bower_components/iron-icon/iron-icon.html">
 <link rel="import" href="../../../bower_components/iron-icons/iron-icons.html">
+<link rel="import" href="../../../bower_components/iron-icons/social-icons.html">
 <link rel="import" href="../../../bower_components/paper-item/paper-icon-item.html">
 <link rel="import" href="../../../bower_components/paper-menu/paper-menu.html">
 <link rel="import" href="../../../bower_components/paper-menu-button/paper-menu-button.html">
@@ -16,6 +17,7 @@
 
 <link rel="import" href="./qa-search-property-item.html">
 <link rel="import" href="./qa-search-person-item.html">
+<link rel="import" href="./qa-search-task-item.html">
 
 <dom-module id="qa-search">
 
@@ -33,17 +35,15 @@
 				padding: 0px 8px 0px 0px;
 				position: relative;
 			}
+			iron-icon, paper-icon-button {
+				color: #84b1ca;
+			}
 			#menu > iron-icon {
 				position: absolute;
-				color: #84b1ca;
 				right: 0px;
 			}
-			iron-icon:not(#arrow) {
-				--iron-icon-height: 20px;
-				--iron-icon-width: 20px;
-			}
 			paper-icon-button {
-				padding: 10px;
+				padding: 6px;
 			}
 			paper-menu-button {
 				padding: 0px;
@@ -103,11 +103,11 @@
 		<div id="menu">
 			<iron-icon id="arrow" icon="arrow-drop-down"></iron-icon>
 			<paper-menu-button >
-				<paper-icon-button src="[[selectedType.icon]]" class="dropdown-trigger"></paper-icon-button>
+				<paper-icon-button icon="[[selectedType.icon]]" class="dropdown-trigger"></paper-icon-button>
 				<paper-menu class="dropdown-content" selected="{{selectedTypeIndex}}">
 					<template is="dom-repeat" items="[[types]]">
 						<paper-icon-item>
-							<iron-icon src="[[item.icon]]" item-icon></iron-icon>
+							<iron-icon icon="[[item.icon]]" item-icon></iron-icon>
 							{{item.label}}
 						</paper-icon-item>
 					</template>
@@ -119,7 +119,7 @@
 			<qa-loading class="dropdown-content" loader="ajax">
 				<template is="dom-if" if="[[selectedType.showPeople]]">
 					<div class="section">
-						<iron-icon src="[[types.1.icon]]" item-icon></iron-icon>
+						<iron-icon icon="[[types.1.icon]]" item-icon></iron-icon>
 						<div>
 							<template is="dom-repeat" items="[[result.users.items]]">
 								<qa-search-person-item item="[[item]]" on-tap="onTap"></qa-search-person-item>
@@ -132,13 +132,26 @@
 				</template>
 				<template is="dom-if" if="[[selectedType.showProperties]]">
 					<div class="section">
-						<iron-icon src="[[types.2.icon]]" item-icon></iron-icon>
+						<iron-icon icon="[[types.2.icon]]" item-icon></iron-icon>
 						<div>
 							<template is="dom-repeat" items="[[result.properties.items]]">
 								<qa-search-property-item item="[[item]]" on-tap="onTap"></qa-search-property-item>
 							</template>
 							<div class="footer" on-tap="onAllPropertiesTap">
 								{{getMessage('imóveis', value, result.properties.count)}}
+							</div>
+						</div>
+					</div>
+				</template>
+				<template is="dom-if" if="[[selectedType.showTasks]]">
+					<div class="section">
+						<iron-icon icon="[[types.3.icon]]" item-icon></iron-icon>
+						<div>
+							<template is="dom-repeat" items="[[result.tasks.items]]">
+								<qa-search-task-item item="[[item]]" on-tap="onTap"></qa-search-task-item>
+							</template>
+							<div class="footer" on-tap="onAllTasksTap">
+								{{getMessage('tarefas', value, result.tasks.count)}}
 							</div>
 						</div>
 					</div>
@@ -213,25 +226,30 @@
 					value: function() {
 						return [{
 							id: 'all',
-							size: 4,
+							size: 3,
 							label: 'Todos',
+							showTasks: true,
 							showPeople: true,
 							showProperties: true,
-							icon: this.resolveUrl('../v1/assets/magnifier12.png')
+							icon: 'search'
 						}, {
 							id: 'users',
 							size: 10,
 							label: 'Pessoas',
 							showPeople: true,
-							showProperties: false,
-							icon: this.resolveUrl('../v1/assets/social10.png')
+							icon: 'account-circle'
 						}, {
 							id: 'properties',
 							size: 10,
 							label: 'Imoveis',
-							showPeople: false,
 							showProperties: true,
-							icon: this.resolveUrl('../v1/assets/office42.png')
+							icon: 'social:domain'
+						}, {
+							id: 'tasks',
+							size: 10,
+							label: 'Tarefas',
+							showTasks: true,
+							icon: 'assignment-turned-in'
 						}];
 					}
 				}
@@ -340,6 +358,10 @@
 			},
 			onAllPropertiesTap: function() {
 				var url = '@@PROPERTIES_URL/busca?query=' + this.value;
+				window.open(url, '_blank');
+			},
+			onAllTasksTap: function() {
+				var url = '@@USTASKS_URL/busca?query=' + this.value;
 				window.open(url, '_blank');
 			},
 			onTap: function(event) {
