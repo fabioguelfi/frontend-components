@@ -272,11 +272,12 @@
 			},
 			doRequest: function() {
 				if (this.value.length >= this.minLength) {
-					this.async(function() {
+					this.debounce('search-request', function() {
 						this.$.ajax.generateRequest();
-					});
+					}, 300);
 					return true;
 				} else {
+					this.cancelDebouncer('search-request')
 					return false;
 				}
 			},
