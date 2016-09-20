@@ -134,7 +134,9 @@
 					this.set('message', 'Nenhum usuário encontrado');
 				}
 				this.$$('paper-listbox').select(null);
-				this.$.results.notifyResize();
+				this.async(function() {
+					this.$.results.notifyResize();
+				}, 100);
 			},
 			handleError: function(event) {
 				this.$.results.notifyResize();
