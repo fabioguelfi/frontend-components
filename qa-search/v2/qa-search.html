@@ -337,7 +337,9 @@
 			},
 			onResponse: function(event) {
 				var response = event.detail.response;
-				if (this.delegating) {
+				if (event.detail != this.$.ajax.lastRequest) {
+					return;
+				} else if (this.delegating) {
 					this.set('delegateResult', response[this.selectedType.id]);
 				} else {
 					this.set('result', response);
