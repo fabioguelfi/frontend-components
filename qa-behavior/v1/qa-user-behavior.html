@@ -1,0 +1,29 @@
+<link rel="import" href="../../../bower_components/polymer/polymer.html">
+
+<script src="../../../bower_components/jwt-decode/build/jwt-decode.min.js"></script>
+
+<script>
+
+	window.QuintoAndar = window.QuintoAndar || {};
+
+	/** @polymerBehavior */
+	QuintoAndar.UserBehavior = {
+		properties: {
+			user: {
+				type: Object,
+				notify: true
+			}
+		},
+		ready: function() {
+			var token = document.cookie
+				.replace(/(?:(?:^|.*;\s*)5AJWT_AUTH\s*\=\s*([^;]*).*$)|^.*$/, "$1");
+			try {
+				var user = jwt_decode(token);
+				this.set('user', user);
+			} catch (err) {
+				console.warn('user not found');
+			}
+		}
+	};
+
+</script>

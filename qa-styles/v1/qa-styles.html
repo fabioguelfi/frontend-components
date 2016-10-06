@@ -189,6 +189,11 @@
 				text-transform: none;
 				color: var(--qa-color);
 			}
+			paper-button[qa-style-flat][disabled],
+			paper-button.qa-style[disabled] {
+				color: var(--qa-light-disabled-color);
+				background: inherit;
+			}
 		</style>
 	</template>
 </dom-module>
@@ -204,10 +209,32 @@
 					background-color: var(--qa-dark-color);
 				};
 				--paper-input-container-label-focus: {
-					color: var(--qa-dark-color);
+					color: var(--qa-light-secondary-color);
 				};
 				--paper-input-container-label-floating: {
-					color: var(--qa-dark-color);
+					color: var(--qa-light-secondary-color);
+				};
+			}
+		</style>
+	</template>
+</dom-module>
+
+<dom-module id="qa-dropdown-menu-style">
+	<template>
+		<style include="qa-styles">
+			paper-dropdown-menu[qa-style],
+			paper-dropdown-menu.qa-style {
+				--paper-input-container-underline: {
+					background-color: var(--qa-light-divider-color);
+				};
+				--paper-input-container-underline-focus: {
+					background-color: var(--qa-dark-color);
+				};
+				--paper-input-container-label-focus: {
+					color: var(--qa-light-secondary-color);
+				};
+				--paper-input-container-label-floating: {
+					color: var(--qa-light-secondary-color);
 				};
 			}
 		</style>
