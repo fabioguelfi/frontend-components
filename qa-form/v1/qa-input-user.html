@@ -153,8 +153,9 @@
 				this.$.results.close();
 			},
 			onChangeValue: function(value) {
-				if (!value) {
-					this.$$('paper-icon-button').setAttribute('icon', 'search');
+				var icon = this.$$('paper-icon-button');
+				if (!value && icon) {
+					icon.setAttribute('icon', 'search');
 				}
 			}
 		});
