@@ -1,0 +1,59 @@
+<link rel="import" href="../../../bower_components/polymer/polymer.html">
+<link rel="import" href="./remove-diacritics.html">
+<script>
+
+	/** @polymerBehavior */
+	var StringBehaviorImpl = {
+
+		safeString: function(value) {
+			return value == undefined ? '' : String(value);
+		},
+		normalize: function(value) {
+			value = this.safeString(value);
+			value = this.fixDiacritics(value);
+			return value.trim()
+				.replace(/([a-z])([A-Z])/g, '$1 $2')
+				.replace('_', ' ');
+		},
+		toClassName: function(value) {
+			value = String(value).trim()
+				.replace(/([a-z])([A-Z])/g, '$1-$2')
+				.replace(/[\s_]/g, '-')
+				.toLowerCase();
+			return this.removeDiacritics(value);
+		},
+		fixDiacritics: function(value) {
+			value = this.safeString(value);
+			var result = value.toLowerCase();
+			var map = {
+				'proprietario': 'proprietário',
+				'captacao': 'captação',
+				'pre-propsta': 'pré-proposta',
+				'negociacao': 'negociação',
+				'documentacao': 'documentação',
+				'apolice': 'apólice',
+				'excluido': 'excluído',
+				'edicao': 'edição',
+				'publicacao': 'publicacao'
+			};
+			for (var i in map) {
+				result = result.replace(i, map[i]);
+			}
+			var match;
+			var re = /[A-Z]/g;
+			while ((match = re.exec(value)) != null) {
+				result = result.slice(0, match.index) +
+					result.charAt(match.index).toUpperCase() +
+					result.slice(match.index + 1);
+			}
+			return result;
+		}
+	};
+
+	window.QuintoAndar = window.QuintoAndar || {};
+
+	/** @polymerBehavior */
+	QuintoAndar.StringBehavior = [ StringBehaviorImpl, RemoveDiacritics ];
+
+</script>
+
