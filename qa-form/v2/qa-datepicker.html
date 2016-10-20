@@ -150,10 +150,11 @@
 			_onChangeValue: function(value, format) {
 				moment.locale('pt-br');
 				var date = moment(value, format);
-				if (date.isValid()) {
-					this._setSelected(date.format());
-					this._setDate(date.format());
+				if (!date.isValid()) {
+					date = moment();
 				}
+				this._setSelected(date.format());
+				this._setDate(date.format());
 			},
 			_getDate: function(date) {
 				moment.locale('pt-br');
@@ -239,4 +240,3 @@
 		});
 	</script>
 </dom-module>
-
