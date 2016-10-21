@@ -96,6 +96,13 @@
 			onTapTab: function(event) {
 				window.open(event.model.item.url, '_blank');
 				this.async(this.selectView, 1);
+			},
+			attached: function() {
+				if (!this.user) {
+					var auth_url = '@@MAIN_URL/auth/login?redirect=';
+					var current_href = encodeURIComponent(window.location.href);
+					window.location.href = auth_url + current_href;
+				}
 			}
 		});
 
