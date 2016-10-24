@@ -1,0 +1,17 @@
+<link rel="import" href="../../../bower_components/polymer/polymer.html">
+
+<script src="../../../bower_components/moment/moment.js"></script>
+
+<script>
+
+	window.QuintoAndar = window.QuintoAndar || {};
+
+	/** @polymerBehavior */
+	QuintoAndar.DateBehavior = {
+		formatDateTime: function(date) {
+			return moment(date).format('DD/MM/YYYY HH:mm');
+		}
+	};
+
+</script>
+
