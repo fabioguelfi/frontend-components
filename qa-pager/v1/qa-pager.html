@@ -11,6 +11,7 @@
 		<style include="qa-styles"></style>
 		<style is="custom-style">
 			:host {
+				@apply(--layout-center);
 				@apply(--layout-horizontal);
 				@apply(--layout-end-justified);
 				color: var(--qa-light-disabled-color);
@@ -20,8 +21,11 @@
 				padding: 0 ;
 				color: inherit;
 				cursor: pointer;
-				margin: 0 0 0 0.4em;
+				margin: 0 0 0 0;
 				background-color: inherit;
+			}
+			qa-badge + qa-badge {
+				margin-left: 0.4em;
 			}
 			qa-badge:not(.selected):hover {
 				background-color: var(--qa-grey-color);
