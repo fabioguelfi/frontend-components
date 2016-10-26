@@ -1,0 +1,68 @@
+<link rel="import" href="../../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../qa-badge/v1/qa-badge.html">
+<link rel="import" href="./qa-search-item-styles.html">
+
+<dom-module id="qa-search-lead-item">
+	<template strip-whitespace>
+		<style include="iron-flex iron-flex-alignment"></style>
+		<style include="qa-styles qa-search-item-styles"></style>
+		<style is="custom-style">
+			:host {
+				@apply(--layout-horizontal);
+			}
+			:host > div:first-of-type {
+				@apply(--layout-flex);
+			}
+			.badges {
+				@apply(--layout-horizontal);
+			}
+			qa-badge {
+				--qa-badge: {
+					margin: 0.4em 0.4em 0 0 !important;
+				};
+			}
+		</style>
+		<div>
+			<div class="label">Lead - {{item.id}}</div>
+			<div>
+				<span>{{item.endereco}}</span>
+				<template is="dom-if" if="{{item.numero}}">, </template>
+				<span>{{item.numero}} </span>
+				<template is="dom-if" if="{{item.complemento}}">
+					<span>- {{item.complemento}}</span>
+				</template>
+				<template is="dom-if" if="{{item.bairro}}">
+					<span>* {{item.bairro}} </span>
+				</template>
+				<template is="dom-if" if="{{item.cidade}}">
+					<span>* {{item.cidade}} </span>
+				</template>
+			</div>
+			<div class="badges">
+				<qa-badge label="{{item.origem}}" full></qa-badge>
+				<qa-badge label="{{item.status}}" full></qa-badge>
+			</div>
+		</div>
+	</template>
+	<script>
+		Polymer({
+			is: 'qa-search-lead-item',
+			properties: {
+				item: Object
+			},
+			getTitle: function(item) {
+				var type = item.property_type
+					.replace(/([A-Z])/g, ' $1')
+					.replace('Apartamento', 'Apto');
+				var title = item.id + ' - ' + type;
+				var dorms = Number(item.bedrooms);
+				if (dorms) {
+					title += ' de ' + dorms + (dorms > 1 ? ' dorms' : ' dorm');
+				}
+				return title;
+			}
+		});
+	</script>
+</dom-module>
+
+

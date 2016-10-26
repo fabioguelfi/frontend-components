@@ -6,6 +6,7 @@
 <link rel="import" href="../../../bower_components/iron-icon/iron-icon.html">
 <link rel="import" href="../../../bower_components/iron-icons/iron-icons.html">
 <link rel="import" href="../../../bower_components/iron-icons/social-icons.html">
+<link rel="import" href="../../../bower_components/iron-icons/notification-icons.html">
 <link rel="import" href="../../../bower_components/paper-item/paper-icon-item.html">
 <link rel="import" href="../../../bower_components/paper-menu/paper-menu.html">
 <link rel="import" href="../../../bower_components/paper-menu-button/paper-menu-button.html">
@@ -17,6 +18,7 @@
 
 <link rel="import" href="./qa-search-property-item.html">
 <link rel="import" href="./qa-search-person-item.html">
+<link rel="import" href="./qa-search-lead-item.html">
 <link rel="import" href="./qa-search-task-item.html">
 
 <dom-module id="qa-search">
@@ -143,9 +145,22 @@
 						</div>
 					</div>
 				</template>
-				<template is="dom-if" if="[[selectedType.showTasks]]">
+				<template is="dom-if" if="[[selectedType.showLeads]]">
 					<div class="section">
 						<iron-icon icon="[[types.3.icon]]" item-icon></iron-icon>
+						<div>
+							<template is="dom-repeat" items="[[result.leads.items]]">
+								<qa-search-lead-item item="[[item]]" on-tap="onTap"></qa-search-lead-item>
+							</template>
+							<div class="footer" on-tap="onAllLeadsTap">
+								{{getMessage('leads', value, result.leads.count)}}
+							</div>
+						</div>
+					</div>
+				</template>
+				<template is="dom-if" if="[[selectedType.showTasks]]">
+					<div class="section">
+						<iron-icon icon="[[types.4.icon]]" item-icon></iron-icon>
 						<div>
 							<template is="dom-repeat" items="[[result.tasks.items]]">
 								<qa-search-task-item item="[[item]]" on-tap="onTap"></qa-search-task-item>
@@ -231,6 +246,7 @@
 							showTasks: true,
 							showPeople: true,
 							showProperties: true,
+							showLeads: true,
 							icon: 'search'
 						}, {
 							id: 'users',
@@ -244,6 +260,12 @@
 							label: 'Imoveis',
 							showProperties: true,
 							icon: 'social:domain'
+						}, {
+							id: 'leads',
+							size: 10,
+							label: 'Leads',
+							showLeads: true,
+							icon: 'notification:more'
 						}, {
 							id: 'tasks',
 							size: 10,
@@ -300,7 +322,15 @@
 			getParams: function(value, delegating, page, size, selectedType) {
 				size = delegating ? size : selectedType.size;
 				var offset = size * (delegating ? page : 0);
-				return { query: value, size: size, offset: offset };
+				var params = {
+					query: value,
+					size: size,
+					offset: offset
+				};
+				if (selectedType.id != 'all') {
+					params.type = selectedType.id;
+				}
+				return params;
 			},
 			onPageChange: function(page) {
 				this.doRequest();
@@ -356,15 +386,19 @@
 				}
 			},
 			onAllPeopleTap: function() {
-				var url = '@@ACCOUNTS_URL/busca?query=' + this.value;
+				var url = '@@USTASKS_URL/busca?type=users&query=' + this.value;
 				window.open(url, '_blank');
 			},
 			onAllPropertiesTap: function() {
-				var url = '@@PROPERTIES_URL/busca?query=' + this.value;
+				var url = '@@USTASKS_URL/busca?type=properties&query=' + this.value;
+				window.open(url, '_blank');
+			},
+			onAllLeadsTap: function() {
+				var url = '@@USTASKS_URL/busca?type=leads&query=' + this.value;
 				window.open(url, '_blank');
 			},
 			onAllTasksTap: function() {
-				var url = '@@USTASKS_URL/busca?query=' + this.value;
+				var url = '@@USTASKS_URL/busca?type=tasks&query=' + this.value;
 				window.open(url, '_blank');
 			},
 			onTap: function(event) {
