@@ -1,0 +1,126 @@
+<link rel="import" href="../../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../../qa-styles/v1/qa-styles.html">
+
+<dom-module id="qa-toast">
+	<template>
+		<style include="iron-flex iron-flex-alignment"></style>
+		<style include="qa-styles"></style>
+		<style is="custom-style">
+			:host {
+				--qa-toast-height: 48px;
+				position: fixed;
+				display: block;
+				bottom: 16px;
+				left: 16px;
+				z-index: 127;
+			}
+			.toast {
+				min-width: 288px;
+				transition: min-height 0.3s, max-height 0.3s, opacity 0.3s;
+				max-height: 0px;
+				min-height: 0px;
+				opacity: 0;
+			}
+			.toast.opened {
+				min-height: calc(var(--qa-toast-height) + 8px);
+				max-height: calc(var(--qa-toast-height) + 8px);
+				opacity: 1;
+			}
+			.content {
+				@apply(--layout-horizontal);
+				@apply(--layout-justified);
+				@apply(--layout-center);
+				background-color: #323232;
+				padding: 4px 8px 4px 24px;
+				color: #f1f1f1;
+				cursor: default;
+				border-radius: 2px;
+				box-sizing: border-box;
+				box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.26);
+				min-height: var(--qa-toast-height);
+			}
+			.content > span {
+				margin-right: 16px;
+			}
+			paper-button {
+				color: var(--qa-color);
+				font-size: 0.8em;
+			}
+		</style>
+		<template is="dom-repeat" items="[[toasts]]">
+			<div id="[[item.id]]" class="toast">
+				<div class="content" on-tap="handleTap">
+					<span>{{item.text}}</span>
+					<template is="dom-if" if="[[item.action]]">
+						<paper-button on-tap="handleAction">
+							[[item.action.label]]
+						</paper-button>
+					</template>
+				</div>
+			</div>
+		</template>
+	</template>
+	<script>
+
+		Polymer({
+			is: 'qa-toast',
+			properties: {
+				toasts: {
+					type: Array,
+					value: function() {
+						return [];
+					}
+				},
+				defaultDuration: {
+					type: Number,
+					value: 3000
+				}
+			},
+			handleAction: function(event) {
+				var toast = event.model.item;
+				toast.action.callback();
+			},
+			handleTap: function(event) {
+				var toast = event.model.item;
+				this.hide(toast);
+			},
+			hide: function(toast) {
+				clearTimeout(toast.timer);
+				this.$$('#' + toast.id).classList.remove('opened');
+				this.async(function() {
+					this.arrayDelete('toasts', toast);
+				}, 300);
+			},
+			show: function(options) {
+
+				options.duration = options.duration != null ? options.duration : this.defaultDuration;
+				options.id = options.id || Date.now();
+
+				var position = this.toasts.length;
+				var replace = this.toasts.find(function(toast) {
+					return toast.id == options.id;
+				});
+
+				if (replace) {
+					this.hide(replace);
+					position = this.toasts.indexOf(replace);
+				}
+
+				if (options.duration) {
+					options.timer = setTimeout(function() {
+						this.hide(options);
+					}.bind(this), options.duration);
+				}
+
+				this.splice('toasts', position, 0, options);
+
+				this.async(function() {
+					this.$$('#' + options.id).classList.add('opened');
+				}, 30);
+			}
+		});
+
+	</script>
+</dom-module>
+
