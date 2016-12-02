@@ -15,11 +15,10 @@
 			}
 			.badges {
 				@apply(--layout-horizontal);
+				margin-top: 0.4em;
 			}
-			qa-badge {
-				--qa-badge: {
-					margin: 0.4em 0.4em 0 0 !important;
-				};
+			qa-badge + qa-badge {
+				margin-left: 0.4em;
 			}
 		</style>
 		<div>
