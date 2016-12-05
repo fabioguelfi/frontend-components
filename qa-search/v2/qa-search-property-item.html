@@ -18,10 +18,12 @@
 				margin-left: 8px;
 				margin-top: 4px;
 			}
-			qa-badge {
-				--qa-badge: {
-					margin: 0.4em 0.4em 0 0 !important;
-				};
+			.badges {
+				@apply(--layout-horizontal);
+				margin-top: 0.4em;
+			}
+			qa-badge + qa-badge {
+				margin-left: 0.4em;
 			}
 		</style>
 		<div>
@@ -40,7 +42,9 @@
 					<span>* {{item.city}} </span>
 				</template>
 			</div>
-			<qa-badge label="{{item.status}}" full></qa-badge>
+			<div class="badges">
+				<qa-badge label="{{item.status}}" full></qa-badge>
+			</div>
 		</div>
 		<div>
 			<div>Aluguel R$ {{item.rent}}</div>

@@ -10,13 +10,12 @@
 			:host {
 				@apply(--layout-horizontal);
 			}
-			qa-badge {
-				--qa-badge: {
-					margin: 0.4em 0.6em 0 0 !important;
-				};
+			qa-badge + qa-badge {
+				margin-top: 0.4em;
 			}
 			.badges {
 				@apply(--layout-vertical);
+				margin-right: 0.6em;
 			}
 		</style>
 		<div class="badges">
