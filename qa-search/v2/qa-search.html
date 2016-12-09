@@ -386,19 +386,19 @@
 				}
 			},
 			onAllPeopleTap: function() {
-				var url = '@@USTASKS_URL/busca?type=users&query=' + this.value;
+				var url = this.result.fullContentLinks['users'];
 				window.open(url, '_blank');
 			},
 			onAllPropertiesTap: function() {
-				var url = '@@USTASKS_URL/busca?type=properties&query=' + this.value;
+				var url = this.result.fullContentLinks['properties'];
 				window.open(url, '_blank');
 			},
 			onAllLeadsTap: function() {
-				var url = '@@USTASKS_URL/busca?type=leads&query=' + this.value;
+				var url = this.result.fullContentLinks['leads'];
 				window.open(url, '_blank');
 			},
 			onAllTasksTap: function() {
-				var url = '@@USTASKS_URL/busca?type=tasks&query=' + this.value;
+				var url = this.result.fullContentLinks['tasks'];
 				window.open(url, '_blank');
 			},
 			onTap: function(event) {
