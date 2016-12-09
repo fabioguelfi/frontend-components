@@ -40,6 +40,9 @@
 		paper-item-body > div:first-child {
 			font-weight: bold;
 		}
+		paper-item-body[two-line] {
+			min-height: 0px;
+		}
 		.secondary {
 			line-height: 16px;
 		}
@@ -230,7 +233,8 @@
 			waiting: {
 				type: Boolean,
 				value: false
-			}
+			},
+			fullContentLinks: Object
 		},
 
 		observers: [
@@ -319,12 +323,12 @@
 		},
 
 		showAllImoveisResults: function(e) {
-			var url = ['@@PROPERTIES_URL', 'busca?query=' + this.searchString].join('/');
+			var url = this.fullContentLinks['properties'];
 			window.open(url, '_blank');
 		},
 
 		showAllUsersResults: function(e) {
-			var url = ['@@ACCOUNTS_URL', 'busca?query=' + this.searchString].join('/');
+			var url = this.fullContentLinks['users'];
 			window.open(url, '_blank');
 		}
 	});
