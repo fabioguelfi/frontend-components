@@ -1,7 +1,12 @@
+<link rel="import" href="../../bower_components/iron-icon/iron-icon.html">
+<link rel="import" href="../../bower_components/iron-icons/communication-icons.html">
+
 <dom-module id="qa-click-to-call">
 	<template>
 		<template is="dom-if" if="{{phonenumber}}">
-			<a href="sip:[[phonenumber]]"><i class="fa fa-phone"></i></a>
+			<a href="sip:[[phonenumber]]">
+				<iron-icon icon="communication:phone"></iron-icon>
+			</a>
 		</template>
 	</template>
 	<script>
