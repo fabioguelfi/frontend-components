@@ -50,8 +50,17 @@
 			}, this.delay);
 		},
 		onError: function(event) {
-			this.set('error', event.detail.error.message);
-			this.set('loading', false);
+			this.async(function() {
+				var loader = this.loader;
+				if (!loader || loader.loading) {
+					return;
+				}
+				var err = loader.lastError;
+				if (err) {
+					this.set('error', err.error.message);
+					this.set('loading', false);
+				}
+			}, 300);
 		},
 		onLoadingChange: function(loading) {
 			this.toggleClass('hidden', !this.error && !loading);

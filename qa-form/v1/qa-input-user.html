@@ -146,7 +146,9 @@
 				}, 100);
 			},
 			handleError: function(event) {
-				this.$.results.notifyResize();
+				this.async(function() {
+					this.$.results.notifyResize();
+				}, 500);
 			},
 			buildParams: function(userName, roles) {
 				return { size: 10, query: userName , roles: roles };
