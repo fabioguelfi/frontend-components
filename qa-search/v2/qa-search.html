@@ -293,9 +293,13 @@
 				}
 			},
 			doRequest: function() {
+				var ajax = this.$.ajax;
+				ajax.activeRequests.forEach(function(request) {
+					request.abort();
+				});
 				if (this.value.length >= this.minLength) {
 					this.debounce('search-request', function() {
-						this.$.ajax.generateRequest();
+						ajax.generateRequest();
 					}, 300);
 					return true;
 				} else {

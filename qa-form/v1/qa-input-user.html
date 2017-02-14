@@ -113,19 +113,26 @@
 
 				var input = this.$.name.$$('input');
 				var value = input.value || '';
-				this.set('message', '');
+				var ajax = this.$.ajax;
 
-				if (event.target == input) {
-					this.set('value', undefined);
+				this.set('message', '');
+				this.set('value', undefined);
+
+				ajax.activeRequests.forEach(function(request) {
+					request.abort();
+				});
+
+				if (value.length < 3) {
+					this.cancelDebouncer('do-search');
+					this.$.results.close();
+					return;
 				}
 
-				if (event.target != input || value.length >= 3) {
-					this.$.ajax.generateRequest();
+				this.debounce('do-search', function() {
+					ajax.generateRequest();
 					this.$.results.notifyResize();
 					this.$.results.open();
-				} else {
-					this.$.results.close();
-				}
+				}, 300);
 			},
 			handleResponse: function(event) {
 				var results = event.detail.response.users.items;
@@ -139,7 +146,9 @@
 				}, 100);
 			},
 			handleError: function(event) {
-				this.$.results.notifyResize();
+				this.async(function() {
+					this.$.results.notifyResize();
+				}, 500);
 			},
 			buildParams: function(userName, roles) {
 				return { size: 10, query: userName , roles: roles };
