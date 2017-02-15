@@ -1,0 +1,22 @@
+<link rel="import" href="../../../bower_components/polymer/polymer.html">
+
+<script>
+
+	window.QuintoAndar = window.QuintoAndar || {};
+
+	/** @polymerBehavior */
+	QuintoAndar.SipBehavior = {
+
+		sipLink: function(phone) {
+			phone = (phone || '').replace(/[^0-9+]/g, '');
+			if (phone.startsWith('+55')) {
+				phone = phone.replace(/^\+55/, '0');
+			} else if (phone.length == 10 || phone.length == 11) {
+				phone = '0' + phone;
+			}
+			return 'sip:' + phone;
+		}
+	};
+
+</script>
+
