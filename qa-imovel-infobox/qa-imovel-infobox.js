@@ -12,7 +12,10 @@ Polymer(
 			type: Object,
 			observer: '_imovelIdChanged'
 		},
-		imovelOpenUrl: String
+		imovelOpenUrl: {
+			type: String,
+			value: ''
+		}
 	},
 
 	_imovelIdChanged: function() {
@@ -65,8 +68,8 @@ Polymer(
 		else{return status}
 	},
 	
-	imovelViewHref: function(id){
-		return (this.imovelOpenUrl || ("/imoveis/"+id))
+	imovelViewHref: function(imovelOpenUrl, imovelId){
+		return (imovelOpenUrl || ("/imoveis/" + imovelId))
 	}
 
 
