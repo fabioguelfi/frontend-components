@@ -1,0 +1,176 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/paper-header-panel/paper-header-panel.html">
+<link rel="import" href="../../bower_components/paper-drawer-panel/paper-drawer-panel.html">
+<link rel="import" href="../../bower_components/paper-tabs/paper-tabs.html">
+<link rel="import" href="../../bower_components/paper-tabs/paper-tab.html">
+<link rel="import" href="../../bower_components/paper-toolbar/paper-toolbar.html">
+<link rel="import" href="../../bower_components/iron-a11y-keys/iron-a11y-keys.html">
+<link rel="import" href="../../bower_components/iron-list/iron-list.html">
+<link rel="import" href="../../bower_components/paper-dialog/paper-dialog.html">
+<link rel="import" href="../../bower_components/paper-input/paper-input.html">
+<link rel="import" href="../../bower_components/paper-listbox/paper-listbox.html">
+<link rel="import" href="../../bower_components/paper-item/paper-item.html">
+
+<link rel="import" href="../qa-behavior/v1/qa-behavior.html">
+
+<dom-module id="qa-shortcuts">
+	<template>
+		<iron-a11y-keys id="cmdPallete" target="[[cmdPalTarget]]" keys="ctrl+shift+3"
+			on-keys-pressed="openCommandPallete"></iron-a11y-keys>
+		<iron-a11y-keys id="closeCmdPallete" target="[[dlgCmdPallete]]" keys="esc"
+			on-keys-pressed="closeCommandPallete"></iron-a11y-keys>
+		<!-- <iron-a11y-keys target="[[cmdPalTarget]]" keys="up down enter" on-keys-pressed="browseFilteredCommandList"></iron-a11y-keys>-->
+		<template is="dom-repeat" items="[[listaComandos]]">
+			<iron-a11y-keys target="[[cmdPalTarget]]" keys="[[item.shortcut]]" on-keys-pressed="closeCommandPallete"></iron-a11y-keys>
+		</template>
+		<paper-dialog id="dlgCmdPallete" modal="true">
+			<paper-input id="commandFilterInput" no-label-float="true" label="Digite o comando" value="{{commandFilter}}"></paper-input>
+			<!--<paper-listbox>
+				<iron-list id="listCmd" items="[[listaFiltrada]]" selection-enabled selected-item="{{selectedCommand}}">
+					<template>
+						<paper-item><span class="shortcut">{{item.shortcut}}</span>{{item.description}}</paper-item>
+					</template>
+				</iron-list>
+			</paper-listbox>-->
+			<paper-listbox id="listCmd" items="[[listaFiltrada]]" selected-item="{{selectedCommand}}">
+				<template is="dom-repeat" items="[[listaFiltrada]]">
+					<paper-item on-tap="_onCommandTap"><span class="shortcut">{{item.shortcut}}</span>{{item.description}}</paper-item>
+				</template>
+			</paper-listbox>
+		</paper-dialog>
+		<style is="custom-style">
+			paper-item .shortcut {
+				border-radius: 5px;
+				background-color: #888888;
+				color: #ffffff;
+				min-width: 80px;
+				text-align: center;
+				padding: 4px 8px;
+				font-size: 9pt;
+				position: absolute;
+				right: 0;
+				font-weight: bold;
+        margin-right: 20px;
+			}
+      paper-item:focus .shortcut {
+        background-color: #666666;
+				color: #eeeeee;
+      }
+			paper-dialog#dlgCmdPallete {
+				width: 70%;
+				min-width: 300px;
+			}
+      #listCmd paper-item {
+      --paper-item-focused: {
+        background: #0288D1;
+        font-weight: bold;
+				color: #ffffff;
+      };
+      --paper-item-focused-before: {
+        opacity: 0;
+      };
+  }
+		</style>
+	</template>
+	<script>
+		Polymer({
+			is: 'qa-shortcuts',
+			properties: {
+				house: Object,
+				tenant: Object,
+				owner: Object,
+				cmdPalTarget: Object,
+				listaFiltrada: Array,
+				allCommands: Array,
+				listaComandos: {
+					type: Array,
+					computed: 'availableCommands(allCommands)'
+				},
+				commandFilter : { type : String, observer: '_commandFiltered' },
+        selectedCommand: Object
+			},
+			behaviors: [ QuintoAndar.Behavior ],
+			ready: function() {
+				this.set('allCommands',[
+					{description:"Abrir página apartamento", shortcut:"ctrl+shift+a", depends: ["house"]},
+					{description:"Abrir página inquilino", shortcut:"ctrl+shift+i", depends: ["tenant"]},
+					{description:"Abrir página proprietário", shortcut:"ctrl+shift+p", depends: ["owner"]},
+					{description:"Abrir busca em nova aba", shortcut:"ctrl+shift+b", action:"/busca"},
+					{description:"Abrir relatório funil mensal", shortcut:"ctrl+shift+m", action:'/relatorio'},
+					{description:"Ligar inquilino", shortcut:"ctrl+alt+i", depends: ["tenant"]},
+					{description:"Ligar proprietário",shortcut:"ctrl+alt+p", depends: ["owner"]}
+				]);
+				this.set('cmdPalTarget',document.body)
+				this._commandFiltered();
+			},
+			availableCommands : function(allCommands){
+        var available = [];
+        allCommands.forEach(function(cmd){
+          ['house','tenant','owner'].every(function(dependency){
+            if (!cmd.depends || (this[dependency] && cmd.depends.find(function(it){return it == dependency}))){
+              available.push(cmd);
+              console.info(cmd.description)
+              return false;
+            }
+            return true;
+          }.bind(this))
+        }.bind(this));
+        return available;
+      },
+			_commandFiltered : function(){
+				// this.$.cmdPallete.removeOwnKeyBindings();
+				var filt = [];
+				for(cmdIdx in this.listaComandos) {
+					var cmd = this.listaComandos[cmdIdx];
+					if(cmd.description.toLowerCase().indexOf((this.commandFilter||'').toLowerCase()) >= 0) {
+						filt.push(cmd)
+						// this.$.cmdPallete.addOwnKeyBinding(cmd.shortcut,'closeCommandPallete');
+					}
+					if (filt.length > 4) {
+						break;
+					}
+				}
+				// this.$.cmdPallete.addOwnKeyBinding('ctrl+3','openCommandPallete');
+				this.set('listaFiltrada',filt)
+			},
+			openCommandPallete: function() {
+				this.$.dlgCmdPallete.open()
+        setTimeout(function(){
+          this.$.commandFilterInput.focus()
+        }.bind(this),50)
+			},
+			closeCommandPallete: function() {
+				this.$.dlgCmdPallete.close()
+			},
+      browseFilteredCommandList: function(event, ctx) {
+        var selectedIndex = null;
+        this.listaFiltrada.forEach(function(el,index){
+          if(el == this.$.listCmd.selectedItem) {
+            selectedIndex = index;
+            return false;
+          }
+          return true;
+        },this);
+        console.info("select: "+selectedIndex)
+        
+        if (ctx.keyboardEvent.key == "ArrowDown" && selectedIndex < this.$.listCmd.items.length-1) {
+          var newIndex = selectedIndex + 1;
+          // this.$.listCmd.scrollToIndex(newIndex)
+          this.$.listCmd.selectIndex(newIndex)
+          console.info("down")
+        } else if (ctx.keyboardEvent.key == "ArrowUp" && selectedIndex > 0) {
+          var newIndex = selectedIndex - 1;
+          // this.$.listCmd.scrollToIndex(newIndex)
+          this.$.listCmd.selectIndex(newIndex)
+          console.info("up")
+        } else if (ctx.keyboardEvent.key == "Enter" && selectedIndex >= 0) {
+          console.info("execute: "+this.selectedCommand.shortcut)
+        }
+      },
+			_onCommandTap: function(event) {
+        console.info(this.selectedCommand.shorcut)
+			},
+		});
+	</script>
+</dom-module>
+
