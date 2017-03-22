@@ -50,26 +50,26 @@
 				position: absolute;
 				right: 0;
 				font-weight: bold;
-        margin-right: 20px;
+				margin-right: 20px;
 			}
-      paper-item:focus .shortcut {
-        background-color: #666666;
+			paper-item:focus .shortcut {
+				background-color: #666666;
 				color: #eeeeee;
-      }
+			}
 			paper-dialog#dlgCmdPallete {
 				width: 70%;
 				min-width: 300px;
 			}
-      #listCmd paper-item {
-      --paper-item-focused: {
-        background: #0288D1;
-        font-weight: bold;
+			#listCmd paper-item {
+			--paper-item-focused: {
+				background: #0288D1;
+				font-weight: bold;
 				color: #ffffff;
-      };
-      --paper-item-focused-before: {
-        opacity: 0;
-      };
-  }
+			};
+			--paper-item-focused-before: {
+				opacity: 0;
+			};
+	}
 		</style>
 	</template>
 	<script>
@@ -87,7 +87,7 @@
 					computed: 'availableCommands(allCommands)'
 				},
 				commandFilter : { type : String, observer: '_commandFiltered' },
-        selectedCommand: Object
+				selectedCommand: Object
 			},
 			behaviors: [ QuintoAndar.Behavior ],
 			ready: function() {
@@ -104,19 +104,19 @@
 				this._commandFiltered();
 			},
 			availableCommands : function(allCommands){
-        var available = [];
-        allCommands.forEach(function(cmd){
-          ['house','tenant','owner'].every(function(dependency){
-            if (!cmd.depends || (this[dependency] && cmd.depends.find(function(it){return it == dependency}))){
-              available.push(cmd);
-              console.info(cmd.description)
-              return false;
-            }
-            return true;
-          }.bind(this))
-        }.bind(this));
-        return available;
-      },
+				var available = [];
+				allCommands.forEach(function(cmd){
+					['house','tenant','owner'].every(function(dependency){
+						if (!cmd.depends || (this[dependency] && cmd.depends.find(function(it){return it == dependency}))){
+							available.push(cmd);
+							console.info(cmd.description)
+							return false;
+						}
+						return true;
+					}.bind(this))
+				}.bind(this));
+				return available;
+			},
 			_commandFiltered : function(){
 				// this.$.cmdPallete.removeOwnKeyBindings();
 				var filt = [];
@@ -135,40 +135,40 @@
 			},
 			openCommandPallete: function() {
 				this.$.dlgCmdPallete.open()
-        setTimeout(function(){
-          this.$.commandFilterInput.focus()
-        }.bind(this),50)
+				setTimeout(function(){
+					this.$.commandFilterInput.focus()
+				}.bind(this),50)
 			},
 			closeCommandPallete: function() {
 				this.$.dlgCmdPallete.close()
 			},
-      browseFilteredCommandList: function(event, ctx) {
-        var selectedIndex = null;
-        this.listaFiltrada.forEach(function(el,index){
-          if(el == this.$.listCmd.selectedItem) {
-            selectedIndex = index;
-            return false;
-          }
-          return true;
-        },this);
-        console.info("select: "+selectedIndex)
-        
-        if (ctx.keyboardEvent.key == "ArrowDown" && selectedIndex < this.$.listCmd.items.length-1) {
-          var newIndex = selectedIndex + 1;
-          // this.$.listCmd.scrollToIndex(newIndex)
-          this.$.listCmd.selectIndex(newIndex)
-          console.info("down")
-        } else if (ctx.keyboardEvent.key == "ArrowUp" && selectedIndex > 0) {
-          var newIndex = selectedIndex - 1;
-          // this.$.listCmd.scrollToIndex(newIndex)
-          this.$.listCmd.selectIndex(newIndex)
-          console.info("up")
-        } else if (ctx.keyboardEvent.key == "Enter" && selectedIndex >= 0) {
-          console.info("execute: "+this.selectedCommand.shortcut)
-        }
-      },
+			browseFilteredCommandList: function(event, ctx) {
+				var selectedIndex = null;
+				this.listaFiltrada.forEach(function(el,index){
+					if(el == this.$.listCmd.selectedItem) {
+						selectedIndex = index;
+						return false;
+					}
+					return true;
+				},this);
+				console.info("select: "+selectedIndex)
+				
+				if (ctx.keyboardEvent.key == "ArrowDown" && selectedIndex < this.$.listCmd.items.length-1) {
+					var newIndex = selectedIndex + 1;
+					// this.$.listCmd.scrollToIndex(newIndex)
+					this.$.listCmd.selectIndex(newIndex)
+					console.info("down")
+				} else if (ctx.keyboardEvent.key == "ArrowUp" && selectedIndex > 0) {
+					var newIndex = selectedIndex - 1;
+					// this.$.listCmd.scrollToIndex(newIndex)
+					this.$.listCmd.selectIndex(newIndex)
+					console.info("up")
+				} else if (ctx.keyboardEvent.key == "Enter" && selectedIndex >= 0) {
+					console.info("execute: "+this.selectedCommand.shortcut)
+				}
+			},
 			_onCommandTap: function(event) {
-        console.info(this.selectedCommand.shorcut)
+				console.info(this.selectedCommand.shorcut)
 			},
 		});
 	</script>
