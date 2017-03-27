@@ -9,17 +9,17 @@
 
 <dom-module id="qa-shortcuts">
 	<template>
-		<iron-a11y-keys id="shortcutOpenDlg" target="[[cmdPalTarget]]" keys="ctrl+shift+3 shift+3" on-keys-pressed="openCommandPallete"></iron-a11y-keys>
 		<iron-a11y-keys target="[[cmdPalTarget]]" keys="esc" on-keys-pressed="closeCommandPallete"></iron-a11y-keys>
+		<iron-a11y-keys target="[[cmdPalTarget]]" keys="ctrl+alt+3" on-keys-pressed="openCommandPallete" stop-keyboard-event-propagation="true"></iron-a11y-keys>
 		<template is="dom-repeat" items="[[listaComandos]]">
-			<iron-a11y-keys target="[[cmdPalTarget]]" keys="[[item.shortcut]]" on-keys-pressed="closeCommandPallete">
+			<iron-a11y-keys target="[[cmdPalTarget]]" keys="[[item.shortcut]]" on-keys-pressed="_actOnShortcut" data-command-index="[[index]]">
 			</iron-a11y-keys>
 		</template>
 		<paper-dialog id="dlgCmdPallete" modal="true">
 			<paper-input id="commandFilterInput" no-label-float="true" label="Digite o comando" value="{{commandFilter}}"></paper-input>
-			<paper-listbox id="listCmd" items="[[listaFiltrada]]" selected-item="{{selectedCommand}}">
+			<paper-listbox id="listCmd">
 				<template is="dom-repeat" items="[[listaFiltrada]]">
-					<paper-item on-tap="_onCommandTap"><span class="shortcut">{{item.shortcut}}</span>{{item.description}}</paper-item>
+					<paper-item on-tap="_onCommandTap" data-command-index="[[index]]"><span class="shortcut">[[item.shortcut]]</span>[[item.description]]</paper-item>
 				</template>
 			</paper-listbox>
 		</paper-dialog>
@@ -61,9 +61,10 @@
 		Polymer({
 			is: 'qa-shortcuts',
 			properties: {
-				house: Object,
-				tenant: Object,
-				owner: Object,
+				house: { type : Object, observer: '_contextChanged' },
+				tenant: { type : Object, observer: '_contextChanged' },
+				owner: { type : Object, observer: '_contextChanged' },
+				task: { type : Object, observer: '_contextChanged' },
 				cmdPalTarget: {
 					type: Object
 				},
@@ -74,30 +75,45 @@
 					computed: 'availableCommands(allCommands)'
 				},
 				commandFilter : { type : String, observer: '_commandFiltered' },
-				selectedCommand: Object
+				selectedCommandItem: Object,
+				selectedCommand: {
+					type: Object,
+					computed: 'getSelectedCommand(selectedCommandItem, listaFiltrada)'
+				}
 			},
 			behaviors: [ QuintoAndar.Behavior ],
 			ready: function() {
 				this.set('cmdPalTarget',document.body)
 				console.info(this.cmdPalTarget)
 				this.set('allCommands',[
-					{description:"Abrir página apartamento", shortcut:"ctrl+alt+a", depends: ["house"]},
-					{description:"Abrir página inquilino", shortcut:"ctrl+alt+i", depends: ["tenant"]},
-					{description:"Abrir página proprietário", shortcut:"ctrl+shift+p", depends: ["owner"]},
-					{description:"Abrir busca em nova aba", shortcut:"ctrl+alt+b", action:"/busca"},
-					{description:"Abrir relatório funil mensal", shortcut:"ctrl+shift+m", action:'/relatorio'},
-					{description:"Ligar inquilino", shortcut:"ctrl+alt+i", depends: ["tenant"]},
-					{description:"Ligar proprietário",shortcut:"ctrl+alt+p", depends: ["owner"]}
+					{description:"Abrir página apartamento", shortcut:"ctrl+alt+a", depends: ["house"], action: this.openUsPropertiesUrl('/imoveis/',['house','id'])},
+					{description:"Abrir página inquilino", shortcut:"ctrl+alt+i", depends: ["tenant"], action: this.openUsAccountsUrl('/usuarios/',['tenant','id'])},
+					{description:"Abrir página proprietário", shortcut:"ctrl+shift+p", depends: ["owner"], action: this.openUsAccountsUrl('/usuarios/',['owner','id'])},
+					{description:"Abrir task nova aba", shortcut:"ctrl+alt+t", depends: ["task"], action: this.openUsTasksUrl('/tarefas?taskId=',['task','_id'])},
+					{description:"Abrir busca em nova aba", shortcut:"ctrl+alt+b", action: this.openUsTasksUrl('/busca')},
+					{description:"Abrir relatório funil mensal", shortcut:"ctrl+alt+m", action: this.openUsTasksUrl('/relatorios')},
+					{description:"Ligar inquilino", shortcut:"ctrl+alt+i", depends: ["tenant"], action: this.callTenant.bind(this)},
+					{description:"Ligar proprietário",shortcut:"ctrl+alt+p", depends: ["owner"], action: this.callOwner.bind(this)}
 				]);
 				this._commandFiltered();
+				setTimeout(function(){
+						this.set('cmdPalTarget',document.body)
+				}.bind(this),1000)
+			},
+			getSelectedCommand: function(selectedCommandItem, listaFiltrada) {
+				var index = selectedCommandItem.dataCommandIndex;
+				return listaFiltrada[index];
+			},
+			_contextChanged : function(){
+				this.set('allCommands',this.allCommands.slice(0))
+				this._commandFiltered()
 			},
 			availableCommands : function(allCommands){
 				var available = [];
 				allCommands.forEach(function(cmd){
-					['house','tenant','owner'].every(function(dependency){
+					['house','tenant','owner','task'].every(function(dependency){
 						if (!cmd.depends || (this[dependency] && cmd.depends.find(function(it){return it == dependency}))){
 							available.push(cmd);
-							// console.info(cmd.description)
 							return false;
 						}
 						return true;
@@ -106,60 +122,98 @@
 				return available;
 			},
 			_commandFiltered : function(){
-				// this.$.cmdPallete.removeOwnKeyBindings();
 				var filt = [];
 				for(cmdIdx in this.listaComandos) {
 					var cmd = this.listaComandos[cmdIdx];
 					if(cmd.description.toLowerCase().indexOf((this.commandFilter||'').toLowerCase()) >= 0) {
 						filt.push(cmd)
-						// this.$.cmdPallete.addOwnKeyBinding(cmd.shortcut,'closeCommandPallete');
 					}
 					if (filt.length > 4) {
 						break;
 					}
 				}
-				// this.$.cmdPallete.addOwnKeyBinding('ctrl+3','openCommandPallete');
 				this.set('listaFiltrada',filt)
 			},
-			openCommandPallete: function() {
-				console.info("OB")
-				this.$.dlgCmdPallete.open()
-				setTimeout(function(){
-					this.$.commandFilterInput.focus()
-				}.bind(this),50)
+			openCommandPallete: function(e) {
+				if (! this.$.dlgCmdPallete.opened) {
+					this.$.dlgCmdPallete.open()
+					setTimeout(function(){
+						this.$.commandFilterInput.focus()
+					}.bind(this),50)
+				} else {
+					this.closeCommandPallete();
+				}
 			},
 			closeCommandPallete: function() {
-				console.info("OE")
-				this.$.dlgCmdPallete.close()
-			},
-			browseFilteredCommandList: function(event, ctx) {
-				var selectedIndex = null;
-				this.listaFiltrada.forEach(function(el,index){
-					if(el == this.$.listCmd.selectedItem) {
-						selectedIndex = index;
-						return false;
-					}
-					return true;
-				},this);
-				console.info("select: "+selectedIndex)
-				
-				if (ctx.keyboardEvent.key == "ArrowDown" && selectedIndex < this.$.listCmd.items.length-1) {
-					var newIndex = selectedIndex + 1;
-					// this.$.listCmd.scrollToIndex(newIndex)
-					this.$.listCmd.selectIndex(newIndex)
-					console.info("down")
-				} else if (ctx.keyboardEvent.key == "ArrowUp" && selectedIndex > 0) {
-					var newIndex = selectedIndex - 1;
-					// this.$.listCmd.scrollToIndex(newIndex)
-					this.$.listCmd.selectIndex(newIndex)
-					console.info("up")
-				} else if (ctx.keyboardEvent.key == "Enter" && selectedIndex >= 0) {
-					console.info("execute: "+this.selectedCommand.shortcut)
+				if (this.$.dlgCmdPallete.opened) {
+					this.$.dlgCmdPallete.close()
 				}
 			},
 			_onCommandTap: function(event) {
-				console.info(event)
+				this.set('selectedCommandItem',event.srcElement)
+				setTimeout(function(){
+					var url = this.selectedCommand.action();
+					if (url.match(/^((http)|(\/)).*$/g)) {
+						window.open(url)
+					}
+					if (url.match(/^sip:.*$/g)) {
+						window.location = url
+					}
+				}.bind(this),1)
 			},
+			_actOnShortcut: function(event) {
+				var cmdIndex = event.srcElement.dataCommandIndex;
+				var url = this.listaComandos[cmdIndex].action();
+				if (url.match(/^((http)|(\/)).*$/g)) {
+					window.open(url)
+				}
+				if (url.match(/^sip:.*$/g)) {
+					window.location = url
+				}
+			},
+			evaluatePath:function(pathArray) {
+				debugger;
+				var val = this.get(pathArray[0]);
+				pathArray.slice(1).forEach(function(pathPiece){
+					val = val[pathPiece];
+				})
+				return val;
+			},
+			openUsTasksUrl : function() {
+				return this.openUrl("", arguments);
+			},
+			openUsAccountsUrl : function() {
+				return this.openUrl("http://accounts.dev.quintoandar.com.br", arguments);
+			},
+			openUsPropertiesUrl : function() {
+				return this.openUrl("http://props.dev.quintoandar.com.br", arguments);
+			},
+			openUrl : function(baseUrl, args) {
+				return function() {
+					var action = baseUrl;
+					for(argIndex in args) {
+						arg = args[argIndex]
+						if (typeof arg === "string") {
+							action += arg
+						} else if (Array.isArray(arg)) {
+							console.info(this.task ? this.task.id : -1)
+							action += (this.evaluatePath.bind(this))(arg);
+						}
+					}
+					return action;
+				}.bind(this)
+			},
+			call: function(user) {
+				var numberToCall = (user.telefonePrincipal || user.telefoneSecundario || user.telefoneComercial || user.telefoneAnunciante);
+				return 'sip: ' + numberToCall.replace(/[^0-9]/g,'').replace(/^\+55/g,'0');
+			},
+			callOwner: function() {
+				return this.call(this.owner)
+			},
+			callTenant: function() {
+				// this.call(this.tenent)
+				return this.call({nome:'Teste Tenent',telefonePrincipal:'+5519981287944'})
+			}
 		});
 	</script>
 </dom-module>
