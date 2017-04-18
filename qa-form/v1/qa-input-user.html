@@ -166,7 +166,6 @@
 				var user = item.dataHost.dataHost.modelForElement(item).__data__.item;
 				this.$$('paper-icon-button').setAttribute('icon', 'check');
 				this.set('userName', user.name);
-				console.log(JSON.stringify(user));
 				this.set('user', user);
 				this.set('value', user.id);
 				this.$.results.close();
