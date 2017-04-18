@@ -1,0 +1,133 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/paper-dialog/paper-dialog.html">
+<link rel="import" href="../../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../../bower_components/paper-input/paper-textarea.html">
+<link rel="import" href="../../bower_components/paper-toggle-button/paper-toggle-button.html">
+<link rel="import" href="../../bower_components/paper-toast/paper-toast.html">
+<link rel="import" href="../qa-styles/v1/qa-styles.html">
+<link rel="import" href="../qa-loading/v1/qa-loading.html">
+<link rel="import" href="../qa-form/v1/qa-input-user.html">
+<script src="../../bower_components/moment/moment.js"></script>
+
+<dom-module id="qa-task-form">
+	<template>
+		<style include="qa-styles qa-button-style qa-table-style"></style>
+		<paper-button raised on-tap="handleOpen">Criar tarefa</paper-button>
+		<paper-dialog id="dialog" modal>
+			<h2>Nova Tarefa</h2>
+			<form is="iron-form" id="taskForm" method="POST"
+				action="/api/tasks/manual" content-type="application/json">
+				<paper-toggle-button
+					id="toggleSelf"
+					checked="{{forMyself}}">Para mim
+				</paper-toggle-button>
+				<template is="dom-if" if="[[!forMyself]]" >
+					<qa-input-user
+						id="assigneeSearch"
+						name="assigneeId"
+						user-name="{{assigneeName}}"
+						label="Responsável"
+						disabled=[[forMyself]]>
+					</qa-input-user>
+				</template>
+				<qa-input-user
+					id="userSearch"
+					name="destinatarioId"
+					user-name="{{userName}}"
+					label="Cliente"
+					user="{{destinatario}}"
+					roles="">
+				</qa-input-user>
+				<paper-input
+					label="Tipo de tarefa"
+					name="assunto"
+					maxlength="60"
+					qa-style
+					required
+					auto-validate
+					error-message="Informe o tipo de tarefa">
+				</paper-input>
+				<paper-textarea
+					qa-style
+					label="Descrição"
+					name="descricao"
+					maxlength="256"
+					rows="6">
+				</paper-textarea>
+			</form>
+			<div class="buttons" >
+				<paper-button dialog-dismiss qa-style>Cancelar</paper-button>
+				<paper-button submit raised qa-style on-tap="handleSubmit">Enviar</paper-button>
+			</div>
+		</paper-dialog>
+		<paper-toast id="toastSuccess" type="success" horizontal-align="right" text="Tarefa criada!"> </paper-toast>
+		<paper-toast id="toastError" type="error" horizontal-align="right" text="Erro ao criar tarefa"> </paper-toast>
+	</template>
+	<script>
+		Polymer({
+			is: 'qa-task-form',
+			properties: {
+				houseId: {
+					type: Number,
+					notify: true,
+					readonly: true
+				},
+				flowId: {
+					type: Number,
+					notify: true,
+					readonly: true
+				},
+				origem: {
+					type: String
+				},
+				origemId: {
+					type: String
+				},
+				forMyself: {
+					type: Boolean,
+					value: true
+				},
+				destinatario: {
+					type: Object,
+					notify: true,
+					observer: 'translateUserObject'
+				}
+			},
+			ready: function() {
+				var self = this;
+				var form = this.$.taskForm;
+				form.addEventListener('iron-form-presubmit', function() {
+					this.request.body['origem'] = self.origem;
+					this.request.body['origemId'] = self.origemId;
+					this.request.body['origemData'] = moment().format();
+					this.request.body['imovelId'] = self.houseId;
+					this.request.body['fluxoLocacaoId'] = self.flowId;
+					this.request.body['destinatario'] = self.destinatario;
+				});
+				form.addEventListener('iron-form-response', function(event) {
+					if (event.detail.succeeded) {
+						self.$.dialog.close();
+						self.$.toastSuccess.open();
+					} else {
+						self.$.toastError.open();
+					}
+				});
+			},
+			handleSubmit: function() {
+				this.$.taskForm.submit();
+			},
+			handleOpen: function() {
+				this.$.taskForm.reset();
+				this.$.dialog.open();
+			},
+			translateUserObject: function(user) {
+				user['nome'] = user.name;
+				user['telefonePrincipal'] = user['primary_phone'];
+				user['email'] = user['primary_email'];
+				return user;
+			}
+		});
+
+	</script>
+
+</dom-module>

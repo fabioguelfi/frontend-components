@@ -39,7 +39,7 @@
 				</paper-icon-button>
 			</template>
 		</paper-input>
-		<input type="hidden" name$="[[name]]" value$="[[value]]">
+		<input disabled="[[disabled]]" id="hidden" type="hidden" name$="[[name]]" value$="[[value]]">
 		<iron-dropdown id="results" no-overlap dynamic-align>
 			<qa-loading
 				class="dropdown-content"
@@ -82,6 +82,10 @@
 					type: String,
 					notify: true
 				},
+				user: {
+					type: Object,
+					notify: true
+				},
 				readonly: {
 					type: Boolean,
 					value: false
@@ -107,7 +111,11 @@
 					type: String,
 					notify: true
 				},
-				name: String
+				name: String,
+				disabled: {
+					type: Boolean,
+					value: false
+				}
 			},
 			doSearch: function(event) {
 
@@ -158,6 +166,8 @@
 				var user = item.dataHost.dataHost.modelForElement(item).__data__.item;
 				this.$$('paper-icon-button').setAttribute('icon', 'check');
 				this.set('userName', user.name);
+				console.log(JSON.stringify(user));
+				this.set('user', user);
 				this.set('value', user.id);
 				this.$.results.close();
 			},
