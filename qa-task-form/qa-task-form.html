@@ -12,6 +12,11 @@
 <dom-module id="qa-task-form">
 	<template>
 		<style include="qa-styles qa-button-style qa-table-style"></style>
+		<style>
+			paper-button {
+				color: #0288d1;
+			}
+		</style>
 		<paper-button raised on-tap="handleOpen">Criar tarefa</paper-button>
 		<paper-dialog id="dialog" modal>
 			<h2>Nova Tarefa</h2>
