@@ -4,135 +4,247 @@
 <link rel="import" href="../../bower_components/paper-input/paper-textarea.html">
 <link rel="import" href="../../bower_components/paper-toggle-button/paper-toggle-button.html">
 <link rel="import" href="../../bower_components/paper-toast/paper-toast.html">
+<link rel="import" href="../../bower_components/iron-pages/iron-pages.html">
+<link rel="import" href="../../bower_components/paper-tabs/paper-tabs.html">
+<link rel="import" href="../../bower_components/paper-tabs/paper-tab.html">
+<link rel="import" href="../../bower_components/paper-material/paper-material.html">
+<link rel="import" href="../../bower_components/paper-dropdown-menu/paper-dropdown-menu.html">
+<link rel="import" href="../../bower_components/paper-listbox/paper-listbox.html">
+<link rel="import" href="../../bower_components/paper-item/paper-item.html">
+<link rel="import" href="../../bower_components/paper-icon-button/paper-icon-button.html">
+<link rel="import" href="../../bower_components/iron-ajax/iron-ajax.html">
+<link rel="import" href="../qa-behavior/v1/qa-user-behavior.html">
 <link rel="import" href="../qa-styles/v1/qa-styles.html">
 <link rel="import" href="../qa-loading/v1/qa-loading.html">
 <link rel="import" href="../qa-form/v1/qa-input-user.html">
 <script src="../../bower_components/moment/moment.js"></script>
 
 <dom-module id="qa-task-form">
-	<template>
-		<style include="qa-styles qa-button-style qa-table-style"></style>
-		<style>
-			paper-button {
-				color: #0288d1;
-			}
-		</style>
-		<paper-button raised on-tap="handleOpen">Criar tarefa</paper-button>
-		<paper-dialog id="dialog" modal>
-			<h2>Nova Tarefa</h2>
-			<form is="iron-form" id="taskForm" method="POST"
-				action="/api/tasks/manual" content-type="application/json">
-				<paper-toggle-button
-					id="toggleSelf"
-					checked="{{forMyself}}">Para mim
-				</paper-toggle-button>
-				<template is="dom-if" if="[[!forMyself]]" >
-					<qa-input-user
-						id="assigneeSearch"
-						name="assigneeId"
-						user-name="{{assigneeName}}"
-						label="Responsável"
-						disabled=[[forMyself]]>
-					</qa-input-user>
-				</template>
-				<qa-input-user
-					id="userSearch"
-					name="destinatarioId"
-					user-name="{{userName}}"
-					label="Cliente"
-					user="{{destinatario}}"
-					roles="">
-				</qa-input-user>
-				<paper-input
-					label="Tipo de tarefa"
-					name="assunto"
-					maxlength="60"
-					qa-style
-					required
-					auto-validate
-					error-message="Informe o tipo de tarefa">
-				</paper-input>
-				<paper-textarea
-					qa-style
-					label="Descrição"
-					name="descricao"
-					maxlength="256"
-					rows="6">
-				</paper-textarea>
-			</form>
-			<div class="buttons" >
-				<paper-button dialog-dismiss qa-style>Cancelar</paper-button>
-				<paper-button submit raised qa-style on-tap="handleSubmit">Enviar</paper-button>
-			</div>
-		</paper-dialog>
-		<paper-toast id="toastSuccess" type="success" horizontal-align="right" text="Tarefa criada!"> </paper-toast>
-		<paper-toast id="toastError" type="error" horizontal-align="right" text="Erro ao criar tarefa"> </paper-toast>
-	</template>
-	<script>
-		Polymer({
-			is: 'qa-task-form',
-			properties: {
-				houseId: {
-					type: Number,
-					notify: true,
-					readonly: true
-				},
-				flowId: {
-					type: Number,
-					notify: true,
-					readonly: true
-				},
-				origem: {
-					type: String
-				},
-				origemId: {
-					type: String
-				},
-				forMyself: {
-					type: Boolean,
-					value: true
-				},
-				destinatario: {
-					type: Object,
-					notify: true,
-					observer: 'translateUserObject'
-				}
-			},
-			ready: function() {
-				var self = this;
-				var form = this.$.taskForm;
-				form.addEventListener('iron-form-presubmit', function() {
-					this.request.body['origem'] = self.origem;
-					this.request.body['origemId'] = self.origemId;
-					this.request.body['origemData'] = moment().format();
-					this.request.body['imovelId'] = self.houseId;
-					this.request.body['fluxoLocacaoId'] = self.flowId;
-					this.request.body['destinatario'] = self.destinatario;
-				});
-				form.addEventListener('iron-form-response', function(event) {
-					if (event.detail.succeeded) {
-						self.$.dialog.close();
-						self.$.toastSuccess.open();
-					} else {
-						self.$.toastError.open();
-					}
-				});
-			},
-			handleSubmit: function() {
-				this.$.taskForm.submit();
-			},
-			handleOpen: function() {
-				this.$.taskForm.reset();
-				this.$.dialog.open();
-			},
-			translateUserObject: function(user) {
-				user['nome'] = user.name;
-				user['telefonePrincipal'] = user['primary_phone'];
-				user['email'] = user['primary_email'];
-				return user;
-			}
-		});
+    <template>
+        <style include="qa-styles qa-button-style qa-table-style qa-input-styles"></style>
+        <style is="custom-style">
+            paper-button {
+                color: #0288d1;
+            }
+            paper-dialog {
+                min-width: 440px;
+            }
+            paper-tabs {
+                --paper-tabs-selection-bar-color: var(--qa-dark-color);
+            }
+            paper-tab {
+                color: var(--qa-light-text-color);
+                font-weight: 500;
+                --paper-tab-content-unselected: {
+                    color: var(--qa-light-disabled-color);
+                }
+            }
+            paper-material {
+                margin-bottom: 12px;
+                padding-bottom: 12px;
+            }
+            paper-material > :not(paper-tabs) {
+                padding: 0px 16px;
+            }
+            paper-icon-button[icon="check"] {
+                color: green;
+            }
+            qa-input-user {
+                display: block;
+            }
+            paper-dropdown-menu {
+                width: 100%;
+                margin-top: 8px;
+                --paper-input-suffix: {
+                    padding: 8px;
+                };
+                --paper-input-container: {
+                    padding: 0px 0px 8px;
+                }
+            }
+            .buttons {
+                padding: 0px 24px 12px;
+            }
+        </style>
+        <paper-button raised on-tap="handleOpen">Criar tarefa</paper-button>
+        <paper-dialog id="dialog" opened="{{opened}}" modal>
+            <h2>Nova Tarefa</h2>
+            <form is="iron-form" id="taskForm" method="POST"
+                action="/api/tasks/manual" content-type="application/json">
+                <paper-material>
+                    <paper-tabs qa-style selected="{{selectedTab}}">
+                        <paper-tab>Para mim</paper-tab>
+                        <paper-tab>Para outro</paper-tab>
+                        <paper-tab>Para uma equipe</paper-tab>
+                    </paper-tabs>
+                    <iron-pages selected="[[selectedTab]]">
+                        <paper-input
+                            qa-style
+                            readonly
+                            label="Responsável"
+                            required="[[isEqual(selectedTab, 0)]]"
+                            value="[[user.name]]">
+                            <paper-icon-button icon="check" suffix>
+                            </paper-icon-button>
+                        </paper-input>
+                        <qa-input-user
+                            id="assigneeSearch"
+                            user-name="{{assigneeName}}"
+                            label="Responsável"
+                            required="[[isEqual(selectedTab, 1)]]"
+                            error-message="Informe o responsável">
+                        </qa-input-user>
+                        <paper-dropdown-menu
+                            qa-style
+                            label="Equipe responsável"
+                            required="[[isEqual(selectedTab, 2)]]"
+                            error-message="Informe a equipe responsável">
+                            <paper-listbox
+                                class="dropdown-content"
+                                selected="{{workgroupIndex}}">
+                                <template is="dom-repeat" items="[[workgroups]]">
+                                    <paper-item>[[item.title]]</paper-item>
+                                </template>
+                            </paper-listbox>
+                        </paper-dropdown-menu>
+                    </iron-pages>
+                </paper-material>
+                <paper-material>
+                    <qa-input-user
+                        id="userSearch"
+                        name="destinatarioId"
+                        user-name="{{userName}}"
+                        label="Cliente"
+                        user="{{destinatario}}"
+                        roles="">
+                    </qa-input-user>
+                    <paper-input
+                        label="Tipo de tarefa"
+                        name="assunto"
+                        maxlength="60"
+                        qa-style
+                        required
+                        error-message="Informe o tipo de tarefa">
+                    </paper-input>
+                    <paper-textarea
+                        qa-style
+                        label="Descrição"
+                        name="descricao"
+                        maxlength="256"
+                        rows="6">
+                    </paper-textarea>
+                </paper-material>
+            </form>
+            <div class="buttons" >
+                <paper-button dialog-dismiss qa-style>Cancelar</paper-button>
+                <paper-button submit raised qa-style on-tap="handleSubmit">Enviar</paper-button>
+            </div>
+        </paper-dialog>
+        <paper-toast id="toastSuccess" type="success" horizontal-align="right" text="Tarefa criada!"> </paper-toast>
+        <paper-toast id="toastError" type="error" horizontal-align="right" text="Erro ao criar tarefa"> </paper-toast>
+        <iron-ajax
+            auto="[[opened]]"
+            url="/api/workgroups"
+            withCredentials
+            last-response="{{workgroups}}">
+        </iron-ajax>
+    </template>
+    <script>
+        Polymer({
+            is: 'qa-task-form',
+            properties: {
+                houseId: {
+                    type: Number,
+                    notify: true,
+                    readonly: true
+                },
+                flowId: {
+                    type: Number,
+                    notify: true,
+                    readonly: true
+                },
+                origem: {
+                    type: String
+                },
+                origemId: {
+                    type: String
+                },
+                destinatario: {
+                    type: Object,
+                    notify: true,
+                    observer: 'translateUserObject'
+                },
+                selectedTab: {
+                    type: Number,
+                    value: 0
+                },
+                opened: {
+                    type: Boolean,
+                    value: false
+                },
+                workgroupIndex: Number,
+                workgroups: {
+                    type: Array,
+                    value: function() {
+                        return [];
+                    }
+                }
+            },
+            behaviors: [ QuintoAndar.UserBehavior ],
+            ready: function() {
+                var self = this;
+                var form = this.$.taskForm;
+                form.addEventListener('iron-form-presubmit', function(event) {
 
-	</script>
+                    var assigneeLabel = self.$$('paper-tabs').selectedItem.outerText;
+                    var body = this.request.body;
+
+                    if (assigneeLabel == 'Para outro') {
+                        var assigneeId = self.$.assigneeSearch.value;
+                        body['assigneeId'] = assigneeId;
+                    } else if (assigneeLabel == 'Para uma equipe') {
+                        var workgroupId = self.workgroups[self.workgroupIndex]._id;
+                        body['workgroupId'] = workgroupId;
+                    } else {
+                        body['assigneeId'] = undefined;
+                        body['workgroupId'] = undefined;
+                    }
+
+                    body['origem'] = self.origem;
+                    body['origemId'] = self.origemId;
+                    body['origemData'] = moment().format();
+                    body['imovelId'] = self.houseId;
+                    body['fluxoLocacaoId'] = self.flowId;
+                    body['destinatario'] = self.destinatario;
+                });
+                form.addEventListener('iron-form-response', function(event) {
+                    if (event.detail.succeeded) {
+                        self.$.dialog.close();
+                        self.$.toastSuccess.open();
+                    } else {
+                        self.$.toastError.open();
+                    }
+                });
+            },
+            handleSubmit: function() {
+                this.$.taskForm.submit();
+            },
+            handleOpen: function() {
+                this.set('selectedTab', 0);
+                this.$.taskForm.reset();
+                this.$.dialog.open();
+            },
+            translateUserObject: function(user) {
+                user['nome'] = user.name;
+                user['telefonePrincipal'] = user['primary_phone'];
+                user['email'] = user['primary_email'];
+                return user;
+            },
+            isEqual: function(x, y) {
+                return x == y;
+            }
+        });
+
+    </script>
 
 </dom-module>
