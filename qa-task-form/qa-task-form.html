@@ -137,7 +137,7 @@
             </form>
             <div class="buttons" >
                 <paper-button dialog-dismiss qa-style>Cancelar</paper-button>
-                <paper-button submit raised qa-style on-tap="handleSubmit">Enviar</paper-button>
+                <paper-button id="submit" submit raised qa-style on-tap="handleSubmit">Enviar</paper-button>
             </div>
         </paper-dialog>
         <paper-toast id="toastSuccess" type="success" horizontal-align="right" text="Tarefa criada!"> </paper-toast>
@@ -216,14 +216,17 @@
                     body['imovelId'] = self.houseId;
                     body['fluxoLocacaoId'] = self.flowId;
                     body['destinatario'] = self.destinatario;
+
+                    self.$.submit.set('disabled', true);
                 });
                 form.addEventListener('iron-form-response', function(event) {
-                    if (event.detail.succeeded) {
-                        self.$.dialog.close();
-                        self.$.toastSuccess.open();
-                    } else {
-                        self.$.toastError.open();
-                    }
+                    self.$.dialog.close();
+                    self.$.toastSuccess.open();
+                    self.$.submit.set('disabled', false);
+                });
+                form.addEventListener('iron-form-error', function(event) {
+                    self.$.toastError.open();
+                    self.$.submit.set('disabled', false);
                 });
             },
             handleSubmit: function() {
