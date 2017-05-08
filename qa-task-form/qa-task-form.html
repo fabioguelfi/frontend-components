@@ -40,6 +40,7 @@
                 }
             }
             paper-material {
+                @apply(--layout-vertical);
                 margin-bottom: 12px;
                 padding-bottom: 12px;
             }
@@ -52,8 +53,11 @@
             qa-input-user {
                 display: block;
             }
+            iron-pages {
+                @apply(--layout-vertical);
+            }
             paper-dropdown-menu {
-                width: 100%;
+                @apply(--layout-self-stretch);
                 margin-top: 8px;
                 --paper-input-suffix: {
                     padding: 8px;
@@ -110,14 +114,30 @@
                     </iron-pages>
                 </paper-material>
                 <paper-material>
-                    <qa-input-user
-                        id="userSearch"
-                        name="destinatarioId"
-                        user-name="{{userName}}"
-                        label="Cliente"
-                        user="{{destinatario}}"
-                        roles="">
-                    </qa-input-user>
+                    <template is="dom-if" if="[[!recipients.length]]">
+                        <qa-input-user
+                            id="userSearch"
+                            user-name="{{userName}}"
+                            label="Cliente"
+                            user="{{destinatario}}"
+                            roles="">
+                        </qa-input-user>
+                    </template>
+                    <template is="dom-if" if="[[recipients.length]]">
+                        <paper-dropdown-menu
+                            qa-style
+                            label="Cliente"
+                            required="[[recipients.length]]"
+                            error-message="Informe cliente de destino">
+                            <paper-listbox
+                                class="dropdown-content"
+                                selected="{{recipientIndex}}">
+                                <template is="dom-repeat" items="[[recipients]]">
+                                    <paper-item>[[item.label]]</paper-item>
+                                </template>
+                            </paper-listbox>
+                        </paper-dropdown-menu>
+                    </template>
                     <paper-input
                         label="Tipo de tarefa"
                         name="assunto"
@@ -188,6 +208,13 @@
                     value: function() {
                         return [];
                     }
+                },
+                recipientIndex: Number,
+                recipients: {
+                    type: Array,
+                    value: function() {
+                        return [];
+                    }
                 }
             },
             behaviors: [ QuintoAndar.UserBehavior ],
@@ -208,6 +235,12 @@
                     } else {
                         body['assigneeId'] = undefined;
                         body['workgroupId'] = undefined;
+                    }
+
+                    if (self.recipients.length) {
+                        body['destinatarioId'] = self.recipients[self.recipientIndex].id;
+                    } else {
+                        body['destinatarioId'] = self.$$('#userSearch').value;
                     }
 
                     body['origem'] = self.origem;
@@ -234,6 +267,9 @@
             },
             handleOpen: function() {
                 this.set('selectedTab', 0);
+                this.querySelectorAll('paper-listbox').forEach(function(elem) {
+                    elem.set('selected', null);
+                });
                 this.$.taskForm.reset();
                 this.$.dialog.open();
             },
