@@ -6,6 +6,7 @@
 <link rel="import" href="../../../bower_components/paper-item/paper-item.html">
 <link rel="import" href="../../../bower_components/paper-input/paper-input.html">
 <link rel="import" href="../../../bower_components/paper-icon-button/paper-icon-button.html">
+<link rel="import" href="../../../bower_components/iron-validator-behavior/iron-validator-behavior.html">
 
 <link rel="import" href="../../qa-loading/v1/qa-loading.html">
 <link rel="import" href="./qa-input-styles.html">
@@ -28,10 +29,12 @@
 				background: white;
 			}
 		</style>
+		<qa-input-user-validator validator-name="validator"></qa-input-user-validator>
 		<paper-input
 			id="name"
 			on-input="doSearch"
 			label="[[label]]"
+			validator="validator"
 			readonly="[[readonly]]"
 			required="[[required]]"
 			error-message="[[errorMessage]]"
@@ -72,6 +75,11 @@
 	<script>
 
 		Polymer({
+			is: 'qa-input-user-validator',
+			behaviors: [ Polymer.IronValidatorBehavior ]
+		});
+
+		Polymer({
 			is: 'qa-input-user',
 			properties: {
 				label: String,
@@ -82,7 +90,8 @@
 				},
 				userName: {
 					type: String,
-					notify: true
+					notify: true,
+					observer: 'onChangeUserName'
 				},
 				user: {
 					type: Object,
@@ -124,14 +133,26 @@
 					value: false
 				}
 			},
+			ready: function() {
+				var validator = this.$$('qa-input-user-validator');
+				var input = this.$$('paper-input');
+
+				validator.validate = function() {
+					return !this.required || Boolean(this.user);
+				}.bind(this);
+			},
+			doReset: function() {
+				this.set('message', '');
+				this.set('value', undefined);
+				this.set('user', undefined);
+			},
 			doSearch: function(event) {
 
 				var input = this.$.name.$$('input');
 				var value = input.value || '';
 				var ajax = this.$.ajax;
 
-				this.set('message', '');
-				this.set('value', undefined);
+				this.doReset();
 
 				ajax.activeRequests.forEach(function(request) {
 					request.abort();
@@ -151,7 +172,13 @@
 			},
 			handleResponse: function(event) {
 				var results = event.detail.response.users.items;
-				this.set('results', results);
+				var users = results.map(function(user) {
+					user['nome'] = user.name;
+					user['telefonePrincipal'] = user['primary_phone'];
+					user['email'] = user['primary_email'];
+					return user;
+				});
+				this.set('results', users);
 				if (!this.results.length) {
 					this.set('message', 'Nenhum usuário encontrado');
 				}
@@ -177,6 +204,9 @@
 				this.set('value', user.id);
 				this.set('invalid', false);
 				this.$.results.close();
+			},
+			onChangeUserName: function(userName) {
+				this.doReset();
 			},
 			onChangeValue: function(value) {
 				var icon = this.$$('paper-icon-button');
