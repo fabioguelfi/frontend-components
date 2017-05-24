@@ -77,9 +77,9 @@
                 action="/api/tasks/manual" content-type="application/json">
                 <paper-material>
                     <paper-tabs qa-style selected="{{selectedTab}}">
-                        <paper-tab>Para mim</paper-tab>
-                        <paper-tab>Para outro</paper-tab>
-                        <paper-tab>Para uma equipe</paper-tab>
+                        <template is="dom-repeat" items="[[assigneeTabs]]">
+                            <paper-tab>[[item]]</paper-tab>
+                        </template>
                     </paper-tabs>
                     <iron-pages selected="[[selectedTab]]">
                         <paper-input
@@ -194,6 +194,12 @@
                     type: Object,
                     notify: true
                 },
+                assigneeTabs: {
+                    type: Array,
+                    value: function() {
+                        return [ 'Para mim', 'Para outro', 'Para uma equipe' ];
+                    }
+                },
                 selectedTab: {
                     type: Number,
                     value: 0
@@ -223,35 +229,43 @@
                 var form = this.$.taskForm;
                 form.addEventListener('iron-form-presubmit', function(event) {
 
-                    var assigneeLabel = self.$$('paper-tabs').selectedItem.outerText;
-                    var body = this.request.body;
+                    try {
+                        var body = this.request.body;
 
-                    if (assigneeLabel == 'Para outro') {
-                        var assigneeId = self.$.assigneeSearch.value;
-                        body['assigneeId'] = assigneeId;
-                    } else if (assigneeLabel == 'Para uma equipe') {
-                        var workgroupId = self.workgroups[self.workgroupIndex]._id;
-                        body['workgroupId'] = workgroupId;
-                    } else {
-                        body['assigneeId'] = undefined;
-                        body['workgroupId'] = undefined;
+                        if (self.selectedTab == 0) {
+                            body['assigneeId'] = undefined;
+                            body['workgroupId'] = undefined;
+                        } else if (self.selectedTab == 1) {
+                            var assigneeId = self.$.assigneeSearch.value;
+                            body['assigneeId'] = assigneeId;
+                        } else if (self.selectedTab == 2) {
+                            var workgroupId = self.workgroups[self.workgroupIndex]._id;
+                            body['workgroupId'] = workgroupId;
+                        } else {
+                            console.error("It shouldn't be here...", self.selectedTab);
+                        }
+
+                        if (self.recipients.length) {
+                            body['destinatario'] = self.recipients[self.recipientIndex];
+                            body['destinatarioId'] = body['destinatario'].id;
+                        } else {
+                            body['destinatarioId'] = self.$$('#userSearch').value;
+                            body['destinatario'] = self.destinatario;
+                        }
+
+                        body['origem'] = self.origem;
+                        body['origemId'] = self.origemId;
+                        body['origemData'] = moment().format();
+                        body['imovelId'] = self.houseId;
+                        body['fluxoLocacaoId'] = self.flowId;
+
+                        self.$.submit.set('disabled', true);
+
+                    } catch (e) {
+                        console.error(e);
+                        event.preventDefault();
+                        self.$.toastError.open();
                     }
-
-                    if (self.recipients.length) {
-                        body['destinatario'] = self.recipients[self.recipientIndex];
-                        body['destinatarioId'] = body['destinatario'].id;
-                    } else {
-                        body['destinatarioId'] = self.$$('#userSearch').value;
-                        body['destinatario'] = self.destinatario;
-                    }
-
-                    body['origem'] = self.origem;
-                    body['origemId'] = self.origemId;
-                    body['origemData'] = moment().format();
-                    body['imovelId'] = self.houseId;
-                    body['fluxoLocacaoId'] = self.flowId;
-
-                    self.$.submit.set('disabled', true);
                 });
                 form.addEventListener('iron-form-response', function(event) {
                     self.$.dialog.close();
