@@ -18,7 +18,7 @@
 		<style include="qa-v4-header-style"></style>
 
         <paper-menu-button>
-            <paper-icon-button icon="icons:menu" class="dropdown-trigger" horizontal-offset=-105 no-overlap></paper-icon-button>
+            <paper-icon-button icon="icons:menu" class="dropdown-trigger" no-overlap></paper-icon-button>
             <paper-listbox class="dropdown-content">
                 <div class="menu-header layout">
                     <div class="user-info">
@@ -28,11 +28,12 @@
                 </div>
                 <div class="menu-content">
                     <template is="dom-repeat" items="[[views]]">
-                        <paper-item on-tap="onTapTab">{{item.label}}</paper-item>
+                        <paper-item on-tap="onTapItem" class$="[[getItemClass(item.id)]]">{{item.label}}</paper-item>
                     </template>
                 </div>
             </paper-listbox>
         </paper-menu-button>
+        <div class="header-title">[[selectedViewLabel]]</div>
 		<div class="layout horizontal flex center-justified">
 			<content></content>
 		</div>
@@ -50,23 +51,19 @@
 					type: String,
 					value: ''
 				},
+                selectedViewLabel: {
+                    type: String,
+                    value: ''
+                },
 				views: {
 					type: Array,
 					value: function() {
-						return [{
-							id: 'ustasks',
-							label: 'Tarefas',
-							url: '@@USTASKS_URL'
-						}, {
-							id: 'reports',
-							label: 'Relatórios',
-							url: '@@USTASKS_URL/relatorios'
-						}];
+						return [];
 					}
 				}
 			},
 			behaviors: [ QuintoAndar.UserBehavior ],
-			observers: [ 'selectView(selectedView, views)' ],
+			observers: [ 'selectedViewChanged(selectedView, views)' ],
 			selectView: function() {
 				this.views.forEach(function(view, index) {
 					if (view.id == this.selectedView) {
@@ -74,10 +71,26 @@
 					}
 				}, this);
 			},
-			onTapTab: function(event) {
+            selectedViewChanged: function(selectedView, views) {
+                this.selectView();
+                this.setSelectedViewLabel();
+            },
+            setSelectedViewLabel: function() {
+                this.views.forEach(function(view, index) {
+                    if (view.id == this.selectedView) {
+                        this.set('selectedViewLabel', view.label);
+                    }
+                }, this);
+            },
+			onTapItem: function(event) {
 				window.open(event.model.item.url, '_blank');
 				this.async(this.selectView, 1);
 			},
+            getItemClass: function(viewId) {
+                if (this.selectedView == viewId) {
+                    return 'current-view';
+                }
+            },
 			attached: function() {
 				if (!this.user) {
 					var auth_url = '@@MAIN_URL/auth/login?redirect=';
@@ -87,6 +100,4 @@
 			}
 		});
 	</script>
-
 </dom-module>
-
