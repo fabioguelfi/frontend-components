@@ -1,0 +1,92 @@
+<link rel="import" href="../../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../../bower_components/paper-tabs/paper-tabs.html">
+<link rel="import" href="../../../bower_components/paper-tabs/paper-tab.html">
+<link rel="import" href="../../../bower_components/iron-image/iron-image.html">
+<link rel="import" href="../../../bower_components/paper-menu-button/paper-menu-button.html">
+<link rel="import" href="../../../bower_components/paper-icon-button/paper-icon-button.html">
+<link rel="import" href="../../../bower_components/paper-listbox/paper-listbox.html">
+<link rel="import" href="../../../bower_components/iron-icons/iron-icons.html">
+<link rel="import" href="../../../bower_components/iron-icon/iron-icon.html">
+<link rel="import" href="../../qa-behavior/v1/qa-user-behavior.html">
+<link rel="import" href="../../qa-styles/v1/qa-styles.html">
+<link rel="import" href="../../qa-header/v4/qa-header-style.html">
+
+<dom-module id="qa-header">
+	<template>
+		<style include="iron-flex iron-flex-alignment"></style>
+		<style include="qa-styles"></style>
+		<style include="qa-v4-header-style"></style>
+
+        <paper-menu-button>
+            <paper-icon-button icon="icons:menu" class="dropdown-trigger" horizontal-offset=-105 no-overlap></paper-icon-button>
+            <paper-listbox class="dropdown-content">
+                <div class="menu-header layout">
+                    <div class="user-info">
+                        <p>{{user.name}}</p>
+                        <p class="user-email">{{user.email}}</p>
+                    </div>
+                </div>
+                <div class="menu-content">
+                    <template is="dom-repeat" items="[[views]]">
+                        <paper-item on-tap="onTapTab">{{item.label}}</paper-item>
+                    </template>
+                </div>
+            </paper-listbox>
+        </paper-menu-button>
+		<div class="layout horizontal flex center-justified">
+			<content></content>
+		</div>
+		<iron-image alt="Quinto Andar" src="https://d406l28ic3dl5.cloudfront.net/5a-logo.svg"></iron-image>
+	</template>
+
+	<script src="../../../bower_components/jwt-decode/build/jwt-decode.min.js"></script>
+
+	<script>
+		Polymer({
+			is: "qa-header",
+			properties: {
+				user: Object,
+				selectedView: {
+					type: String,
+					value: ''
+				},
+				views: {
+					type: Array,
+					value: function() {
+						return [{
+							id: 'ustasks',
+							label: 'Tarefas',
+							url: '@@USTASKS_URL'
+						}, {
+							id: 'reports',
+							label: 'Relatórios',
+							url: '@@USTASKS_URL/relatorios'
+						}];
+					}
+				}
+			},
+			behaviors: [ QuintoAndar.UserBehavior ],
+			observers: [ 'selectView(selectedView, views)' ],
+			selectView: function() {
+				this.views.forEach(function(view, index) {
+					if (view.id == this.selectedView) {
+						this.$$('paper-listbox').select(index);
+					}
+				}, this);
+			},
+			onTapTab: function(event) {
+				window.open(event.model.item.url, '_blank');
+				this.async(this.selectView, 1);
+			},
+			attached: function() {
+				if (!this.user) {
+					var auth_url = '@@MAIN_URL/auth/login?redirect=';
+					var current_href = encodeURIComponent(window.location.href);
+					window.location.href = auth_url + current_href;
+				}
+			}
+		});
+	</script>
+
+</dom-module>
+

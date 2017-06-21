@@ -1,0 +1,78 @@
+<dom-module id="qa-v4-header-style">
+    <template>
+        <style>
+            :host {
+				@apply(--layout-horizontal);
+				@apply(--layout-center);
+				@apply(--layout-flex);
+				@apply(--layout-wrap);
+			}
+			paper-tab {
+				--paper-tab-ink: var(--qa-text-color);
+				--paper-tab: {
+					font-size: 15px;
+					font-weight: bold;
+					color: var(--qa-text-color);
+				};
+			}
+            paper-menu-button {
+                --paper-menu-button-dropdown: {
+                    left: 0 !important;
+                    top: 0 !important;
+                    outline:none !important;
+                };
+                --paper-menu-button-content: {
+                    overflow-y: hidden !important;
+                    height: 100vh;
+                    outline:none !important;
+                };
+                outline:none !important;
+            }
+            .dropdown-content {
+                padding-top: 0;
+                width: 320px;
+            }
+            .dropdown-content .menu-header {
+                font-size: 14px;
+                line-height: 16px;
+                color: rgba(0,0,0,0.54);
+                height: 64px;
+                background-color: #E7EFF6;
+                user-select: none !important;
+                -moz-user-select: none !important;
+                -webkit-user-select: none !important;
+                display: flex;
+                justify-content: space-around;
+                align-items: flex-end;
+                outline:none;
+                padding-bottom: 20px;
+            }
+            .dropdown-content .menu-header .user-info {
+                line-height: 20px;
+            }
+            .dropdown-content .menu-header .user-info p {
+                margin: 0;
+            }
+            .dropdown-content .menu-header .user-info .user-email {
+                font-weight: 400;
+            }
+            .dropdown-content .menu-content {
+                font-weight: 500;
+                padding-top: 30px;
+                outline:none;
+            }
+            .dropdown-content .menu-content paper-item {
+                color: #000;
+                opacity: 0.87;
+                font-size: 13px;
+                font-weight: 500;
+                padding-left: 50px;
+                --paper-item-selected-weight: 500;
+            }
+            .dropdown-content .menu-content paper-item:hover {
+                cursor: pointer;
+                background-color: #F0F0F0;
+            }
+        </style>
+    </template>
+</dom-module>
