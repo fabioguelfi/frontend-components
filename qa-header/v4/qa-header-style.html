@@ -2,6 +2,7 @@
     <template>
         <style>
             :host {
+                padding-right: 12px;
 				@apply(--layout-horizontal);
 				@apply(--layout-center);
 				@apply(--layout-flex);
@@ -15,10 +16,13 @@
 					color: var(--qa-text-color);
 				};
 			}
-            .header-title {
+            .title span {
                 font-size: 20px;
                 font-weight: 500;
                 padding-left: 20px;
+            }
+            iron-image {
+                pointer-events: none;
             }
             paper-menu-button {
                 --paper-menu-button-dropdown: {
