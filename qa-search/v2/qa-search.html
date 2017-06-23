@@ -21,6 +21,7 @@
 <link rel="import" href="./qa-search-person-item.html">
 <link rel="import" href="./qa-search-lead-item.html">
 <link rel="import" href="./qa-search-task-item.html">
+<link rel="import" href="./qa-search-preproposta-item.html">
 
 <dom-module id="qa-search">
 
@@ -177,7 +178,7 @@
 						<iron-icon icon="[[types.5.icon]]" item-icon></iron-icon>
 						<div>
 							<template is="dom-repeat" items="[[result.prepropostas.items]]">
-								<qa-search-task-item item="[[item]]" on-tap="onTap"></qa-search-task-item>
+								<qa-search-preproposta-item item="[[item]]" on-tap="onTap"></qa-search-preproposta-item>
 							</template>
 							<div class="footer" on-tap="onAllPrepropostasTap">
 								{{getMessage('prepropostas', value, result.prepropostas.count)}}
