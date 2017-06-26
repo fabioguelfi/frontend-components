@@ -47,6 +47,9 @@
 				--qa-agendamento-color: var(--paper-indigo-700);
 				--qa-afiliado-color: var(--paper-blue-700);
 				--qa-pre-proposta-color: var(--paper-light-blue-700);
+				--qa-aprovada-color: var(--paper-green-700);
+				--qa-em-negociacao-color: var(--paper-yellow-700);
+				--qa-rejeitada-color: var(--paper-red-700);
 				/* --qa-fase-color: var(--paper-cyan-700); */
 				--qa-negociacao-color: var(--paper-teal-700);
 				--qa-inquilino-color: var(--paper-purple-700);
@@ -133,6 +136,21 @@
 
 			.apolice { /* @phase */
 				background-color: var(--qa-apolice-color);
+				color: rgba(255, 255, 255, 0.7);
+			}
+			
+			.aprovada { /* @preproposta-status */
+				background-color: var(--qa-aprovada-color);
+				color: rgba(255, 255, 255, 0.7);
+			}
+			
+			.em-negociacao { /* @preproposta-status */
+				background-color: var(--qa-em-negociacao-color);
+				color: rgba(255, 255, 255, 0.7);
+			}
+			
+			.rejeitada { /* @preproposta-status */
+				background-color: var(--qa-rejeitada-color);
 				color: rgba(255, 255, 255, 0.7);
 			}
 
