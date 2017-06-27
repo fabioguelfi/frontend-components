@@ -1,0 +1,74 @@
+<link rel="import" href="../../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../qa-badge/v1/qa-badge.html">
+<link rel="import" href="./qa-search-item-styles.html">
+
+<dom-module id="qa-search-preproposta-item">
+	<template strip-whitespace>
+		<style include="iron-flex iron-flex-alignment"></style>
+		<style include="qa-styles qa-search-item-styles"></style>
+		<style is="custom-style">
+			:host {
+				@apply(--layout-horizontal);
+			}
+			:host > div:first-of-type {
+				@apply(--layout-flex);
+			}
+			.badges {
+				@apply(--layout-horizontal);
+				margin-top: 0.4em;
+			}
+			qa-badge + qa-badge {
+				margin-left: 0.4em;
+			}
+		</style>
+		<div>
+			<div class="label">
+                Proposta -
+                <template is="dom-if" if="{{item.code}}">
+                    <span>{{item.code}}</span>
+                </template>
+                <template is="dom-if" if="{{!item.code}}">
+                    <span>#{{item.id}}</span>
+                </template>
+            </div>
+            <div>
+                <span>{{item.tenant_name}} * </span>
+                <span>{{item.tenant_primary_phone}} * </span>
+                <span>{{item.tenant_primary_email}}</span>
+            </div>
+			<div>
+				<span>{{item.address}}</span>
+				<template is="dom-if" if="{{item.street_number}}">, </template>
+				<span>{{item.street_number}} </span>
+				<template is="dom-if" if="{{item.address_complement}}">
+					<span>- {{item.address_complement}}</span>
+				</template>
+				<template is="dom-if" if="{{item.neighborhood}}">
+					<span>* {{item.neighborhood}} </span>
+				</template>
+				<template is="dom-if" if="{{item.city}}">
+					<span>* {{item.city}} </span>
+				</template>
+			</div>
+			<div class="badges">
+				<qa-badge label="{{item.status}}" full></qa-badge>
+			</div>
+		</div>
+	</template>
+	<script>
+		Polymer({
+			is: 'qa-search-preproposta-item',
+			properties: {
+				item: Object
+			},
+			getTitle: function(item) {
+				var type = item.property_type
+					.replace(/([A-Z])/g, ' $1')
+					.replace('Apartamento', 'Apto');
+				var title = (item.code ? item.code : '#' + item.id)
+                    + ' - ' + type;
+				return title;
+			}
+		});
+	</script>
+</dom-module>
