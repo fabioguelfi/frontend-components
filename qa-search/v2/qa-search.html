@@ -7,6 +7,7 @@
 <link rel="import" href="../../../bower_components/iron-icons/iron-icons.html">
 <link rel="import" href="../../../bower_components/iron-icons/social-icons.html">
 <link rel="import" href="../../../bower_components/iron-icons/notification-icons.html">
+<link rel="import" href="../../../bower_components/iron-icons/editor-icons.html">
 <link rel="import" href="../../../bower_components/paper-item/paper-icon-item.html">
 <link rel="import" href="../../../bower_components/paper-menu/paper-menu.html">
 <link rel="import" href="../../../bower_components/paper-menu-button/paper-menu-button.html">
@@ -20,6 +21,7 @@
 <link rel="import" href="./qa-search-person-item.html">
 <link rel="import" href="./qa-search-lead-item.html">
 <link rel="import" href="./qa-search-task-item.html">
+<link rel="import" href="./qa-search-preproposta-item.html">
 
 <dom-module id="qa-search">
 
@@ -171,6 +173,19 @@
 						</div>
 					</div>
 				</template>
+				<template is="dom-if" if="[[selectedType.showPrepropostas]]">
+					<div class="section">
+						<iron-icon icon="[[types.5.icon]]" item-icon></iron-icon>
+						<div>
+							<template is="dom-repeat" items="[[result.prepropostas.items]]">
+								<qa-search-preproposta-item item="[[item]]" on-tap="onTap"></qa-search-preproposta-item>
+							</template>
+							<div class="footer" on-tap="onAllPrepropostasTap">
+								{{getMessage('prepropostas', value, result.prepropostas.count)}}
+							</div>
+						</div>
+					</div>
+				</template>
 			</qa-loading>
 		</iron-dropdown>
 		<iron-ajax
@@ -247,6 +262,7 @@
 							showPeople: true,
 							showProperties: true,
 							showLeads: true,
+							showPrepropostas: true,
 							icon: 'search'
 						}, {
 							id: 'users',
@@ -272,6 +288,12 @@
 							label: 'Tarefas',
 							showTasks: true,
 							icon: 'assignment-turned-in'
+						}, {
+							id: 'prepropostas',
+							size: 10,
+							label: 'Propostas',
+							showPrepropostas: true,
+							icon: 'editor:insert-drive-file'
 						}];
 					}
 				}
@@ -405,6 +427,10 @@
 				var url = this.result.fullContentLinks['tasks'];
 				window.open(url, '_blank');
 			},
+			onAllPrepropostasTap: function() {
+				var url = this.result.fullContentLinks['prepropostas'];
+				window.open(url, '_blank');
+			},
 			onTap: function(event) {
 				window.open(event.model.item.viewUrl, '_blank');
 			}
@@ -412,4 +438,3 @@
 
 	</script>
 </dom-module>
-
