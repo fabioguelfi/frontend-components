@@ -39,19 +39,31 @@
                 width: 320px;
             }
             .dropdown-content .menu-header {
-                font-size: 14px;
-                line-height: 16px;
+                font-size: 15px;
+                line-height: 20px;
                 color: rgba(0,0,0,0.54);
-                height: 160px;
-                background-color: #E7EFF6;
+                height: 145px;
+                background-color: #F6F6F7;
                 display: flex;
-                justify-content: space-around;
+                flex-wrap: wrap;
+                justify-content: flex-start;
                 align-items: flex-end;
                 outline:none;
-                padding-bottom: 20px;
+                padding-bottom: 12px;
+                padding-left: 18px;
+            }
+            .dropdown-content .menu-header .user-icon-wrapper {
+                width: 100%;
+                padding-top: 22px;
+            }
+            .dropdown-content .menu-header .user-icon {
+                --iron-icon-width: 55px;
+                --iron-icon-height: 55px;
+                --iron-icon-fill-color: #2691CA;
             }
             .dropdown-content .menu-header .user-info {
-                line-height: 20px;
+                padding-left: 4px;
+                line-height: 21px;
             }
             .dropdown-content .menu-header .user-info p {
                 margin: 0;
@@ -60,23 +72,25 @@
                 font-weight: 400;
             }
             .dropdown-content .menu-content {
+                padding-top: 16px;
                 font-weight: 500;
                 outline:none;
             }
             .dropdown-content .menu-content paper-item {
-                color: #000;
+                color: #464646;
                 opacity: 0.87;
                 font-size: 13px;
                 font-weight: 500;
                 padding-left: 50px;
                 --paper-item-selected-weight: 500;
             }
-            .dropdown-content .menu-content paper-item.current-view {
-                color: #03a9f4;
-            }
             .dropdown-content .menu-content paper-item:hover {
                 cursor: pointer;
                 background-color: #F0F0F0;
+            }
+            .dropdown-content .menu-content paper-item.current-view {
+                color: #2196F3;
+                background-color: #A5EAFF;
             }
         </style>
     </template>

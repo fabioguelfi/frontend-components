@@ -21,6 +21,9 @@
             <paper-icon-button icon="icons:menu" class="dropdown-trigger" no-overlap></paper-icon-button>
             <paper-listbox class="dropdown-content">
                 <div class="menu-header layout">
+					<div class="user-icon-wrapper">
+						<iron-icon class="user-icon" icon="icons:account-circle"></iron-icon>
+					</div>
                     <div class="user-info">
                         <p>{{user.name}}</p>
                         <p class="user-email">{{user.email}}</p>
@@ -28,7 +31,7 @@
                 </div>
                 <div class="menu-content">
                     <template is="dom-repeat" items="[[views]]">
-                        <paper-item on-tap="onTapItem" class$="[[getItemClass(item.id)]]">{{item.label}}</paper-item>
+                        <paper-item on-tap="onTapItem" class$="[[getItemClass(item.id)]]"><a id="aa">{{item.label}}</a></paper-item>
                     </template>
                 </div>
             </paper-listbox>
@@ -87,7 +90,11 @@
                 }, this);
             },
 			onTapItem: function(event) {
-				window.open(event.model.item.url, '_blank');
+				if (event.detail.sourceEvent.ctrlKey) {
+					window.open(event.model.item.url, '_blank');
+				} else {
+					window.open(event.model.item.url, '_self');
+				}
 				this.async(this.selectView, 1);
 			},
             getItemClass: function(viewId) {
@@ -96,6 +103,7 @@
                 }
             },
 			attached: function() {
+				this.user = {name: 'coiso sei la', email: 'alguma coisa bla'};
 				if (!this.skipAuth && !this.user) {
 					var auth_url = '@@MAIN_URL/auth/login?redirect=';
 					var current_href = encodeURIComponent(window.location.href);
