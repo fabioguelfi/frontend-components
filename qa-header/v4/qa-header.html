@@ -31,7 +31,7 @@
                 </div>
                 <div class="menu-content">
                     <template is="dom-repeat" items="[[views]]">
-                        <paper-item on-tap="onTapItem" class$="[[getItemClass(item.id)]]"><a id="aa">{{item.label}}</a></paper-item>
+                        <paper-item data-url="[[item.url]]" on-tap="onTapItem" class$="[[getItemClass(item.id)]] item-link">{{item.label}}</paper-item>
                     </template>
                 </div>
             </paper-listbox>
@@ -90,12 +90,18 @@
                 }, this);
             },
 			onTapItem: function(event) {
-				if (event.detail.sourceEvent.ctrlKey) {
+				var sourceEvent = event.detail.sourceEvent;
+				if (sourceEvent.ctrlKey) {
 					window.open(event.model.item.url, '_blank');
 				} else {
 					window.open(event.model.item.url, '_self');
 				}
 				this.async(this.selectView, 1);
+			},
+			onMiddleClickItem: function(event) {
+				if (event.which === 2) {
+					window.open(event.target.dataUrl, '_blank');
+				}
 			},
             getItemClass: function(viewId) {
                 if (this.selectedView == viewId) {
@@ -109,6 +115,9 @@
 					var current_href = encodeURIComponent(window.location.href);
 					window.location.href = auth_url + current_href;
 				}
+				this.querySelectorAll('.item-link').forEach(function(tabLink) {
+					tabLink.addEventListener('mouseup', this.onMiddleClickItem);
+				}, this);
 			}
 		});
 	</script>
