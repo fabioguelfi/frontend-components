@@ -11,6 +11,25 @@
 	<template>
 		<iron-a11y-keys target="[[cmdPalTarget]]" keys="esc" on-keys-pressed="closeCommandPallete"></iron-a11y-keys>
 		<iron-a11y-keys target="[[cmdPalTarget]]" keys="ctrl+alt+3" on-keys-pressed="openCommandPallete" stop-keyboard-event-propagation="true"></iron-a11y-keys>
+		<paper-dialog id="dlgOnboardingShortcuts" modal="true" opened="[[!crmShortcutsOnboarding]]">
+			<h1>YES, nós temos atalhos!</h1>
+			<p>
+				Para facilitar sua vida, nós colocamos atalhos dentro do CRM.<br />
+				Veja alguns deles:
+			</p>
+			<ul>
+				<li><span class="shortcut">CTRL+ALT+3</span>Abrir Busca/Lista de atalhos</li>
+				<template is="dom-repeat" items="[[allCommands]]">
+					<template is="dom-if" if="[[!item.depends]]">
+						<li><span class="shortcut">[[item.shortcut]]</span>[[item.description]]</li>
+					</template>
+				</template>
+			</ul>
+			<p>
+				Lembre-se: para pesquisar os atalhos disponíveis você pode usar o "CTRL+ALT+3"
+			</p>
+			<paper-button raised active on-tap="closeOnboarding">Ok, entendi!</paper-button>
+		</paper-dialog>
 		<template is="dom-repeat" items="[[listaComandos]]">
 			<iron-a11y-keys target="[[cmdPalTarget]]" keys="[[item.shortcut]]" on-keys-pressed="_actOnShortcut" data-command-index="[[index]]">
 			</iron-a11y-keys>
@@ -24,7 +43,22 @@
 			</paper-listbox>
 		</paper-dialog>
 		<style is="custom-style">
-			paper-item .shortcut {
+			#dlgOnboardingShortcuts ul,
+			#dlgOnboardingShortcuts li {
+				list-style: none;
+			}
+			#dlgOnboardingShortcuts li {
+				display:block;
+				padding: 5px 10px;
+			}
+			#dlgOnboardingShortcuts paper-button {
+				background-color: #00A2F6;
+				color: #ffffff;
+				font-weight: bold;
+				padding: 10px 22px;
+				margin-left: 24px;
+			}
+			paper-item .shortcut, li .shortcut {
 				border-radius: 5px;
 				background-color: #888888;
 				color: #ffffff;
@@ -68,28 +102,54 @@
 				cmdPalTarget: {
 					type: Object
 				},
+				commandDisplayMaxCount : 5,
 				listaFiltrada: Array,
 				allCommands: Array,
 				listaComandos: {
 					type: Array,
-					computed: 'availableCommands(allCommands)'
+					computed: 'availableCommands(allCommands,extraCommands)'
 				},
 				commandFilter : { type : String, observer: '_commandFiltered' },
 				selectedCommandItem: Object,
 				selectedCommand: {
 					type: Object,
 					computed: 'getSelectedCommand(selectedCommandItem, listaFiltrada)'
+				},
+				extraCommands: {
+					type: Array,
+					value: []
+				},
+				crmShortcutsOnboarding: {
+					type : Boolean,
+					observer: '_shortcutsOnboarding',
+					value: false
 				}
 			},
 			behaviors: [ QuintoAndar.Behavior ],
+			closeOnboarding: function(){
+				this.set("crmShortcutsOnboarding",true)
+			},
+			_shortcutsOnboarding: function() {
+				if (this.crmShortcutsOnboarding) {
+					var crmShortcut = document.cookie.match(new RegExp("(; *)?crmShortcutsOnboarding=([^;]*)"));
+					if (!crmShortcut || crmShortcut[1] != "yes") {
+						// document.cookie = "crmShortcutsOnboarding=yes; path=/";
+						// console.info("COOKED!")
+					}
+				}
+			},
 			ready: function() {
+				var crmShortcut = document.cookie.match(new RegExp("(; *)?crmShortcutsOnboarding=([^;]*)"));
+				if (crmShortcut && crmShortcut[1] == "yes") {
+					this.set("crmShortcutsOnboarding",true)
+				}
+				
 				this.set('cmdPalTarget',document.body)
-				console.info(this.cmdPalTarget)
 				this.set('allCommands',[
 					{description:"Abrir página apartamento", shortcut:"ctrl+alt+a", depends: ["house"], action: this.openUsPropertiesUrl('/imoveis/',['house','id'])},
 					{description:"Abrir página inquilino", shortcut:"ctrl+alt+i", depends: ["tenant"], action: this.openUsAccountsUrl('/usuarios/',['tenant','id'])},
 					{description:"Abrir página proprietário", shortcut:"ctrl+shift+p", depends: ["owner"], action: this.openUsAccountsUrl('/usuarios/',['owner','id'])},
-					{description:"Abrir task nova aba", shortcut:"ctrl+alt+t", depends: ["task"], action: this.openUsTasksUrl('/tarefas?taskId=',['task','_id'])},
+					{description:"Abrir task em nova aba", shortcut:"ctrl+alt+t", depends: ["task"], action: this.openUsTasksUrl('/tarefas?taskId=',['task','_id'])},
 					{description:"Abrir busca em nova aba", shortcut:"ctrl+alt+b", action: this.openUsTasksUrl('/busca')},
 					{description:"Abrir relatório funil mensal", shortcut:"ctrl+alt+m", action: this.openUsTasksUrl('/relatorios')},
 					{description:"Ligar inquilino", shortcut:"ctrl+alt+i", depends: ["tenant"], action: this.callTenant.bind(this)},
@@ -108,17 +168,21 @@
 				this.set('allCommands',this.allCommands.slice(0))
 				this._commandFiltered()
 			},
-			availableCommands : function(allCommands){
+			availableCommands : function(allCommands,extraCommands){
 				var available = [];
-				allCommands.forEach(function(cmd){
-					['house','tenant','owner','task'].every(function(dependency){
-						if (!cmd.depends || (this[dependency] && cmd.depends.find(function(it){return it == dependency}))){
-							available.push(cmd);
-							return false;
-						}
-						return true;
-					}.bind(this))
-				}.bind(this));
+				var filterCommands = function(commands, avail){
+					commands.forEach(function(cmd){
+						['house','tenant','owner','task'].every(function(dependency){
+							if (!cmd.depends || (this[dependency] && cmd.depends.find(function(it){return it == dependency}))){
+								avail.push(cmd);
+								return false;
+							}
+							return true;
+						}.bind(this))
+					}.bind(this));
+				}.bind(this)
+				filterCommands(allCommands, available);
+				filterCommands(extraCommands, available);
 				return available;
 			},
 			_commandFiltered : function(){
@@ -128,7 +192,7 @@
 					if(cmd.description.toLowerCase().indexOf((this.commandFilter||'').toLowerCase()) >= 0) {
 						filt.push(cmd)
 					}
-					if (filt.length > 4) {
+					if (filt.length > this.commandDisplayCount) {
 						break;
 					}
 				}
@@ -170,9 +234,9 @@
 				if (url.match(/^sip:.*$/g)) {
 					window.location = url
 				}
+				this.closeCommandPallete();
 			},
 			evaluatePath:function(pathArray) {
-				debugger;
 				var val = this.get(pathArray[0]);
 				pathArray.slice(1).forEach(function(pathPiece){
 					val = val[pathPiece];
@@ -196,7 +260,6 @@
 						if (typeof arg === "string") {
 							action += arg
 						} else if (Array.isArray(arg)) {
-							console.info(this.task ? this.task.id : -1)
 							action += (this.evaluatePath.bind(this))(arg);
 						}
 					}
@@ -211,8 +274,7 @@
 				return this.call(this.owner)
 			},
 			callTenant: function() {
-				// this.call(this.tenent)
-				return this.call({nome:'Teste Tenent',telefonePrincipal:'+5519981287944'})
+				this.call(this.tenant)
 			}
 		});
 	</script>
