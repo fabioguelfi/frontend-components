@@ -109,7 +109,6 @@
                 }
             },
 			attached: function() {
-				this.user = {name: 'coiso sei la', email: 'alguma coisa bla'};
 				if (!this.skipAuth && !this.user) {
 					var auth_url = '@@MAIN_URL/auth/login?redirect=';
 					var current_href = encodeURIComponent(window.location.href);
