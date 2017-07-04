@@ -139,12 +139,21 @@
 				
 				this.set('cmdPalTarget',document.body)
 				this.set('allCommands',[
-					{description:"Abrir página apartamento", shortcut:"ctrl+alt+a", depends: ["house"], action: this.openUsPropertiesUrl('/imoveis/',['house','id'])},
-					{description:"Abrir página inquilino", shortcut:"ctrl+alt+i", depends: ["tenant"], action: this.openUsAccountsUrl('/usuarios/',['tenant','id'])},
-					{description:"Abrir página proprietário", shortcut:"ctrl+shift+p", depends: ["owner"], action: this.openUsAccountsUrl('/usuarios/',['owner','id'])},
-					{description:"Abrir task em nova aba", shortcut:"ctrl+alt+t", depends: ["task"], action: this.openUsTasksUrl('/tarefas?taskId=',['task','_id'])},
+					{description:"Abrir página apartamento", shortcut:"ctrl+shift+a", depends: ["house"],
+						action: this.openUsPropertiesUrl('/imoveis/',['house','id'])
+					},
+					{description:"Abrir página inquilino", shortcut:"ctrl+shift+i", depends: ["tenant"],
+						action: this.openUsAccountsUrl('/usuarios/',['tenant','id'])
+					},
+					{description:"Abrir página proprietário", shortcut:"ctrl+shift+p", depends: ["owner"],
+						action: this.openUsAccountsUrl('/usuarios/',['owner','id'])
+					},
+					{description:"Abrir task em nova aba", shortcut:"ctrl+alt+t", depends: ["task"],
+						action: this.openUsTasksUrl('/tarefas?taskId=',['task','_id'])
+					},
 					{description:"Abrir busca em nova aba", shortcut:"ctrl+alt+b", action: this.openUsTasksUrl('/busca')},
-					{description:"Abrir relatório funil mensal", shortcut:"ctrl+alt+m", action: this.openUsTasksUrl('/relatorios')},
+					{description:"Abrir relatórios em nova aba", shortcut:"ctrl+alt+r", action: this.openUsTasksUrl('/relatorios')},
+					{description:"Abrir performance em nova aba", shortcut:"ctrl+alt+d", action: this.openUsTasksUrl('/dashboard/')},
 					{description:"Ligar inquilino", shortcut:"ctrl+alt+i", depends: ["tenant"], action: this.callTenant.bind(this)},
 					{description:"Ligar proprietário",shortcut:"ctrl+alt+p", depends: ["owner"], action: this.callOwner.bind(this)}
 				]);
