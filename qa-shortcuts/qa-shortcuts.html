@@ -194,7 +194,7 @@
 					if(cmd.description.toLowerCase().indexOf((this.commandFilter||'').toLowerCase()) >= 0) {
 						filt.push(cmd)
 					}
-					if (filt.length > this.commandDisplayCount) {
+					if (filt.length > this.commandDisplayMaxCount) {
 						break;
 					}
 				}
