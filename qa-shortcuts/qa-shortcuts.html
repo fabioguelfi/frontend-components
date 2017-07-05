@@ -36,7 +36,8 @@
 		</template>
 		<paper-dialog id="dlgCmdPallete" modal="true">
 			<paper-input id="commandFilterInput" no-label-float="true" label="Digite o comando" value="{{commandFilter}}"></paper-input>
-			<paper-listbox id="listCmd">
+			<iron-a11y-keys target="[[commandFilterNode]]" keys="esc enter down up" on-keys-pressed="commandFilterKeyPressed"></iron-a11y-keys>
+			<paper-listbox id="listCmd" selected="{{selectedCommandIndex}}">
 				<template is="dom-repeat" items="[[listaFiltrada]]">
 					<paper-item on-tap="_onCommandTap" data-command-index="[[index]]"><span class="shortcut">[[item.shortcut]]</span>[[item.description]]</paper-item>
 				</template>
@@ -71,7 +72,7 @@
 				font-weight: bold;
 				margin-right: 20px;
 			}
-			paper-item:focus .shortcut {
+			paper-item.iron-selected .shortcut {
 				background-color: #666666;
 				color: #eeeeee;
 			}
@@ -80,7 +81,7 @@
 				min-width: 300px;
 			}
 			#listCmd paper-item {
-				--paper-item-focused: {
+				--paper-item-selected: {
 					background: #0288D1;
 					font-weight: bold;
 					color: #ffffff;
@@ -102,7 +103,10 @@
 				cmdPalTarget: {
 					type: Object
 				},
-				commandDisplayMaxCount : 5,
+				commandDisplayMaxCount : {
+					type: Number,
+					value: 5
+				},
 				listaFiltrada: Array,
 				allCommands: Array,
 				listaComandos: {
@@ -110,10 +114,10 @@
 					computed: 'availableCommands(allCommands,extraCommands)'
 				},
 				commandFilter : { type : String, observer: '_commandFiltered' },
-				selectedCommandItem: Object,
+				selectedCommandIndex: Number,
 				selectedCommand: {
 					type: Object,
-					computed: 'getSelectedCommand(selectedCommandItem, listaFiltrada)'
+					computed: 'getSelectedCommand(selectedCommandIndex, listaFiltrada)'
 				},
 				extraCommands: {
 					type: Array,
@@ -161,10 +165,27 @@
 				setTimeout(function(){
 						this.set('cmdPalTarget',document.body)
 				}.bind(this),1000)
+				this.set("commandFilterNode",this.$.commandFilterInput);
 			},
-			getSelectedCommand: function(selectedCommandItem, listaFiltrada) {
-				var index = selectedCommandItem.dataCommandIndex;
-				return listaFiltrada[index];
+			getSelectedCommand: function(selectedCommandIndex, listaFiltrada) {
+				return listaFiltrada[selectedCommandIndex];
+			},
+			commandFilterKeyPressed : function(e) {
+				var keyName = e.detail.keyboardEvent.code;
+				if (keyName == "Enter") {
+					if (this.selectedCommand) {
+						this.executeShortcut(this.selectedCommand);
+					}
+				} else if (keyName == "Esc") {
+					this.closeCommandPallete();
+				} else if (keyName == "ArrowDown" || keyName == "ArrowUp") {
+					var signal = keyName == "ArrowUp" ? -1 : +1
+					var current = parseInt(this.selectedCommandIndex || ((signal < 0)?this.listaFiltrada.length:-1))
+					var newVal = current + signal
+					if (newVal  >= 0 && newVal < this.listaFiltrada.length) {
+						this.set("selectedCommandIndex",""+newVal)
+					}
+				}
 			},
 			_contextChanged : function(){
 				this.set('allCommands',this.allCommands.slice(0))
@@ -194,11 +215,12 @@
 					if(cmd.description.toLowerCase().indexOf((this.commandFilter||'').toLowerCase()) >= 0) {
 						filt.push(cmd)
 					}
-					if (filt.length > this.commandDisplayMaxCount) {
+					if (filt.length >= this.commandDisplayMaxCount) {
 						break;
 					}
 				}
 				this.set('listaFiltrada',filt)
+				this.set('selectedCommandIndex',"0")
 			},
 			openCommandPallete: function(e) {
 				if (! this.$.dlgCmdPallete.opened) {
@@ -213,30 +235,28 @@
 			closeCommandPallete: function() {
 				if (this.$.dlgCmdPallete.opened) {
 					this.$.dlgCmdPallete.close()
+					this.set("commandFilter","")
 				}
 			},
 			_onCommandTap: function(event) {
-				this.set('selectedCommandItem',event.srcElement)
+				// this.set('selectedCommandItem',event.srcElement)
 				setTimeout(function(){
-					var url = this.selectedCommand.action();
+					this.executeShortcut(this.selectedCommand)
+				}.bind(this),1)
+			},
+			_actOnShortcut: function(event) {
+				var cmdIndex = event.srcElement.dataCommandIndex;
+				this.executeShortcut(this.listaComandos[cmdIndex]);
+			},
+			executeShortcut:function(item){
+				var url = item.action();
+				if (url) {
 					if (url.match(/^((http)|(\/)).*$/g)) {
 						window.open(url)
 					}
 					if (url.match(/^sip:.*$/g)) {
 						window.location = url
 					}
-				}.bind(this),1)
-			},
-			_actOnShortcut: function(event) {
-				debugger
-				
-				var cmdIndex = event.srcElement.dataCommandIndex;
-				var url = this.listaComandos[cmdIndex].action();
-				if (url.match(/^((http)|(\/)).*$/g)) {
-					window.open(url)
-				}
-				if (url.match(/^sip:.*$/g)) {
-					window.location = url
 				}
 				this.closeCommandPallete();
 			},
