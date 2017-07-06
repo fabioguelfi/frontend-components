@@ -37,7 +37,7 @@
 			</iron-a11y-keys>
 		</template>
 		<paper-dialog id="dlgCmdPallete" modal="true">
-			<paper-input id="commandFilterInput" no-label-float="true" label="Digite o comando" value="{{commandFilter}}"></paper-input>
+			<paper-input id="commandFilterInput" no-label-float="true" label="Digite o comando" value="{{commandFilter}}" autofocus="true"></paper-input>
 			<iron-a11y-keys target="[[commandFilterNode]]" keys="esc enter down up" on-keys-pressed="commandFilterKeyPressed"></iron-a11y-keys>
 			<paper-listbox id="listCmd" selected="{{selectedCommandIndex}}">
 				<template is="dom-repeat" items="[[listaFiltrada]]">
@@ -230,9 +230,6 @@
 			openCommandPallete: function(e) {
 				if (! this.$.dlgCmdPallete.opened) {
 					this.$.dlgCmdPallete.open()
-					setTimeout(function(){
-						this.$.commandFilterInput.focus()
-					}.bind(this),50)
 				} else {
 					this.closeCommandPallete();
 				}
@@ -312,7 +309,7 @@
 				return this.call(this.owner)
 			},
 			callTenant: function() {
-				this.call(this.tenant)
+				return this.call(this.tenant)
 			}
 		});
 	</script>
