@@ -4,6 +4,7 @@
 <link rel="import" href="../../bower_components/paper-input/paper-input.html">
 <link rel="import" href="../../bower_components/paper-listbox/paper-listbox.html">
 <link rel="import" href="../../bower_components/paper-item/paper-item.html">
+<link rel="import" href="../../bower_components/paper-checkbox/paper-checkbox.html">
 
 <link rel="import" href="../qa-behavior/v1/qa-behavior.html">
 
@@ -29,6 +30,7 @@
 				Lembre-se: para pesquisar os atalhos disponíveis você pode usar o "CTRL+ALT+3"
 			</p>
 			<paper-button raised active on-tap="closeOnboarding">Ok, entendi!</paper-button>
+			<paper-checkbox checked="{{dontShowOnboarding}}">Já entendi e não quero mais ver essa tela :)</paper-checkbox>
 		</paper-dialog>
 		<template is="dom-repeat" items="[[listaComandos]]">
 			<iron-a11y-keys target="[[cmdPalTarget]]" keys="[[item.shortcut]]" on-keys-pressed="_actOnShortcut" data-command-index="[[index]]">
@@ -125,13 +127,16 @@
 				},
 				tasksUrl: {type: String, value:""},
 				propertiesUrl: {type: String, value:""},
-				accountsUrl: {type: String, value:""}
+				accountsUrl: {type: String, value:""},
+				dontShowOnboarding: false
 			},
 			behaviors: [ QuintoAndar.Behavior ],
 			closeOnboarding: function() {
-				var crmShortcut = document.cookie.match(new RegExp("(; *)?crmShortcutsOnboarding=([^;]*)"));
-				if (!crmShortcut || crmShortcut[2] != "yes") {
-					document.cookie = "crmShortcutsOnboarding=yes; path=/";
+				if (this.dontShowOnboarding) {
+					var crmShortcut = document.cookie.match(new RegExp("(; *)?crmShortcutsOnboarding=([^;]*)"));
+					if (!crmShortcut || crmShortcut[2] != "yes") {
+						document.cookie = "crmShortcutsOnboarding=yes; path=/";
+					}
 				}
 				this.$.dlgOnboardingShortcuts.close()
 			},
@@ -268,13 +273,22 @@
 				return val;
 			},
 			openUsTasksUrl : function() {
-				return this.openUrl(this.tasksUrl, arguments);
+				var args = arguments
+				return function() {
+					return this.openUrl(this.tasksUrl, args)()
+				}.bind(this);
 			},
 			openUsAccountsUrl : function() {
-				return this.openUrl(this.accountsUrl, arguments);
+				var args = arguments
+				return function() {
+					return this.openUrl(this.accountsUrl, args)()
+				}.bind(this);
 			},
 			openUsPropertiesUrl : function() {
-				return this.openUrl(this.propertiesUrl, arguments);
+				var args = arguments
+				return function() {
+					return this.openUrl(this.propertiesUrl, args)()
+				}.bind(this);
 			},
 			openUrl : function(baseUrl, args) {
 				return function() {
