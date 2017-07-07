@@ -301,9 +301,20 @@
 					return action;
 				}.bind(this)
 			},
+			PhoneNumberFields : [
+				'telefone','phone','phoneNumber','telefonePrincipal','telefoneSecundario',
+				'telefoneComercial','telefoneAnunciante','telefoneAnuncianteDois'
+			],
 			call: function(user) {
-				var numberToCall = (user.telefonePrincipal || user.telefoneSecundario || user.telefoneComercial || user.telefoneAnunciante);
-				return 'sip: ' + numberToCall.replace(/[^0-9]/g,'').replace(/^\+55/g,'0');
+				if (user) {
+					var phoneKey = this.PhoneNumberFields.find(function(fname){
+						return user[fname]
+					})
+					var numberToCall = user[phoneKey]
+					if (numberToCall) {
+						return 'sip: ' + numberToCall.replace(/[^0-9]/g,'').replace(/^\+55/g,'0');
+					}
+				}
 			},
 			callOwner: function() {
 				return this.call(this.owner)
