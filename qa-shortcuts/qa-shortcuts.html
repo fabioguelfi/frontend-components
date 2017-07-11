@@ -148,7 +148,7 @@
 				
 				this.set('cmdPalTarget',document.body)
 				this.set('allCommands',[
-					{description:"Abrir página apartamento", shortcut:"ctrl+shift+a", depends: ["house"],
+					{description:"Abrir página apartamento/imóvel", shortcut:"ctrl+shift+a", depends: ["house"],
 						action: this.openUsPropertiesUrl('/imoveis/',['house','id'])
 					},
 					{description:"Abrir página inquilino", shortcut:"ctrl+shift+i", depends: ["tenant"],
@@ -248,9 +248,9 @@
 			},
 			_actOnShortcut: function(event) {
 				var cmdIndex = event.srcElement.dataCommandIndex;
-				this.executeShortcut(this.listaComandos[cmdIndex]);
+				this.executeShortcut(this.listaComandos[cmdIndex], true);
 			},
-			executeShortcut:function(item){
+			executeShortcut:function(item, fromShortcut){
 				var url = item.action();
 				if (url) {
 					if (url.match(/^((http)|(\/)).*$/g)) {
@@ -260,7 +260,26 @@
 						window.location = url
 					}
 				}
-				this.closeCommandPallete();
+				this.countCommand({item:item,fromShortcut:(fromShortcut||false)})
+				setTimeout(function(){
+					this.closeCommandPallete();
+				}.bind(this),10);
+			},
+			//this is to get statistics of shortcut usage
+			countCommand: function(payload) {
+				fromShortcut = payload.fromShortcut
+				item = payload.item
+				usage = {origin:fromShortcut?item.shortcut:'pallete',command:item.description,at:new Date()}
+				console.info(usage)
+				this.updateUsage(usage)
+			},
+			updateUsage:function(usage){
+				var key = 'COUNT'
+				if (window.localStorage && window.localStorage.getItem) {
+					var current = JSON.parse(window.localStorage.getItem(key)||'[]')
+					current.push(usage)
+					window.localStorage.setItem(key, JSON.stringify(current))
+				}
 			},
 			evaluatePath:function(pathArray) {
 				var val = this.get(pathArray[0]);
