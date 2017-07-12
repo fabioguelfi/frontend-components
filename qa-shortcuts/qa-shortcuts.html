@@ -4,6 +4,7 @@
 <link rel="import" href="../../bower_components/paper-input/paper-input.html">
 <link rel="import" href="../../bower_components/paper-listbox/paper-listbox.html">
 <link rel="import" href="../../bower_components/paper-item/paper-item.html">
+<link rel="import" href="../../bower_components/paper-checkbox/paper-checkbox.html">
 
 <link rel="import" href="../qa-behavior/v1/qa-behavior.html">
 
@@ -29,13 +30,14 @@
 				Lembre-se: para pesquisar os atalhos disponíveis você pode usar o "CTRL+ALT+3"
 			</p>
 			<paper-button raised active on-tap="closeOnboarding">Ok, entendi!</paper-button>
+			<paper-checkbox checked="{{dontShowOnboarding}}">Já entendi e não quero mais ver essa tela :)</paper-checkbox>
 		</paper-dialog>
 		<template is="dom-repeat" items="[[listaComandos]]">
 			<iron-a11y-keys target="[[cmdPalTarget]]" keys="[[item.shortcut]]" on-keys-pressed="_actOnShortcut" data-command-index="[[index]]">
 			</iron-a11y-keys>
 		</template>
 		<paper-dialog id="dlgCmdPallete" modal="true">
-			<paper-input id="commandFilterInput" no-label-float="true" label="Digite o comando" value="{{commandFilter}}"></paper-input>
+			<paper-input id="commandFilterInput" no-label-float="true" label="Digite o comando" value="{{commandFilter}}" autofocus="true"></paper-input>
 			<iron-a11y-keys target="[[commandFilterNode]]" keys="esc enter down up" on-keys-pressed="commandFilterKeyPressed"></iron-a11y-keys>
 			<paper-listbox id="listCmd" selected="{{selectedCommandIndex}}">
 				<template is="dom-repeat" items="[[listaFiltrada]]">
@@ -125,13 +127,16 @@
 				},
 				tasksUrl: {type: String, value:""},
 				propertiesUrl: {type: String, value:""},
-				accountsUrl: {type: String, value:""}
+				accountsUrl: {type: String, value:""},
+				dontShowOnboarding: false
 			},
 			behaviors: [ QuintoAndar.Behavior ],
 			closeOnboarding: function() {
-				var crmShortcut = document.cookie.match(new RegExp("(; *)?crmShortcutsOnboarding=([^;]*)"));
-				if (!crmShortcut || crmShortcut[2] != "yes") {
-					document.cookie = "crmShortcutsOnboarding=yes; path=/";
+				if (this.dontShowOnboarding) {
+					var crmShortcut = document.cookie.match(new RegExp("(; *)?crmShortcutsOnboarding=([^;]*)"));
+					if (!crmShortcut || crmShortcut[2] != "yes") {
+						document.cookie = "crmShortcutsOnboarding=yes; path=/";
+					}
 				}
 				this.$.dlgOnboardingShortcuts.close()
 			},
@@ -143,7 +148,7 @@
 				
 				this.set('cmdPalTarget',document.body)
 				this.set('allCommands',[
-					{description:"Abrir página apartamento", shortcut:"ctrl+shift+a", depends: ["house"],
+					{description:"Abrir página apartamento/imóvel", shortcut:"ctrl+shift+a", depends: ["house"],
 						action: this.openUsPropertiesUrl('/imoveis/',['house','id'])
 					},
 					{description:"Abrir página inquilino", shortcut:"ctrl+shift+i", depends: ["tenant"],
@@ -225,9 +230,6 @@
 			openCommandPallete: function(e) {
 				if (! this.$.dlgCmdPallete.opened) {
 					this.$.dlgCmdPallete.open()
-					setTimeout(function(){
-						this.$.commandFilterInput.focus()
-					}.bind(this),50)
 				} else {
 					this.closeCommandPallete();
 				}
@@ -246,9 +248,9 @@
 			},
 			_actOnShortcut: function(event) {
 				var cmdIndex = event.srcElement.dataCommandIndex;
-				this.executeShortcut(this.listaComandos[cmdIndex]);
+				this.executeShortcut(this.listaComandos[cmdIndex], true);
 			},
-			executeShortcut:function(item){
+			executeShortcut:function(item, fromShortcut){
 				var url = item.action();
 				if (url) {
 					if (url.match(/^((http)|(\/)).*$/g)) {
@@ -258,7 +260,26 @@
 						window.location = url
 					}
 				}
-				this.closeCommandPallete();
+				this.countCommand({item:item,fromShortcut:(fromShortcut||false)})
+				setTimeout(function(){
+					this.closeCommandPallete();
+				}.bind(this),10);
+			},
+			//this is to get statistics of shortcut usage
+			countCommand: function(payload) {
+				fromShortcut = payload.fromShortcut
+				item = payload.item
+				usage = {origin:fromShortcut?item.shortcut:'pallete',command:item.description,at:new Date()}
+				console.info(usage)
+				this.updateUsage(usage)
+			},
+			updateUsage:function(usage){
+				var key = 'COUNT'
+				if (window.localStorage && window.localStorage.getItem) {
+					var current = JSON.parse(window.localStorage.getItem(key)||'[]')
+					current.push(usage)
+					window.localStorage.setItem(key, JSON.stringify(current))
+				}
 			},
 			evaluatePath:function(pathArray) {
 				var val = this.get(pathArray[0]);
@@ -268,13 +289,22 @@
 				return val;
 			},
 			openUsTasksUrl : function() {
-				return this.openUrl(this.tasksUrl, arguments);
+				return this.openUrlWithContextUrl('tasksUrl', arguments);
 			},
 			openUsAccountsUrl : function() {
-				return this.openUrl(this.accountsUrl, arguments);
+				return this.openUrlWithContextUrl('accountsUrl', arguments);
 			},
 			openUsPropertiesUrl : function() {
-				return this.openUrl(this.propertiesUrl, arguments);
+				return this.openUrlWithContextUrl('propertiesUrl', arguments);
+			},
+			/**
+				calling like this ensures that the call will use the current context values
+			**/
+			openUrlWithContextUrl:function(contextNameUrl){
+				var args = arguments[1]
+				return function() {
+					return this.openUrl(this[contextNameUrl], args)()
+				}.bind(this);
 			},
 			openUrl : function(baseUrl, args) {
 				return function() {
@@ -290,15 +320,26 @@
 					return action;
 				}.bind(this)
 			},
+			PhoneNumberFields : [
+				'telefone','phone','phoneNumber','telefonePrincipal','telefoneSecundario',
+				'telefoneComercial','telefoneAnunciante','telefoneAnuncianteDois'
+			],
 			call: function(user) {
-				var numberToCall = (user.telefonePrincipal || user.telefoneSecundario || user.telefoneComercial || user.telefoneAnunciante);
-				return 'sip: ' + numberToCall.replace(/[^0-9]/g,'').replace(/^\+55/g,'0');
+				if (user) {
+					var phoneKey = this.PhoneNumberFields.find(function(fname){
+						return user[fname]
+					})
+					var numberToCall = user[phoneKey]
+					if (numberToCall) {
+						return 'sip: ' + numberToCall.replace(/[^0-9]/g,'').replace(/^\+55/g,'0');
+					}
+				}
 			},
 			callOwner: function() {
 				return this.call(this.owner)
 			},
 			callTenant: function() {
-				this.call(this.tenant)
+				return this.call(this.tenant)
 			}
 		});
 	</script>
