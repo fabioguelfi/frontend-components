@@ -289,21 +289,21 @@
 				return val;
 			},
 			openUsTasksUrl : function() {
-				var args = arguments
-				return function() {
-					return this.openUrl(this.tasksUrl, args)()
-				}.bind(this);
+				return this.openUrlWithContextUrl('tasksUrl', arguments);
 			},
 			openUsAccountsUrl : function() {
-				var args = arguments
-				return function() {
-					return this.openUrl(this.accountsUrl, args)()
-				}.bind(this);
+				return this.openUrlWithContextUrl('accountsUrl', arguments);
 			},
 			openUsPropertiesUrl : function() {
-				var args = arguments
+				return this.openUrlWithContextUrl('propertiesUrl', arguments);
+			},
+			/**
+				calling like this ensures that the call will use the current context values
+			**/
+			openUrlWithContextUrl:function(contextNameUrl){
+				var args = arguments[1]
 				return function() {
-					return this.openUrl(this.propertiesUrl, args)()
+					return this.openUrl(this[contextNameUrl], args)()
 				}.bind(this);
 			},
 			openUrl : function(baseUrl, args) {
