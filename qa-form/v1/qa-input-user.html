@@ -34,6 +34,8 @@
 			id="name"
 			on-input="doSearch"
 			label="[[label]]"
+			no-label-float="[[noLabelFloat]]"
+			placeholder="[[placeholder]]"
 			validator="validator"
 			readonly="[[readonly]]"
 			required="[[required]]"
@@ -83,6 +85,11 @@
 			is: 'qa-input-user',
 			properties: {
 				label: String,
+				noLabelFloat: {
+					type: Boolean,
+					value: false
+				},
+				placeholder: String,
 				value: {
 					type: Number,
 					notify: true,

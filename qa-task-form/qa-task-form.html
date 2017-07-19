@@ -114,17 +114,6 @@
                     </iron-pages>
                 </paper-material>
                 <paper-material>
-                    <template is="dom-if" if="[[!recipients.length]]">
-                        <qa-input-user
-                            id="userSearch"
-                            user-name="{{userName}}"
-                            label="Cliente"
-                            required="[[!recipients.length]]"
-                            user="{{destinatario}}"
-                            error-message="Informe cliente de destino"
-                            roles="">
-                        </qa-input-user>
-                    </template>
                     <template is="dom-if" if="[[recipients.length]]">
                         <paper-dropdown-menu
                             qa-style
@@ -137,8 +126,22 @@
                                 <template is="dom-repeat" items="[[recipients]]">
                                     <paper-item>[[item.label]]</paper-item>
                                 </template>
+                                <paper-item>Outro...</paper-item>
                             </paper-listbox>
                         </paper-dropdown-menu>
+                    </template>
+                    <template is="dom-if" if="[[showClientSearch]]">
+                        <qa-input-user
+                            id="userSearch"
+                            user-name="{{userName}}"
+                            label="[[getClientSearchLabel(recipients.length)]]"
+                            placeholder="[[getClientSearchPlaceholder(recipients.length)]]"
+                            no-label-float="[[recipients.length]]"
+                            required="[[showClientSearch]]"
+                            user="{{destinatario}}"
+                            error-message="Informe cliente de destino"
+                            roles="">
+                        </qa-input-user>
                     </template>
                     <paper-input
                         label="Tipo de tarefa"
@@ -221,6 +224,11 @@
                     value: function() {
                         return [];
                     }
+                },
+                showClientSearch: {
+                    type: Boolean,
+                    computed: '_showClientSearch(recipients.length, recipientIndex)',
+                    value: true
                 }
             },
             behaviors: [ QuintoAndar.UserBehavior ],
@@ -245,7 +253,7 @@
                             console.error("It shouldn't be here...", self.selectedTab);
                         }
 
-                        if (self.recipients.length) {
+                        if (self.recipients.length && !self.showClientSearch) {
                             body['destinatario'] = self.recipients[self.recipientIndex];
                             body['destinatarioId'] = body['destinatario'].id;
                         } else {
@@ -282,6 +290,16 @@
                         elem.set('selected', null);
                     });
                 });
+            },
+            getClientSearchLabel: function(recipientsLength) {
+                return recipientsLength ? '' : 'Client';
+            },
+            getClientSearchPlaceholder: function(recipientsLength) {
+                return recipientsLength ? 'Buscar cliente...' : '';
+            },
+            _showClientSearch: function(recipientsLength, recipientIndex) {
+                var otherClientIndex = recipientsLength;
+                return recipientsLength == 0 || recipientIndex == otherClientIndex;
             },
             handleSubmit: function() {
                 this.$.taskForm.submit();
