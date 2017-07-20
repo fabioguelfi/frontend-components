@@ -162,10 +162,11 @@
 					{description:"Abrir página proprietário", shortcut:"ctrl+shift+p", depends: ["owner"],
 						action: this.openUsAccountsUrl('/usuarios/',['owner','id'])
 					},
-					{description:"Abrir task em nova aba", shortcut:"ctrl+alt+t", depends: ["task"],
+					{description:"Abrir essa tarefa/task em nova aba", shortcut:"ctrl+alt+t", depends: ["task"],
 						action: this.openUsTasksUrl('/tarefas?taskId=',['task','_id'])
 					},
 					{description:"Abrir busca em nova aba", shortcut:"ctrl+alt+b", action: this.openUsTasksUrl('/busca')},
+					{description:"Abrir tarefas em nova aba", shortcut:"ctrl+alt+b", action: this.openUsTasksUrl('/tarefas')},
 					{description:"Abrir relatórios em nova aba", shortcut:"ctrl+alt+r", action: this.openUsTasksUrl('/relatorios')},
 					{description:"Abrir performance em nova aba", shortcut:"ctrl+alt+d", action: this.openUsTasksUrl('/dashboard/')},
 					{description:"Ligar inquilino", shortcut:"ctrl+alt+i", depends: ["tenant"], action: this.callTenant.bind(this)},
