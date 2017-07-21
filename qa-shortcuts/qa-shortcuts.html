@@ -221,10 +221,10 @@
 			},
 			_commandFiltered : function(){
 				var filt = [];
-				var filtering = removeDiacritics((this.commandFilter||'').toLowerCase());
+				var filtering = this.removeDiacritics((this.commandFilter||'').toLowerCase());
 				for(cmdIdx in this.listaComandos) {
 					var cmd = this.listaComandos[cmdIdx];
-					if(removeDiacritics(cmd.description.toLowerCase()).indexOf(filtering) >= 0) {
+					if(this.removeDiacritics(cmd.description.toLowerCase()).indexOf(filtering) >= 0) {
 						filt.push(cmd)
 					}
 					if (filt.length >= this.commandDisplayMaxCount) {
