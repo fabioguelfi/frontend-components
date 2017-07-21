@@ -206,14 +206,12 @@
 				var available = [];
 				var filterCommands = function(commands, avail){
 					commands.forEach(function(cmd){
-						['house','tenant','owner','task','searchUrl'].every(function(dependency){
-							if (!cmd.depends || (this[dependency] && cmd.depends.find(function(it){return it == dependency}))){
-								avail.push(cmd);
-								return false;
-							}
-							return true;
-						}.bind(this))
-					}.bind(this));
+						if (!cmd.depends || cmd.depends.reduce(function(bef,cur){return bef && this[cur]}.bind(this),true)) {
+							avail.push(cmd);
+							return false
+						}
+						return true
+					}.bind(this))
 				}.bind(this)
 				filterCommands(allCommands, available);
 				filterCommands(extraCommands, available);
