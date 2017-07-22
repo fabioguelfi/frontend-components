@@ -1,0 +1,136 @@
+
+<dom-module id="qa-datetime-number">
+	<template>
+		<style include="iron-flex iron-flex-alignment"></style>
+		<style include="qa-styles"></style>
+		<style is="custom-style">
+			:host {
+				@apply(--layout-vertical);
+				color: var(--qa-light-secondary-color);
+				overflow-y: scroll;
+				overflow-x: hidden;
+			}
+			.value {
+				min-height: 1em;
+			}
+			.prefix {
+				color: transparent;
+			}
+			.selected {
+				color: var(--qa-light-text-color);
+				font-weight: 600;
+			}
+			.selected .prefix {
+				color: inherit;
+			}
+			.placeholder {
+				min-height: 50%;
+			}
+		</style>
+		<div class="placeholder"></div>
+		<template is="dom-repeat" items="[[getValues(date, unit, format)]]">
+			<div id$="i[[item]]" class$="value [[getClass(item, value)]]" on-tap="onSelect">
+				<span class="prefix">[[selectedPrefix]]</span>[[item]]
+			</div>
+		</template>
+		<div class="placeholder"></div>
+	</template>
+	<script>
+		Polymer({
+			is: "qa-datetime-number",
+			properties: {
+				date: {
+					type: Date,
+					notify: true
+				},
+				value: {
+					type: String,
+					computed: 'getValue(date, format)'
+				},
+				unit: String,
+				format: String,
+				selectedPrefix: String
+			},
+			observers: [ 'onChangeDate(date, format)' ],
+			getClass: function(item, value) {
+				return item == value ? 'selected' : '';
+			},
+			handleScroll: function(elem, start, direction) {
+
+				var expectedTop = elem.offsetTop - Math.round(this.offsetHeight * 0.45);
+
+				this.cancelAsync(this.scrollAsyncHandler);
+
+				if (this.scrollTop == expectedTop) return;
+
+				var speed = 6;
+				var scrollSteps = 60;
+				var scrollInterval = 1000;
+				var now = Date.now();
+
+				start = start || now;
+				direction = direction || Math.sign(expectedTop - this.scrollTop);
+
+				var remainingSteps = (scrollInterval - (now - start)) / scrollInterval * scrollSteps;
+				var scrollTop = expectedTop;
+
+				if (remainingSteps > 0) {
+					var nextStep = (expectedTop - this.scrollTop) / remainingSteps * speed;
+					scrollTop = this.scrollTop + Math.max(1, Math.abs(nextStep)) * Math.sign(nextStep);
+				}
+
+				this.scrollTop = scrollTop;
+
+				this.scrollAsyncHandler = this.async(function() {
+					this.handleScroll(elem, start, direction);
+				}, scrollInterval / scrollSteps);
+			},
+			onChangeDate: function(date, format) {
+				var value = this.getValue(date, format);
+				var elem = this.$$('#i' + value);
+				if (elem) {
+					this.handleScroll(elem);
+				}
+			},
+			onSelect: function(event) {
+				var value = event.model.item;
+				this.date.set(this.unit, value);
+				this.set('date', moment(this.date));
+				this.fire('focus-unit', this.unit);
+			},
+			getValue: function(date, format) {
+				return date.format(format);
+			},
+			getValues: function(date, unit, format) {
+
+				var max;
+				var min = 0;
+				var values = [];
+				var year = moment().get('year');
+
+				switch (unit) {
+					case 'hour':
+						max = 23;
+						break;
+					case 'minute':
+						max = 59;
+						break;
+					case 'year':
+						min = year - 5;
+						max = year + 10;
+						break;
+					default:
+						throw new Error('Unkown unit: ' + unit);
+				}
+
+				for (var val = min; val <= max; val++) {
+					values.push(moment().set(unit, val).format(format));
+				}
+
+				return values;
+			}
+		});
+	</script>
+</dom-module>
+
+

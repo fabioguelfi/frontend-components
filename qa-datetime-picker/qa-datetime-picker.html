@@ -1,0 +1,161 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/iron-pages/iron-pages.html">
+<link rel="import" href="../qa-styles/v1/qa-styles.html">
+<link rel="import" href="./qa-datetime-unit.html">
+<link rel="import" href="./qa-datetime-number.html">
+<link rel="import" href="./qa-datetime-calendar.html">
+
+
+<dom-module id="qa-datetime-picker">
+	<template>
+		<style include="iron-flex iron-flex-alignment"></style>
+		<style include="qa-styles"></style>
+		<style is="custom-style">
+			:host {
+				@apply(--layout-horizontal);
+				max-height: 17em;
+				min-height: 17em;
+			}
+			#unit-selector {
+				@apply(--layout-vertical);
+				@apply(--layout-flex-4);
+				background-color: var(--qa-dark-color);
+				color: rgba(255, 255, 255, 0.7);
+				padding: 0.4em 0 0 0.4em;
+				font-size: 2.2em;
+				line-height: 1;
+			}
+			#unit-selector > div {
+				padding-bottom: 0.4em;
+			}
+			#unit-selector > .selected {
+				font-size: 1.2em;
+				color: rgba(255, 255, 255, 0.8);
+			}
+			#value-selector {
+				@apply(--layout-flex-8);
+			}
+			iron-pages > div:nth-child(odd) {
+				@apply(--layout-horizontal);
+				@apply(--layout-center-justified);
+				max-height: 100%;
+				font-size: 2.6em;
+			}
+			qa-datetime-calendar {
+				margin: 0.4em;
+			}
+		</style>
+		<div id="unit-selector">
+			<div class="layout horizontal selected">
+				<qa-datetime-unit unit="hour" date="{{date}}" format="HH"></qa-datetime-unit>
+				<div>:</div>
+				<qa-datetime-unit unit="minute" date="{{date}}" format="mm"></qa-datetime-unit>
+			</div>
+			<div class="layout horizontal">
+				<qa-datetime-unit unit="month" date="{{date}}" numeric-format="MM" format="MMM"></qa-datetime-unit>
+				<div>&nbsp;</div>
+				<qa-datetime-unit unit="date" date="{{date}}" format="DD"></qa-datetime-unit>
+			</div>
+			<qa-datetime-unit class="small" unit="year" date="{{date}}" format="YYYY"></qa-datetime-unit>
+		</div>
+		<iron-pages id="value-selector" selected="[[valueIndex]]">
+			<div>
+				<qa-datetime-number unit="hour" date="{{date}}" format="HH"></qa-datetime-number>
+				<qa-datetime-number unit="minute" date="{{date}}" selected-prefix=":" format="mm"></qa-datetime-number>
+			</div>
+			<div>
+				<qa-datetime-calendar date="{{date}}"></qa-datetime-calendar>
+			</div>
+			<div>
+				<qa-datetime-number unit="year" date="{{date}}" format="YYYY"</qa-datetime-number>
+			</div>
+		</iron-pages>
+
+	</template>
+	<script>
+		Polymer({
+			is: 'qa-datetime-picker',
+			properties: {
+				date: {
+					type: Date,
+					notify: true,
+					value: function() {
+						return moment();
+					}
+				},
+				valueIndex: {
+					type: Number,
+					value: 0
+				}
+			},
+			listeners: {
+				'focus-unit': 'handleFocus',
+				'focused-unit': 'handleFocused',
+				'focus-next-unit': 'handleFocusNext',
+				'focus-previous-unit': 'handleFocusPrevious',
+			},
+			onEvent: function(event) {
+				console.log(event);
+			},
+			handleFocus: function(event) {
+				var unit = event.detail;
+				var elem = this.$$('qa-datetime-unit[unit="' + unit + '"]');
+				elem && elem.focus();
+			},
+			handleFocused: function(event) {
+				var unit = event.detail;
+				var pages = [
+					['hour', 'minute'],
+					['month', 'date'],
+					['year']
+				];
+
+				var selectors = Polymer
+					.dom(this.$['unit-selector'])
+					.getEffectiveChildNodes()
+					.filter(function(elem) {
+						return elem.nodeName != '#text';
+					});
+
+				selectors.forEach(function(selector) {
+					selector.classList.remove('selected');
+				});
+
+				pages.forEach(function(page, index) {
+					if (page.indexOf(unit) >= 0) {
+						this.set('valueIndex', index);
+						this.set('date', moment(this.date));
+						selectors[index].classList.add('selected');
+					}
+				}, this);
+			},
+			handleFocusNext: function(event) {
+				var currentUnit = event.detail;
+				var units = this.querySelectorAll('qa-datetime-unit[unit]');
+				units.forEach(function(entry, index, entries) {
+					var next = entries[index + 1];
+					if (next && entry.unit == currentUnit) {
+						next.focus();
+					}
+				});
+			},
+			handleFocusPrevious: function(event) {
+				var currentUnit = event.detail;
+				var units = this.querySelectorAll('qa-datetime-unit[unit]');
+				units.forEach(function(entry, index, entries) {
+					var previous = entries[index - 1];
+					if (previous && entry.unit == currentUnit) {
+						previous.focus();
+					}
+				});
+			},
+			format: function(date, format) {
+				return date.format(format);
+			},
+			reset: function() {
+				this.handleFocus({ detail: 'hour' });
+			}
+		});
+	</script>
+
+</dom-module>

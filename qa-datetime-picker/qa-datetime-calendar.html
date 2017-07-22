@@ -1,0 +1,160 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/iron-icon/iron-icon.html">
+<link rel="import" href="../../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../../qa-components/qa-styles/v1/qa-styles.html">
+
+<dom-module id="qa-datetime-calendar">
+	<template>
+		<style include="iron-flex iron-flex-alignment"></style>
+		<style include="qa-styles"></style>
+		<style is="custom-style">
+
+			:host {
+				@apply(--layout-vertical);
+				@apply(--layout-justified);
+			}
+
+			:host > div {
+				@apply(--layout-horizontal);
+				@apply(--layout-justified);
+			}
+
+			:host > * > * {
+				@apply(--layout-self-center);
+			}
+
+			paper-button {
+				padding: 0px;
+				min-width: 2em;
+				min-height: 2em;
+				border-radius: 50%;
+				margin: 0px;
+				--paper-button-ink-color: var(--qa-dark-color);
+			}
+
+			.month {
+				color: var(--qa-dark-color);
+				font-weight: 600;
+			}
+
+			.week > paper-button {
+				color: var(--qa-dark-color);
+				font-weight: 600;
+				min-width: 2.6em;
+				min-height: 2.6em;
+				font-size: 0.8em;
+			}
+
+			.selected {
+				background-color: var(--qa-dark-color);
+				color: var(--qa-light-light-color);
+				font-weight: 600;
+			}
+
+			.out-of-month {
+				color: var(--qa-light-secondary-color);
+			}
+
+			.out-of-calendar {
+				visibility: hidden;
+			}
+
+		</style>
+		<div class="month">
+			<paper-button on-tap="onMonthDecrement">
+				<iron-icon icon="chevron-left"></iron-icon>
+			</paper-button>
+			<div>
+				[[format(date, 'MMMM')]]&nbsp;[[format(date, 'YYYY')]]
+			</div>
+			<paper-button class="round" on-tap="onMonthIncrement">
+				<iron-icon icon="chevron-right"></iron-icon>
+			</paper-button>
+		</div>
+		<div class="week">
+			<template is="dom-repeat" items="[[getWeekdays()]]">
+				<paper-button noink class="weekday">{{item}}</paper-button>
+			</template>
+		</div>
+		<template is="dom-repeat" items="[[getWeeksOfMonth(startOfMonth)]]" as="week">
+			<div>
+				<template is="dom-repeat" items="[[getDaysOfWeek(week)]]">
+					<paper-button class$="[[getDayClass(date, item, startOfMonth)]]" on-tap="onSelectDay">
+						[[format(item, 'DD')]]
+					</paper-button>
+				</template>
+			</div>
+		</template>
+	</template>
+	<script src="../../bower_components/moment/moment.js"></script>
+	<script src="../../bower_components/moment/locale/pt-br.js"></script>
+	<script>
+		Polymer({
+			is: 'qa-datetime-calendar',
+			properties: {
+				date: {
+					type: Date,
+					notify: true
+				},
+				startOfMonth: {
+					type: Date,
+					computed: 'getStartOfMonth(date)'
+				}
+			},
+			format: function(date, format) {
+				return date.format(format);
+			},
+			getStartOfMonth: function(date) {
+				return moment(date).startOf('month');
+			},
+			getDayClass: function(date, day, startOfMonth) {
+				var endOfMonth = moment(date).endOf('month');
+
+				if (day.isBefore(startOfMonth)) {
+					return 'out-of-month';
+				} else if (day.isAfter(endOfMonth)) {
+					if (day.week() == endOfMonth.week()) {
+						return 'out-of-month';
+					} else {
+						return 'out-of-calendar';
+					}
+				} else if (day.date() == date.date()) {
+					return 'selected';
+				}
+			},
+			getWeekdays: function() {
+				return moment.weekdaysMin();
+			},
+			getDaysOfWeek: function(week) {
+				var days = [];
+				for (var day = moment(week); day.week() == week.week(); day.add(1, 'day')) {
+					days.push(moment(day));
+				}
+				return days;
+			},
+			getWeeksOfMonth: function(startOfMonth) {
+				var weeks = [];
+				var startOfFirstWeek = moment(startOfMonth);
+				for (var current = startOfFirstWeek.startOf('week'); weeks.length < 6; current.add(1, 'week')) {
+					weeks.push(moment(current));
+				}
+				return weeks;
+			},
+			onSelectDay: function(event) {
+				var selectedDay = moment(event.model.item);
+				selectedDay.set('hour', this.date.hour());
+				selectedDay.set('minute', this.date.minute());
+				this.set('date', selectedDay);
+				this.fire('focus-unit', 'date');
+			},
+			onMonthIncrement: function(event) {
+				this.set('date', moment(this.date).add(1, 'month'));
+				this.fire('focus-unit', 'month');
+			},
+			onMonthDecrement: function(event) {
+				this.set('date', moment(this.date).subtract(1, 'month'));
+				this.fire('focus-unit', 'month');
+			}
+		});
+	</script>
+</dom-module>
