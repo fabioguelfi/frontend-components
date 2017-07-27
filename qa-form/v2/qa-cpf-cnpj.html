@@ -1,0 +1,90 @@
+<link rel="import" href="../../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../../bower_components/paper-dropdown-menu/paper-dropdown-menu.html">
+<link rel="import" href="../../../bower_components/paper-listbox/paper-listbox.html">
+<link rel="import" href="../../../bower_components/paper-item/paper-item.html">
+<link rel="import" href="../../../bower_components/iron-flex-layout/iron-flex-layout.html">
+
+<link rel="import" href="./qa-input-cnpj.html">
+<link rel="import" href="./qa-input-cpf-v2.html">
+
+<dom-module id="qa-cpf-cnpj">
+	<template>
+        <style is="custom-style">
+            .flex {
+                @apply --layout-horizontal;
+            }
+        </style>
+        <div class="layout horizontal flex">
+            <paper-dropdown-menu
+                label="Tipo de Documento"
+                id="documentType">
+                <paper-listbox class="dropdown-content"
+                    attr-for-selected="value"
+                    selected="{{documentType}}">
+                    <template is="dom-repeat" items="{{documentTypeOptions}}">
+                        <paper-item value="{{item.value}}">{{item.label}}</paper-item>
+                    </template>
+                </paper-listbox>
+            </paper-dropdown-menu>
+            <template is="dom-if" if="[[isCpf]]">
+                <qa-input-cpf-v2
+                    label="CPF"
+                    name="cpf"
+                    value="{{documentCpf}}">
+                </qa-input-cpf-v2>
+            </template>
+            <template is="dom-if" if="[[!isCpf]]">
+                <qa-input-cnpj
+                    label="CNPJ"
+                    name="cnpj"
+                    value="{{documentCnpj}}">
+                </qa-input-cnpj>
+            </template>
+        </div>
+    </template>
+    <script>
+        Polymer({
+			is: 'qa-cpf-cnpj',
+			properties: {
+                document: {
+                    type: String,
+                    notify: true
+                },
+                documentCpf: {
+                    type: String,
+                    observer: '_documentChanged'
+                },
+                documentCnpj: {
+                    type: String,
+                    observer: '_documentChanged'
+                },
+                documentType: {
+                    type: String,
+                    value: 'CPF',
+                    observer: '_documentTypeChanged'
+                },
+                documentTypeOptions:{
+                    type: Array,
+                    value: [
+                        {label: 'CNPJ', value: 'CNPJ'},
+                        {label: 'CPF', value: 'CPF'}
+                    ]
+                },
+                isCpf: {
+                    type: Boolean,
+                    value: true
+                }
+            },
+			behaviors: [],
+            _documentTypeChanged: function(){
+                this.isCpf = this.documentType == 'CPF';
+                this.document = '';
+                this.documentCpf = '';
+                this.documentCnpj = '';
+            },
+            _documentChanged: function(){
+                this.document = this.isCpf ? this.documentCpf : this.documentCnpj;
+            }
+        });
+    </script>
+</dom-module>
