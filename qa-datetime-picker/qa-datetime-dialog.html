@@ -1,0 +1,47 @@
+<link rel="import" href="../../bower_components/paper-dialog/paper-dialog.html">
+
+<link rel="import" href="./qa-datetime-selector.html">
+
+<dom-module id="qa-datetime-dialog">
+	<template>
+		<paper-dialog on-overlay-opened="onOpened" id="dialog" modal>
+			<qa-datetime-selector id="selector" date="{{date}}"></qa-datetime-selector>
+		</paper-dialog>
+	</template>
+	<script>
+		Polymer({
+			is: 'qa-datetime-dialog',
+			properties: {
+				date: {
+					type: Date,
+					notify: true,
+					observer: 'onChange'
+				}
+			},
+			listeners: {
+				'iron-overlay-opened': 'onOpened'
+			},
+			format: function(date) {
+				return date.format();
+			},
+			listeners: {
+				'iron-overlay-opened': 'onOpened'
+			},
+			onChange: function(date) {
+				this.set('selectedDate', moment(date));
+			},
+			handleSelect: function(event) {
+				this.set('date', moment(this.selectedDate));
+				this.$.dialog.close();
+			},
+			open: function() {
+				this.$.dialog.open();
+			},
+			onOpened: function(event) {
+				this.$.selector.reset();
+			}
+		});
+	</script>
+
+</dom-module>
+

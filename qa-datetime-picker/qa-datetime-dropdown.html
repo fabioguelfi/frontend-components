@@ -1,0 +1,81 @@
+
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/paper-dropdown-menu/paper-dropdown-menu.html">
+
+<link rel="import" href="./qa-datetime-picker.html">
+
+<dom-module id="qa-datetime-dropdown">
+	<template>
+		<style include="iron-flex iron-flex-alignment"></style>
+		<style include="qa-styles"></style>
+		<style is="custom-style">
+			:host {
+				@apply(--layout-vertical);
+			}
+			paper-dropdown-menu {
+				@apply(--layout-self-stretch);
+				margin-top: 8px;
+				--paper-input-suffix: {
+					padding: 8px;
+				};
+				--paper-input-container: {
+					padding: 0px 0px 8px;
+				}
+			}
+		</style>
+		<paper-dropdown-menu
+			qa-style
+			label="[[label]]"
+			on-opened-changed="onOpened"
+			required>
+			<qa-datetime-selector
+				class="dropdown-content"
+				on-qa-label-changed="onLabelChange"
+				on-tap="onEvent"
+				format="[[format]]"
+				date="{{date}}">
+			</qa-datetime-selector>
+		</paper-dropdown-menu>
+	</template>
+	<script>
+
+		Polymer({
+			is: 'qa-datetime-dropdown',
+			properties: {
+				date: {
+					type: Date,
+					notify: true,
+					observer: 'onDateChanged',
+					value: function() {
+						return moment();
+					}
+				},
+				format: String,
+				label: String
+			},
+			onOpened: function(event) {
+				var opened = event.detail.value;
+				if (opened) {
+					this.async(function() {
+						this.$$('qa-datetime-selector').reset();
+					}, 100);
+				}
+			},
+			onDateChanged: function(event) {
+				var selector = this.$$('qa-datetime-selector');
+				this.$$('paper-dropdown-menu')._selectedItemChanged(selector);
+			},
+			onEvent: function(event) {
+				var path = Polymer.dom(event).path;
+				for (var i = 0; i < path.indexOf(this); i++) {
+					var target = path[i];
+					if (target.hasAttribute && (target.hasAttribute('dialog-dismiss') || target.hasAttribute('dialog-confirm'))) {
+						event.stopPropagation();
+						break;
+					}
+				}
+			}
+		});
+
+	</script>
+</dom-module>

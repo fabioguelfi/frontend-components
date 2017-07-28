@@ -1,0 +1,62 @@
+
+<link rel="import" href="../../bower_components/paper-button/paper-button.html">
+
+<link rel="import" href="./qa-datetime-picker.html">
+
+<dom-module id="qa-datetime-selector">
+	<template>
+		<style include="iron-flex iron-flex-alignment"></style>
+		<style include="qa-styles qa-button-style"></style>
+		<style is="custom-style">
+			:host {
+				padding: 0;
+				margin: 0;
+			}
+			.buttons {
+				padding: 8px 8px 12px;
+			}
+		</style>
+		<qa-datetime-picker id="picker" date="{{selectedDate}}"></qa-datetime-picker>
+		<div class="buttons">
+			<paper-button qa-style-flat dialog-dismiss on-tap="handleCancel">Cancelar</paper-button>
+			<paper-button qa-style dialog-confirm on-tap="handleSelect">Selecionar</paper-button>
+		</div>
+	</template>
+	<script>
+		Polymer({
+			is: 'qa-datetime-selector',
+			properties: {
+				format: String,
+				label: {
+					type: String,
+					notify: true,
+					computed: 'getLabel(date, format)'
+				},
+				date: {
+					type: Date,
+					notify: true,
+					observer: 'onChange'
+				},
+				selectedDate: Date
+			},
+			getLabel: function(date, format) {
+				return moment(date).format(format);
+			},
+			onChange: function(date) {
+				this.set('selectedDate', moment(date));
+			},
+			handleCancel: function(event) {
+				this.fire('iron-select', { item: this });
+			},
+			handleSelect: function(event) {
+				this.set('date', moment(this.selectedDate));
+				this.fire('iron-select', { item: this });
+			},
+			reset: function(event) {
+				this.set('selectedDate', moment(this.selectedDate));
+				this.$.picker.reset();
+			}
+		});
+	</script>
+
+</dom-module>
