@@ -1,347 +1,91 @@
 <link rel="import" href="../../bower_components/polymer/polymer.html">
-<link rel="import" href="../../bower_components/paper-dialog/paper-dialog.html">
 <link rel="import" href="../../bower_components/paper-button/paper-button.html">
-<link rel="import" href="../../bower_components/paper-input/paper-textarea.html">
-<link rel="import" href="../../bower_components/paper-toggle-button/paper-toggle-button.html">
 <link rel="import" href="../../bower_components/paper-toast/paper-toast.html">
-<link rel="import" href="../../bower_components/iron-pages/iron-pages.html">
-<link rel="import" href="../../bower_components/paper-tabs/paper-tabs.html">
-<link rel="import" href="../../bower_components/paper-tabs/paper-tab.html">
-<link rel="import" href="../../bower_components/paper-material/paper-material.html">
-<link rel="import" href="../../bower_components/paper-dropdown-menu/paper-dropdown-menu.html">
-<link rel="import" href="../../bower_components/paper-listbox/paper-listbox.html">
-<link rel="import" href="../../bower_components/paper-item/paper-item.html">
-<link rel="import" href="../../bower_components/paper-icon-button/paper-icon-button.html">
-<link rel="import" href="../../bower_components/iron-ajax/iron-ajax.html">
-<link rel="import" href="../qa-behavior/v1/qa-user-behavior.html">
 <link rel="import" href="../qa-styles/v1/qa-styles.html">
-<link rel="import" href="../qa-loading/v1/qa-loading.html">
-<link rel="import" href="../qa-form/v1/qa-input-user.html">
-<link rel="import" href="../qa-datetime-picker/qa-datetime-dialog.html">
-<script src="../../bower_components/moment/moment.js"></script>
+
+<link rel="import" href="../qa-task-creation-dialog/qa-task-creation-dialog.html">
 
 <dom-module id="qa-task-form">
-    <template>
-        <style include="qa-styles qa-button-style qa-table-style qa-input-styles"></style>
-        <style is="custom-style">
-            paper-button {
-                color: #0288d1;
-            }
-            paper-dialog {
-                min-width: 440px;
-            }
-            paper-tabs {
-                --paper-tabs-selection-bar-color: var(--qa-dark-color);
-            }
-            paper-tab {
-                color: var(--qa-light-text-color);
-                font-weight: 500;
-                --paper-tab-content-unselected: {
-                    color: var(--qa-light-disabled-color);
-                }
-            }
-            paper-material {
-                @apply(--layout-vertical);
-                margin-bottom: 12px;
-                padding-bottom: 12px;
-            }
-            paper-material > :not(paper-tabs) {
-                padding: 0px 16px;
-            }
-            paper-icon-button[icon="check"] {
-                color: green;
-            }
-            qa-input-user {
-                display: block;
-            }
-            iron-pages {
-                @apply(--layout-vertical);
-            }
-            paper-dropdown-menu {
-                @apply(--layout-self-stretch);
-                margin-top: 8px;
-                --paper-input-suffix: {
-                    padding: 8px;
-                };
-                --paper-input-container: {
-                    padding: 0px 0px 8px;
-                }
-            }
-            .buttons {
-                padding: 0px 24px 12px;
-            }
-            .activation-date {
-                padding-top: 12px !important;
-            }
-            .activation-date > span {
-                color: var(--qa-dark-color);
-                text-decoration: underline;
-                font-weight: 600;
-            }
-        </style>
-        <paper-button raised on-tap="handleOpen">Criar tarefa</paper-button>
-        <paper-dialog id="dialog" opened="{{opened}}" modal>
-            <h2>Nova Tarefa</h2>
-            <form is="iron-form" id="taskForm" method="POST"
-                action="/api/tasks/manual" content-type="application/json">
-                <paper-material>
-                    <paper-tabs qa-style selected="{{selectedTab}}">
-                        <template is="dom-repeat" items="[[assigneeTabs]]">
-                            <paper-tab>[[item]]</paper-tab>
-                        </template>
-                    </paper-tabs>
-                    <iron-pages selected="[[selectedTab]]">
-                        <paper-input
-                            qa-style
-                            readonly
-                            label="Responsável"
-                            required="[[isEqual(selectedTab, 0)]]"
-                            value="[[user.name]]">
-                            <paper-icon-button icon="check" suffix>
-                            </paper-icon-button>
-                        </paper-input>
-                        <qa-input-user
-                            id="assigneeSearch"
-                            user-name="{{assigneeName}}"
-                            label="Responsável"
-                            required="[[isEqual(selectedTab, 1)]]"
-                            error-message="Informe o responsável">
-                        </qa-input-user>
-                        <paper-dropdown-menu
-                            qa-style
-                            label="Equipe responsável"
-                            required="[[isEqual(selectedTab, 2)]]"
-                            error-message="Informe a equipe responsável">
-                            <paper-listbox
-                                class="dropdown-content"
-                                selected="{{workgroupIndex}}">
-                                <template is="dom-repeat" items="[[workgroups]]">
-                                    <paper-item>[[item.title]]</paper-item>
-                                </template>
-                            </paper-listbox>
-                        </paper-dropdown-menu>
-                    </iron-pages>
-                </paper-material>
-                <paper-material>
-                    <div class="activation-date">
-                        Tarefa com ativação em
-                        <span on-tap="onTapDate">[[formatDate(activationDate, 'DD/MM/YY [às] HH:mm')]]</span>.
-                        <qa-datetime-dialog date="{{activationDate}}"></qa-datetime-dialog>
-                    </div>
-                </paper-material>
-                <paper-material>
-                    <template is="dom-if" if="[[recipients.length]]">
-                        <paper-dropdown-menu
-                            qa-style
-                            label="Cliente"
-                            required="[[recipients.length]]"
-                            error-message="Informe cliente de destino">
-                            <paper-listbox
-                                class="dropdown-content"
-                                selected="{{recipientIndex}}">
-                                <template is="dom-repeat" items="[[recipients]]">
-                                    <paper-item>[[item.label]]</paper-item>
-                                </template>
-                                <paper-item>Outro...</paper-item>
-                            </paper-listbox>
-                        </paper-dropdown-menu>
-                    </template>
-                    <template is="dom-if" if="[[showClientSearch]]">
-                        <qa-input-user
-                            id="userSearch"
-                            user-name="{{userName}}"
-                            label="[[getClientSearchLabel(recipients.length)]]"
-                            placeholder="[[getClientSearchPlaceholder(recipients.length)]]"
-                            no-label-float="[[recipients.length]]"
-                            required="[[showClientSearch]]"
-                            user="{{destinatario}}"
-                            error-message="Informe cliente de destino"
-                            roles="">
-                        </qa-input-user>
-                    </template>
-                    <paper-input
-                        label="Tipo de tarefa"
-                        name="assunto"
-                        maxlength="60"
-                        qa-style
-                        required
-                        error-message="Informe o tipo de tarefa">
-                    </paper-input>
-                    <paper-textarea
-                        qa-style
-                        label="Descrição"
-                        name="descricao"
-                        rows="6">
-                    </paper-textarea>
-                </paper-material>
-            </form>
-            <div class="buttons" >
-                <paper-button dialog-dismiss qa-flat-style>Cancelar</paper-button>
-                <paper-button id="submit" submit raised qa-style on-tap="handleSubmit">Enviar</paper-button>
-            </div>
-        </paper-dialog>
-        <paper-toast id="toastSuccess" type="success" horizontal-align="right" text="Tarefa criada!"> </paper-toast>
-        <paper-toast id="toastError" type="error" horizontal-align="right" text="Erro ao criar tarefa"> </paper-toast>
-        <iron-ajax
-            auto="[[opened]]"
-            url="/api/workgroups"
-            withCredentials
-            last-response="{{workgroups}}">
-        </iron-ajax>
-    </template>
-    <script>
-        Polymer({
-            is: 'qa-task-form',
-            properties: {
-                houseId: {
-                    type: Number,
-                    notify: true,
-                    readonly: true
-                },
-                flowId: {
-                    type: Number,
-                    notify: true,
-                    readonly: true
-                },
-                origem: {
-                    type: String
-                },
-                origemId: {
-                    type: String
-                },
-                destinatario: {
-                    type: Object,
-                    notify: true
-                },
-                assigneeTabs: {
-                    type: Array,
-                    value: function() {
-                        return [ 'Para mim', 'Para outro', 'Para uma equipe' ];
-                    }
-                },
-                selectedTab: {
-                    type: Number,
-                    value: 0
-                },
-                opened: {
-                    type: Boolean,
-                    value: false
-                },
-                workgroupIndex: Number,
-                workgroups: {
-                    type: Array,
-                    value: function() {
-                        return [];
-                    }
-                },
-                recipientIndex: Number,
-                recipients: {
-                    type: Array,
-                    value: function() {
-                        return [];
-                    }
-                },
-                showClientSearch: {
-                    type: Boolean,
-                    computed: '_showClientSearch(recipients.length, recipientIndex)',
-                    value: true
-                },
-                activationDate: {
-                    type: Date,
-                    value: function() {
-                        return moment();
-                    }
-                }
-            },
-            behaviors: [ QuintoAndar.UserBehavior ],
-            ready: function() {
-                var self = this;
-                var form = this.$.taskForm;
-                form.addEventListener('iron-form-presubmit', function(event) {
+	<template>
+		<style include="qa-styles qa-button-style"></style>
+		<style is="custom-style">
+			paper-button {
+				color: #0288d1;
+			}
+		</style>
+		<qa-task-creation-dialog id="dialog"
+			on-task-creation-succeed="showSuccess"
+			on-task-creation-failed="showError"
+			recipients="[[recipients]]"
+			entities="[[entities]]">
+		</qa-task-creation-dialog>
+		<paper-button raised qa-style on-tap="handleOpen">Criar tarefa</paper-button>
+		<paper-toast id="toastSuccess" type="success" horizontal-align="right" text="Tarefa criada!"> </paper-toast>
+		<paper-toast id="toastError" type="error" horizontal-align="right" text="Erro ao criar tarefa"> </paper-toast>
+	</template>
+	<script>
+		Polymer({
+			is: 'qa-task-form',
+			properties: {
+				houseId: {
+					type: Number,
+					notify: true,
+					readonly: true
+				},
+				flowId: {
+					type: Number,
+					notify: true,
+					readonly: true
+				},
+				origem: {
+					type: String
+				},
+				origemId: {
+					type: String
+				},
+				recipients: {
+					type: Array,
+					value: function() {
+						return [];
+					}
+				},
+				entities: {
+					type: Array,
+					computed: 'getEntities(origem, origemId, flowId, houseId)',
+					value: function() {
+						return [];
+					}
+				}
+			},
+			getEntities: function(origem, origemId, flowId, houseId) {
+				return [{
+					origem: origem,
+					origemId: origemId,
+					label: origem,
+					field: origem.toLocaleLowerCase() + 'Id'
+				}, {
+					origem: 'FluxoLocacao',
+					origemId: flowId,
+					label: 'Fluxo de Locação',
+					field: 'flowId'
+				}, {
+					origem: 'Imovel',
+					origemId: houseId,
+					label: 'Imóvel',
+					field: 'imovelId'
+				}];
+			},
+			handleOpen: function() {
+				this.$.dialog.open();
+			},
+			showSuccess: function() {
+				this.$.toastSuccess.open();
+			},
+			showError: function() {
+				this.$.toastError.open();
+			}
+		});
 
-                    try {
-                        var body = this.request.body;
-
-                        if (self.selectedTab == 0) {
-                            body['assigneeId'] = undefined;
-                            body['workgroupId'] = undefined;
-                        } else if (self.selectedTab == 1) {
-                            var assigneeId = self.$.assigneeSearch.value;
-                            body['assigneeId'] = assigneeId;
-                        } else if (self.selectedTab == 2) {
-                            var workgroupId = self.workgroups[self.workgroupIndex]._id;
-                            body['workgroupId'] = workgroupId;
-                        } else {
-                            console.error("It shouldn't be here...", self.selectedTab);
-                        }
-
-                        if (self.recipients.length && !self.showClientSearch) {
-                            body['destinatario'] = self.recipients[self.recipientIndex];
-                            body['destinatarioId'] = body['destinatario'].id;
-                        } else {
-                            body['destinatarioId'] = self.$$('#userSearch').value;
-                            body['destinatario'] = self.destinatario;
-                        }
-
-                        body['origem'] = self.origem;
-                        body['origemId'] = self.origemId;
-                        body['origemData'] = self.activationDate.format();
-                        body['imovelId'] = self.houseId;
-                        body['fluxoLocacaoId'] = self.flowId;
-
-                        self.$.submit.set('disabled', true);
-
-                    } catch (e) {
-                        console.error(e);
-                        event.preventDefault();
-                        self.$.toastError.open();
-                    }
-                });
-                form.addEventListener('iron-form-response', function(event) {
-                    self.$.dialog.close();
-                    self.$.toastSuccess.open();
-                    self.$.submit.set('disabled', false);
-                });
-                form.addEventListener('iron-form-error', function(event) {
-                    self.$.toastError.open();
-                    self.$.submit.set('disabled', false);
-                });
-                form.addEventListener('iron-form-reset', function(event) {
-                    self.set('selectedTab', 0);
-                    self.querySelectorAll('paper-listbox').forEach(function(elem) {
-                        elem.set('selected', null);
-                    });
-                });
-            },
-            getClientSearchLabel: function(recipientsLength) {
-                return recipientsLength ? '' : 'Cliente';
-            },
-            getClientSearchPlaceholder: function(recipientsLength) {
-                return recipientsLength ? 'Buscar cliente...' : '';
-            },
-            _showClientSearch: function(recipientsLength, recipientIndex) {
-                var otherClientIndex = recipientsLength;
-                return recipientsLength == 0 || recipientIndex == otherClientIndex;
-            },
-            handleSubmit: function() {
-                this.$.taskForm.submit();
-            },
-            handleOpen: function() {
-                this.activationDate = moment();
-                this.$.taskForm.reset();
-                this.$.dialog.open();
-            },
-            isEqual: function(x, y) {
-                return x == y;
-            },
-            formatDate: function(date, format) {
-                return date.format(format);
-            },
-            onTapDate: function(event) {
-                this.$$('qa-datetime-dialog').open();
-            }
-        });
-
-    </script>
+	</script>
 
 </dom-module>
