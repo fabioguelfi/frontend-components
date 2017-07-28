@@ -1,0 +1,189 @@
+
+<dom-module id="qa-datetime-unit">
+	<template strip-whitespace>
+		<style include="iron-flex iron-flex-alignment"></style>
+		<style include="qa-styles"></style>
+		<style is="custom-style">
+			:host {
+				@apply(--layout-horizontal);
+				display: block;
+			}
+			:host, a {
+				color: inherit;
+			}
+			a:focus > span {
+				font-weight: 600;
+				color: var(--qa-text-color);
+			}
+			a > span:nth-child(odd) {
+				color: var(--qa-disabled-color);
+			}
+		</style>
+		<a href="#" onclick="return false;" on-focus="onFocus" on-keydown="onKeydown">
+			<template is="dom-repeat" items="[[slice(value, index)]]">
+				<span>[[item]]</span>
+			</template>
+		</a>
+	</template>
+	<script>
+		Polymer({
+			is: "qa-datetime-unit",
+			properties: {
+				date: {
+					type: Date,
+					notify: true
+				},
+				format: String,
+				numericFormat: String,
+				unit: {
+					type: String,
+					observer: 'onSetUnit'
+				},
+				units: {
+					type: Array,
+					readOnly: true,
+					value: function() {
+						return [ 'year', 'month', 'date', 'hour', 'minute' ];
+					}
+				},
+				index: {
+					type: Number,
+					value: -1
+				},
+				value: {
+					type: String,
+					computed: 'getValue(date, format)'
+				},
+			},
+			focus: function() {
+				this.$$('a').focus();
+			},
+			onSetUnit: function(unit) {
+				if (this.units.indexOf(unit) < 0) {
+					throw new Error('Unknown unit type: ' + unit);
+				}
+			},
+			getValue: function(date, format, numericFormat) {
+				return date.format(numericFormat || format);
+			},
+			slice: function(value, index, replace) {
+				if (index == -1 || !value.match(/^\d+$/))  {
+					return ['', value, ''];
+				}
+				return [value.substr(0, index), replace || value[index], value.substr(index + 1)];
+			},
+			onFocus: function(event) {
+				this.fire('focused-unit', this.unit);
+			},
+			onKeydown: function(event) {
+
+				var unitIndex = this.units.indexOf(this.unit);
+				var nextUnit = this.units[unitIndex - 1];
+				var prevUnit = this.units[unitIndex + 1];
+				var current = moment(this.date);
+
+				var value = this.getValue(this.date, this.format, this.numericFormat);
+				var safeValue = this.getValue(this.date.endOf(nextUnit), this.format, this.numericFormat);
+				var fallbackValue = event.key;
+
+				var length = value.length;
+				var index = this.index;
+
+				var increment = Math.pow(10, index < 0 ? 0 : length - index - 1);
+				var incUnitName = this.unit == 'date' ? 'days' : this.unit;
+
+				switch (event.key) {
+					case 'ArrowUp':
+						current.add(increment, incUnitName);
+						break;
+					case 'ArrowDown':
+						current.subtract(increment, incUnitName);
+						break;
+					case 'ArrowRight':
+						index = index == -1 ? length : index + 1;
+						break;
+					case 'ArrowLeft':
+						index--;
+						break;
+				}
+
+				if (nextUnit && current.get(nextUnit) != this.date.get(nextUnit)) {
+					current.set(nextUnit, this.date.get(nextUnit));
+				}
+
+				if (event.key.match(/^\D$/)) {
+					if (this.unit == 'month') {
+
+						var monthsFirstChar = moment.months().map(function(month) {
+							return month[0].toLowerCase();
+						});
+
+						var firstChar = event.key.toLowerCase();
+						var nextMonth = monthsFirstChar.indexOf(firstChar, current.get(this.unit) + 1);
+
+						if (nextMonth < 0) {
+							nextMonth = monthsFirstChar.indexOf(firstChar);
+						}
+
+						if (nextMonth >= 0) {
+							current.set(this.unit, nextMonth);
+						}
+					}
+				}
+
+				if (event.key.match(/^\d+$/)) {
+
+					if (!this.value.match(/^\d+$/) && !this.numericFormat) {
+						throw new Error('numericFormat is required for non-numeric formats: ' + this.unit);
+					}
+
+					index = Math.max(0, index);
+
+					var values = [ value, safeValue, fallbackValue ];
+					var fallbackValueIndex = values.indexOf(fallbackValue);
+					var valueIndex = -1;
+
+					var valid = values.map(function(value) {
+						var validator = {};
+						this.units.forEach(function(unit) {
+							validator[unit] = current.get(unit);
+						});
+						var sliced = this.slice(value, index, event.key);
+						validator[this.unit] = Number(sliced.join(''));
+						if (this.unit == 'month') {
+							validator[this.unit]--;
+						}
+						return validator;
+					}, this).find(function(validator, validatorIndex) {
+						valueIndex = validatorIndex;
+						return moment(validator).isValid();
+					}, this);
+
+					if (valid) {
+						index = valueIndex == fallbackValueIndex ? length : index + 1;
+						current = moment(valid);
+					}
+				}
+
+				if (index >= length) {
+					this.fire('focus-next-unit', this.unit);
+					index = -1;
+				}
+
+				if (index < -1) {
+					this.fire('focus-previous-unit', this.unit);
+					index = -1;
+				}
+
+				if (index != this.index) {
+					this.index = Math.max(-1, index);
+				}
+
+				if (!current.isSame(this.date)) {
+					this.set('date', current);
+				}
+			}
+		});
+	</script>
+</dom-module>
+

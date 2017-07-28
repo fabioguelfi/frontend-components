@@ -17,6 +17,7 @@
 <link rel="import" href="../qa-styles/v1/qa-styles.html">
 <link rel="import" href="../qa-loading/v1/qa-loading.html">
 <link rel="import" href="../qa-form/v1/qa-input-user.html">
+<link rel="import" href="../qa-datetime-picker/qa-datetime-dialog.html">
 <script src="../../bower_components/moment/moment.js"></script>
 
 <dom-module id="qa-task-form">
@@ -69,6 +70,14 @@
             .buttons {
                 padding: 0px 24px 12px;
             }
+            .activation-date {
+                padding-top: 12px !important;
+            }
+            .activation-date > span {
+                color: var(--qa-dark-color);
+                text-decoration: underline;
+                font-weight: 600;
+            }
         </style>
         <paper-button raised on-tap="handleOpen">Criar tarefa</paper-button>
         <paper-dialog id="dialog" opened="{{opened}}" modal>
@@ -112,6 +121,13 @@
                             </paper-listbox>
                         </paper-dropdown-menu>
                     </iron-pages>
+                </paper-material>
+                <paper-material>
+                    <div class="activation-date">
+                        Tarefa com ativação em
+                        <span on-tap="onTapDate">[[formatDate(activationDate, 'DD/MM/YY [às] HH:mm')]]</span>.
+                        <qa-datetime-dialog date="{{activationDate}}"></qa-datetime-dialog>
+                    </div>
                 </paper-material>
                 <paper-material>
                     <template is="dom-if" if="[[recipients.length]]">
@@ -160,7 +176,7 @@
                 </paper-material>
             </form>
             <div class="buttons" >
-                <paper-button dialog-dismiss qa-style>Cancelar</paper-button>
+                <paper-button dialog-dismiss qa-flat-style>Cancelar</paper-button>
                 <paper-button id="submit" submit raised qa-style on-tap="handleSubmit">Enviar</paper-button>
             </div>
         </paper-dialog>
@@ -229,6 +245,12 @@
                     type: Boolean,
                     computed: '_showClientSearch(recipients.length, recipientIndex)',
                     value: true
+                },
+                activationDate: {
+                    type: Date,
+                    value: function() {
+                        return moment();
+                    }
                 }
             },
             behaviors: [ QuintoAndar.UserBehavior ],
@@ -263,7 +285,7 @@
 
                         body['origem'] = self.origem;
                         body['origemId'] = self.origemId;
-                        body['origemData'] = moment().format();
+                        body['origemData'] = self.activationDate.format();
                         body['imovelId'] = self.houseId;
                         body['fluxoLocacaoId'] = self.flowId;
 
@@ -292,7 +314,7 @@
                 });
             },
             getClientSearchLabel: function(recipientsLength) {
-                return recipientsLength ? '' : 'Client';
+                return recipientsLength ? '' : 'Cliente';
             },
             getClientSearchPlaceholder: function(recipientsLength) {
                 return recipientsLength ? 'Buscar cliente...' : '';
@@ -305,11 +327,18 @@
                 this.$.taskForm.submit();
             },
             handleOpen: function() {
+                this.activationDate = moment();
                 this.$.taskForm.reset();
                 this.$.dialog.open();
             },
             isEqual: function(x, y) {
                 return x == y;
+            },
+            formatDate: function(date, format) {
+                return date.format(format);
+            },
+            onTapDate: function(event) {
+                this.$$('qa-datetime-dialog').open();
             }
         });
 
