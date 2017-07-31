@@ -47,64 +47,64 @@
         </div>
     </template>
     <script>
-     Polymer({
-			   is: 'qa-cpf-cnpj',
-			   properties: {
-             value: {
-                 type: String,
-                 observer: '_valueChanged',
-                 notify: true
-             },
-             documentCpf: {
-                 type: String,
-                 value: undefined,
-                 observer: '_documentChanged'
-             },
-             documentCnpj: {
-                 type: String,
-                 value: undefined,
-                 observer: '_documentChanged'
-             },
-             documentType: {
-                 type: String,
-                 observer: '_documentTypeChanged',
-                 notify: true
-             },
-             documentTypeOptions:{
-                 type: Array,
-                 value: [
-                     {label: 'CNPJ', value: 'CNPJ'},
-                     {label: 'CPF', value: 'CPF'}
-                 ]
-             },
-             isCpf: {
-                 type: Boolean,
-             },
-         },
-			   behaviors: [Polymer.IronFormElementBehavior],
-         _documentTypeChanged: function(){
-             this.isCpf = this.documentType == 'CPF';
-             if (this.tempValue != null){
-                 if (this.isCpf)
-                     this.documentCpf = this.tempValue;
-                 else
-                     this.documentCnpj = this.tempValue;
-                 this.tempValue = null;
-             }
-             this.value = this.isCpf ? this.documentCpf : this.documentCnpj;
-         },
-         _documentChanged: function(newValue, oldValue){
+        Polymer({
+            is: 'qa-cpf-cnpj',
+			properties: {
+            value: {
+                type: String,
+                observer: '_valueChanged',
+                notify: true
+            },
+            documentCpf: {
+                type: String,
+                value: undefined,
+                observer: '_documentChanged'
+            },
+            documentCnpj: {
+                type: String,
+                value: undefined,
+                observer: '_documentChanged'
+            },
+            documentType: {
+                type: String,
+                observer: '_documentTypeChanged',
+                notify: true
+            },
+            documentTypeOptions:{
+                type: Array,
+                value: [
+                    {label: 'CNPJ', value: 'CNPJ'},
+                    {label: 'CPF', value: 'CPF'}
+                ]
+            },
+            isCpf: {
+                type: Boolean,
+            },
+        },
+        behaviors: [Polymer.IronFormElementBehavior],
+        _documentTypeChanged: function(){
+            this.isCpf = this.documentType == 'CPF';
+            if (this.tempValue != null){
+                if (this.isCpf)
+                    this.documentCpf = this.tempValue;
+                else
+                    this.documentCnpj = this.tempValue;
+                this.tempValue = null;
+            }
             this.value = this.isCpf ? this.documentCpf : this.documentCnpj;
-         },
-         _valueChanged: function(){
-             this.tempValue = this.value;
-             if (this.documentType){
-                 if (this.isCpf)
-                     this.documentCpf = this.tempValue;
-                 else
-                     this.documentCnpj = this.tempValue;
-             }
-         }
-     });
+        },
+        _documentChanged: function(newValue, oldValue){
+           this.value = this.isCpf ? this.documentCpf : this.documentCnpj;
+        },
+        _valueChanged: function(){
+            this.tempValue = this.value;
+            if (this.documentType){
+                if (this.isCpf)
+                    this.documentCpf = this.tempValue;
+                else
+                    this.documentCnpj = this.tempValue;
+            }
+        }
+    });
     </script>
 </dom-module>
