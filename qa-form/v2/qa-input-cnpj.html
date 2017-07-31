@@ -75,14 +75,9 @@
 					type: String,
 					observer: '_onValueChanged'
 				},
-				validator: {
-					type: String,
-					value: 'cnpj-validator'
-				},
 			},
 			behaviors: [ 
 				Polymer.PaperInputBehavior,
-                Polymer.IronValidatableBehavior,
                 Polymer.IronFormElementBehavior 
 			],
 			ready: function() {
@@ -91,7 +86,7 @@
 			_getFormat: function(value) {
 				return '99.999.999/9999-99'
 			},
-			_zeroFill(value, size){
+			_zeroFill: function(value, size){
         		var pad = new Array(size + 1).join('0');
         		return (pad + value).slice(-size);
     		},

@@ -31,7 +31,8 @@
 			}
 		</style>
 
-		<paper-input-container  id="container"
+		<paper-input-container
+			id = "container"
             disabled$="[[disabled]]"
             no-label-float="[[noLabelFloat]]"
             always-float-label="[[_computeAlwaysFloatLabel(alwaysFloatLabel,placeholder)]]"
@@ -58,7 +59,8 @@
                     size$="[[size]]"
                     required$="[[required]]"
                     aria-labelledby$="[[_ariaLabelledBy]]"
-                    aria-describedby$="[[_ariaDescribedBy]]">
+					aria-describedby$="[[_ariaDescribedBy]]"
+					validator="[[validator]]">
             </div>
             <template is="dom-if" if="[[errorMessage]]">
                 <paper-input-error>[[errorMessage]]</paper-input-error>
@@ -75,20 +77,15 @@
 					type: String,
 					observer: '_onValueChanged'
 				},
-				validator: {
-					type: String,
-					value: 'cnpj-validator'
-				},
 			},
 			behaviors: [ 
 				Polymer.PaperInputBehavior,
-                Polymer.IronValidatableBehavior,
                 Polymer.IronFormElementBehavior 
 			],
 			ready: function() {
 				this.autoValidate = true;
 			},
-			_zeroFill(value, size){
+			_zeroFill: function(value, size){
 				var pad = new Array(size + 1).join('0');
 				return (pad + value).slice(-size);
 			},
@@ -115,7 +112,6 @@
 			},
 			validate: function() {
 				var valid = this.validateCpf(this.value);
-
 				this.$.container.invalid = !valid;
                 this.$.container.updateAddons({
                     inputElement: this.$.input,
@@ -129,7 +125,7 @@
 
 				var start = this.$.input.selectionStart;
                 var previousCharASpace = value ? this.value.charAt(start - 1) == '-' || this.value.charAt(start - 1) == '.' : false;
-				
+
                 if (value) {
                     value = value.replace(/(\.|-)+/g, '');
 					var formattedValue = '';
