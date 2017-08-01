@@ -14,9 +14,24 @@
             .flex {
                 @apply --layout-horizontal;
             }
+            paper-dropdown-menu {
+                margin-right: 4px;
+				--paper-input-container-label: {
+					font-size: 14px;
+				};
+				--paper-dropdown-menu-input: {
+					width: 148px;
+				};
+			}
+            paper-dropdown-menu.selected {
+                --paper-dropdown-menu-input: {
+                    width: 100px;
+                };
+            }
         </style>
         <div class="layout horizontal flex">
             <paper-dropdown-menu
+                class$="[[_getDropdownClass(documentType)]]"
                 label="Tipo de Documento"
                 id="documentType"
                 disabled="[[disabled]]">
@@ -92,6 +107,7 @@
                 this.tempValue = null;
             }
             this.value = this.isCpf ? this.documentCpf : this.documentCnpj;
+            this.updateStyles();
         },
         _documentChanged: function(newValue, oldValue){
            this.value = this.isCpf ? this.documentCpf : this.documentCnpj;
@@ -104,7 +120,10 @@
                 else
                     this.documentCnpj = this.tempValue;
             }
-        }
+        },
+        _getDropdownClass: function(documentType) {
+            return documentType ? 'selected' : 'unselected';
+        },
     });
     </script>
 </dom-module>
