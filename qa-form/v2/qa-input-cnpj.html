@@ -1,0 +1,165 @@
+<link rel="import" href="../../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../../bower_components/iron-input/iron-input.html">
+<link rel="import" href="../../../bower_components/iron-flex-layout/iron-flex-layout.html">
+<link rel="import" href="../../../bower_components/iron-validatable-behavior/iron-validatable-behavior.html">
+<link rel="import" href="../../../bower_components/paper-input/paper-input-behavior.html">
+<link rel="import" href="../../../bower_components/paper-input/paper-input-container.html">
+<link rel="import" href="../../../bower_components/paper-input/paper-input-error.html">
+<link rel="import" href="../../../bower_components/iron-form-element-behavior/iron-form-element-behavior.html">
+
+<dom-module id="qa-input-cnpj">
+	<template>
+		<style>
+			:host {
+				display: block;
+			}
+
+			input::-webkit-input-placeholder {
+				color: var(--paper-input-container-color, --secondary-text-color);
+			}
+
+			input:-moz-placeholder {
+				color: var(--paper-input-container-color, --secondary-text-color);
+			}
+
+			input::-moz-placeholder {
+				color: var(--paper-input-container-color, --secondary-text-color);
+			}
+
+			input:-ms-input-placeholder {
+				color: var(--paper-input-container-color, --secondary-text-color);
+			}
+
+			paper-input-container {
+				width: 11.5em;
+			}
+		</style>
+
+		<paper-input-container  id="container"
+            disabled$="[[disabled]]"
+            no-label-float="[[noLabelFloat]]"
+            always-float-label="[[_computeAlwaysFloatLabel(alwaysFloatLabel,placeholder)]]"
+            invalid="[[invalid]]">
+
+            <label hidden$="[[!label]]">[[label]]</label>
+            <div class="inputcontainer">
+                <input
+                    id="input"
+                    is="iron-input"
+                    maxlength="18"
+                    bind-value="{{value}}"
+                    size="[[size]]"
+					allowed-pattern="[0-9./\-]"
+                    prevent-invalid-input
+                    aria-label="value"
+                    name$="[[name]]"
+                    disabled$="[[disabled]]"
+                    invalid="{{invalid}}"
+                    autofocus$="[[autofocus]]"
+                    inputmode$="[[inputmode]]"
+                    placeholder$="[[placeholder]]"
+                    readonly$="[[readonly]]"
+                    size$="[[size]]"
+                    required$="[[required]]"
+                    aria-labelledby$="[[_ariaLabelledBy]]"
+                    aria-describedby$="[[_ariaDescribedBy]]">
+            </div>
+            <template is="dom-if" if="[[errorMessage]]">
+                <paper-input-error>[[errorMessage]]</paper-input-error>
+            </template>
+        </paper-input-container>
+	</template>
+
+	<script>
+		Polymer({
+			is: 'qa-input-cnpj',
+			properties: {
+				value: {
+					notify: true,
+					type: String,
+					observer: '_onValueChanged'
+				},
+			},
+			behaviors: [ 
+				Polymer.PaperInputBehavior,
+                Polymer.IronFormElementBehavior 
+			],
+			ready: function() {
+				this.autoValidate = true;
+			},
+			_getFormat: function(value) {
+				return '99.999.999/9999-99'
+			},
+			_zeroFill: function(value, size){
+        		var pad = new Array(size + 1).join('0');
+        		return (pad + value).slice(-size);
+    		},
+			_cnpjLoop: function(cnpj, index){
+				var sum = 0;
+				for (var i = 0 ; i < cnpj.length ; i ++){
+					sum += parseInt(cnpj[i]) * index;
+					index--;
+					if (index == 1){
+						index = 9;
+					}
+				}
+				var rem = sum % 11;
+				if (rem < 2)
+					cnpj = cnpj + '0';
+				else
+					cnpj = cnpj + (11 - rem);
+				return cnpj;
+			},
+			validateCnpj: function(value){
+				var fullCnpj = this._zeroFill(value.replace(/\D/g, ""), 14);
+				var checksum = fullCnpj.slice(-2);
+				var cnpj = fullCnpj.slice(0, -2);
+
+				cnpj = this._cnpjLoop(cnpj, 5);
+				cnpj = this._cnpjLoop(cnpj, 6);
+
+				return cnpj.slice(-2) == checksum;
+			},
+			validate: function() {
+				var valid = this.validateCnpj(this.value);
+
+				this.$.container.invalid = !valid;
+                this.$.container.updateAddons({
+                    inputElement: this.$.input,
+                    value: this.value,
+                    invalid: !valid
+                });
+			},
+			_onValueChanged: function(value, oldValue){
+				 if (oldValue == undefined)
+                	return;
+
+				var start = this.$.input.selectionStart;
+                var previousCharASpace = value ? this.value.charAt(start - 1) == '-' || this.value.charAt(start - 1) == '.' || this.value.charAt(start - 1) == '/' : false;
+				
+                if (value) {
+                    value = value.replace(/(\.|-|\/)+/g, '');
+					var formattedValue = '';
+                    for (var i = 0; i < value.length; i++) {
+                        if (i == 2 || i == 5) {
+                            formattedValue += '.';
+                        } else if (i == 8) {
+                            formattedValue += '/';
+                        } else if (i == 12) {
+							formattedValue += '-';
+						}
+                        formattedValue += value[i];
+                    }
+                    this.updateValueAndPreserveCaret(formattedValue.trim());
+
+                    if (!previousCharASpace && (this.value.charAt(start - 1) == '-' || this.value.charAt(start - 1) == '.' || this.value.charAt(start - 1) == '/')) {
+                        this.$.input.selectionStart = start + 1;
+                        this.$.input.selectionEnd = start + 1;
+                    }
+                    this._handleAutoValidate();
+				}
+			}
+		});
+	</script>
+</dom-module>
+

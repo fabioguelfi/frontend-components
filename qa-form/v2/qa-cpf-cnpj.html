@@ -1,0 +1,127 @@
+<link rel="import" href="../../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../../bower_components/paper-dropdown-menu/paper-dropdown-menu.html">
+<link rel="import" href="../../../bower_components/paper-listbox/paper-listbox.html">
+<link rel="import" href="../../../bower_components/paper-item/paper-item.html">
+<link rel="import" href="../../../bower_components/iron-flex-layout/iron-flex-layout.html">
+<link rel="import" href="../../../bower_components/iron-form-element-behavior/iron-form-element-behavior.html">
+
+<link rel="import" href="./qa-input-cnpj.html">
+<link rel="import" href="./qa-input-cpf-v2.html">
+
+<dom-module id="qa-cpf-cnpj">
+	<template>
+        <style is="custom-style">
+            .flex {
+                @apply --layout-horizontal;
+            }
+            paper-dropdown-menu {
+                margin-right: 4px;
+				--paper-input-container-label: {
+					font-size: 14px;
+				};
+				--paper-dropdown-menu-input: {
+					width: 148px;
+				};
+			}
+            paper-dropdown-menu.selected {
+                --paper-dropdown-menu-input: {
+                    width: 100px;
+                };
+            }
+        </style>
+        <div class="layout horizontal flex">
+            <paper-dropdown-menu
+                class$="[[_getDropdownClass(documentType)]]"
+                label="Tipo de Documento"
+                id="documentType"
+                disabled="[[disabled]]">
+                <paper-listbox class="dropdown-content"
+                    attr-for-selected="value"
+                    selected="{{documentType}}">
+                    <template is="dom-repeat" items="{{documentTypeOptions}}">
+                        <paper-item value="{{item.value}}">{{item.label}}</paper-item>
+                    </template>
+                </paper-listbox>
+            </paper-dropdown-menu>
+            <template is="dom-if" if="[[documentType]]">
+            <template is="dom-if" if="[[isCpf]]">
+                <qa-input-cpf-v2
+                    label="CPF"
+                    value="{{documentCpf}}"
+                    disabled="[[disabled]]">
+                </qa-input-cpf-v2>
+            </template>
+            <template is="dom-if" if="[[!isCpf]]">
+                <qa-input-cnpj
+                    label="CNPJ"
+                    value="{{documentCnpj}}"
+                    disabled="[[disabled]]">
+                </qa-input-cnpj>
+            </template>
+            </template>
+        </div>
+    </template>
+    <script>
+        Polymer({
+            is: 'qa-cpf-cnpj',
+			properties: {
+            value: {
+                type: String,
+                observer: '_valueChanged',
+                notify: true
+            },
+            documentCpf: {
+                type: String,
+                observer: '_documentChanged'
+            },
+            documentCnpj: {
+                type: String,
+                observer: '_documentChanged'
+            },
+            documentType: {
+                type: String,
+                observer: '_documentTypeChanged',
+                notify: true
+            },
+            documentTypeOptions:{
+                type: Array,
+                value: [
+                    {label: 'CNPJ', value: 'CNPJ'},
+                    {label: 'CPF', value: 'CPF'}
+                ]
+            },
+            isCpf: {
+                type: Boolean,
+            },
+        },
+        behaviors: [Polymer.IronFormElementBehavior],
+        _documentTypeChanged: function(){
+            this.isCpf = this.documentType == 'CPF';
+            if (this.tempValue != null){
+                if (this.isCpf)
+                    this.documentCpf = this.tempValue;
+                else
+                    this.documentCnpj = this.tempValue;
+                this.tempValue = null;
+            }
+            this.value = this.isCpf ? this.documentCpf : this.documentCnpj;
+            this.updateStyles();
+        },
+        _documentChanged: function(){
+           this.value = this.isCpf ? this.documentCpf : this.documentCnpj;
+        },
+        _valueChanged: function(){
+            this.tempValue = this.value;
+            if (this.documentType){
+                if (this.isCpf)
+                    this.documentCpf = this.tempValue;
+                else
+                    this.documentCnpj = this.tempValue;
+            }
+        },
+        _getDropdownClass: function(documentType) {
+            return documentType ? 'selected' : 'unselected';
+        },
+    });
+    </script>
+</dom-module>

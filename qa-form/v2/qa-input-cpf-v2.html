@@ -1,0 +1,156 @@
+<link rel="import" href="../../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../../bower_components/iron-input/iron-input.html">
+<link rel="import" href="../../../bower_components/iron-flex-layout/iron-flex-layout.html">
+<link rel="import" href="../../../bower_components/iron-validatable-behavior/iron-validatable-behavior.html">
+<link rel="import" href="../../../bower_components/paper-input/paper-input-behavior.html">
+<link rel="import" href="../../../bower_components/paper-input/paper-input-container.html">
+<link rel="import" href="../../../bower_components/paper-input/paper-input-error.html">
+<link rel="import" href="../../../bower_components/iron-form-element-behavior/iron-form-element-behavior.html">
+
+<dom-module id="qa-input-cpf-v2">
+	<template>
+		<style>
+			:host {
+				display: block;
+			}
+
+			input::-webkit-input-placeholder {
+				color: var(--paper-input-container-color, --secondary-text-color);
+			}
+
+			input:-moz-placeholder {
+				color: var(--paper-input-container-color, --secondary-text-color);
+			}
+
+			input::-moz-placeholder {
+				color: var(--paper-input-container-color, --secondary-text-color);
+			}
+
+			input:-ms-input-placeholder {
+				color: var(--paper-input-container-color, --secondary-text-color);
+			}
+
+			paper-input-container {
+				width: 9em;
+			}
+		</style>
+
+		<paper-input-container
+			id = "container"
+            disabled$="[[disabled]]"
+            no-label-float="[[noLabelFloat]]"
+            always-float-label="[[_computeAlwaysFloatLabel(alwaysFloatLabel,placeholder)]]"
+            invalid="[[invalid]]">
+
+            <label hidden$="[[!label]]">[[label]]</label>
+            <div class="inputcontainer">
+                <input
+                    id="input"
+                    is="iron-input"
+                    maxlength="14"
+                    bind-value="{{value}}"
+                    size="[[size]]"
+					allowed-pattern="[0-9.\-]"
+                    prevent-invalid-input
+                    aria-label="value"
+                    name$="[[name]]"
+                    disabled$="[[disabled]]"
+                    invalid="{{invalid}}"
+                    autofocus$="[[autofocus]]"
+                    inputmode$="[[inputmode]]"
+                    placeholder$="[[placeholder]]"
+                    readonly$="[[readonly]]"
+                    size$="[[size]]"
+                    required$="[[required]]"
+                    aria-labelledby$="[[_ariaLabelledBy]]"
+					aria-describedby$="[[_ariaDescribedBy]]"
+					validator="[[validator]]">
+            </div>
+            <template is="dom-if" if="[[errorMessage]]">
+                <paper-input-error>[[errorMessage]]</paper-input-error>
+            </template>
+        </paper-input-container>
+	</template>
+
+	<script>
+		Polymer({
+			is: 'qa-input-cpf-v2',
+			properties: {
+				value: {
+					notify: true,
+					type: String,
+					observer: '_onValueChanged'
+				},
+			},
+			behaviors: [ 
+				Polymer.PaperInputBehavior,
+                Polymer.IronFormElementBehavior 
+			],
+			ready: function() {
+				this.autoValidate = true;
+			},
+			_zeroFill: function(value, size){
+				var pad = new Array(size + 1).join('0');
+				return (pad + value).slice(-size);
+			},
+			_cpfLoop: function(cpf, maxIndex){
+				var sum = 0;
+				for (var i = 0 ; i < cpf.length ; i++){
+					sum += parseInt(cpf[i]) * (maxIndex - i);
+				}
+				rem = (sum * 10) % 11;
+				if (rem == 10)
+					rem = 0;
+				return cpf + rem;
+			},
+			validateCpf: function(value){
+				var fullCpf = this._zeroFill(value.replace(/\D/g, ""), 11);
+
+				var checksum = fullCpf.slice(-2);
+				var cpf = fullCpf.slice(0, -2);
+
+				cpf = this._cpfLoop(cpf, 10);
+				cpf = this._cpfLoop(cpf, 11);
+
+				return cpf.slice(-2) == checksum;
+			},
+			validate: function() {
+				var valid = this.validateCpf(this.value);
+				this.$.container.invalid = !valid;
+                this.$.container.updateAddons({
+                    inputElement: this.$.input,
+                    value: this.value,
+                    invalid: !valid
+                });
+			},
+			_onValueChanged: function(value, oldValue){
+				 if (oldValue == undefined)
+                	return;
+
+				var start = this.$.input.selectionStart;
+                var previousCharASpace = value ? this.value.charAt(start - 1) == '-' || this.value.charAt(start - 1) == '.' : false;
+
+                if (value) {
+                    value = value.replace(/(\.|-)+/g, '');
+					var formattedValue = '';
+                    for (var i = 0; i < value.length; i++) {
+                        if (i == 3 || i == 6) {
+                            formattedValue += '.';
+                        } else if (i == 9) {
+							formattedValue += '-';
+						}
+                        formattedValue += value[i];
+                    }
+                    this.updateValueAndPreserveCaret(formattedValue.trim());
+
+                    if (!previousCharASpace && (this.value.charAt(start - 1) == '-' || this.value.charAt(start - 1) == '.' )) {
+                        this.$.input.selectionStart = start + 1;
+                        this.$.input.selectionEnd = start + 1;
+                    }
+                    this._handleAutoValidate();
+				}
+			}
+		});
+	</script>
+</dom-module>
+
