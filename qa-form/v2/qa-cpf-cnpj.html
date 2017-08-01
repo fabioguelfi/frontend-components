@@ -72,12 +72,10 @@
             },
             documentCpf: {
                 type: String,
-                value: undefined,
                 observer: '_documentChanged'
             },
             documentCnpj: {
                 type: String,
-                value: undefined,
                 observer: '_documentChanged'
             },
             documentType: {
@@ -109,7 +107,7 @@
             this.value = this.isCpf ? this.documentCpf : this.documentCnpj;
             this.updateStyles();
         },
-        _documentChanged: function(newValue, oldValue){
+        _documentChanged: function(){
            this.value = this.isCpf ? this.documentCpf : this.documentCnpj;
         },
         _valueChanged: function(){
