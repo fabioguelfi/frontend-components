@@ -124,9 +124,6 @@
                 });
 			},
 			_onValueChanged: function(value, oldValue){
-				 if (oldValue == undefined)
-                	return;
-
 				var start = this.$.input.selectionStart;
                 var previousCharASpace = value ? this.value.charAt(start - 1) == '-' || this.value.charAt(start - 1) == '.' : false;
 

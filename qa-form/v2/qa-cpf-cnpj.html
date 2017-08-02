@@ -65,8 +65,10 @@
         Polymer({
             is: 'qa-cpf-cnpj',
 			properties: {
+            /* value should be set along with documentType */
             value: {
                 type: String,
+                value: '',
                 observer: '_valueChanged',
                 notify: true
             },
@@ -78,6 +80,7 @@
                 type: String,
                 observer: '_documentChanged'
             },
+            /* documentType should be set along with value */
             documentType: {
                 type: String,
                 observer: '_documentTypeChanged',
@@ -97,12 +100,10 @@
         behaviors: [Polymer.IronFormElementBehavior],
         _documentTypeChanged: function(){
             this.isCpf = this.documentType == 'CPF';
-            if (this.tempValue != null){
-                if (this.isCpf)
-                    this.documentCpf = this.tempValue;
-                else
-                    this.documentCnpj = this.tempValue;
-                this.tempValue = null;
+            /* polymer calls the property observer callback before updating all properties passed from parent component */
+            /* this triggers value callback again with all properties correctly passed and set */
+            if (this.value && this.documentCnpj == undefined && this.documentCpf == undefined) {
+                this._valueChanged();
             }
             this.value = this.isCpf ? this.documentCpf : this.documentCnpj;
             this.updateStyles();
