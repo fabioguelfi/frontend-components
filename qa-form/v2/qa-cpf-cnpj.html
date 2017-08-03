@@ -105,7 +105,9 @@
             if (this.value && this.documentCnpj == undefined && this.documentCpf == undefined) {
                 this._valueChanged();
             }
-            this.value = this.isCpf ? this.documentCpf : this.documentCnpj;
+            if (this.value || this.documentCnpj || this.documentCpf) {
+                this.value = this.isCpf ? this.documentCpf : this.documentCnpj;
+            }
             this.updateStyles();
         },
         _documentChanged: function(){
@@ -118,6 +120,9 @@
                     this.documentCpf = this.tempValue;
                 else
                     this.documentCnpj = this.tempValue;
+            } else {
+                this.documentCpf = null;
+                this.documentCnpj = null;
             }
         },
         _getDropdownClass: function(documentType) {
