@@ -297,6 +297,7 @@
 
 <dom-module id="qa-table-style">
 	<template>
+		<style include="qa-styles"></style>
 		<style is="custom-style">
 			table[qa-style] {
 				border-collapse: collapse;
@@ -330,21 +331,21 @@
 				border-top: 1px solid var(--qa-light-divider-color);
 			}
 			table[qa-style] > tbody > tr > td,
-			table[qa-style] > tbody > tr > th {
+			table[qa-style] > thead > tr > th {
 				padding-right: 0px;
 				padding-left: 24px;
 				text-align: left;
 			}
 			table[qa-style] > tbody > tr > td:last-of-type,
-			table[qa-style] > tbody > tr > th:last-of-type {
+			table[qa-style] > thead > tr > th:last-of-type {
 				padding-right: 24px;
 			}
 			table[qa-style] > tbody > tr > td > paper-checkbox,
-			table[qa-style] > tbody > tr > th > paper-checkbox {
+			table[qa-style] > thead > tr > th > paper-checkbox {
 				--paper-checkbox-label-spacing: 0px;
 			}
 			table[qa-style] > tbody > tr > td > paper-toggle-button,
-			table[qa-style] > tbody > tr > th > paper-toggle-button {
+			table[qa-style] > thead > tr > th > paper-toggle-button {
 				--paper-toggle-button-label-spacing: 0px;
 			}
 		</style>
