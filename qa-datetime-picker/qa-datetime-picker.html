@@ -15,6 +15,7 @@
 				@apply(--layout-horizontal);
 				max-height: 17em;
 				min-height: 17em;
+				min-width: 27em;
 			}
 			#unit-selector {
 				@apply(--layout-vertical);
@@ -58,7 +59,11 @@
 			</div>
 			<qa-datetime-unit class="small" unit="year" date="{{date}}" format="YYYY"></qa-datetime-unit>
 		</div>
-		<iron-pages id="value-selector" selected="[[valueIndex]]">
+		<iron-pages
+			id="value-selector"
+			on-iron-select="handlePageChange"
+			on-iron-deselect="handlePageChange"
+			selected="[[valueIndex]]">
 			<div>
 				<qa-datetime-number unit="hour" date="{{date}}" format="HH"></qa-datetime-number>
 				<qa-datetime-number unit="minute" date="{{date}}" selected-prefix=":" format="mm"></qa-datetime-number>
@@ -94,8 +99,8 @@
 				'focus-next-unit': 'handleFocusNext',
 				'focus-previous-unit': 'handleFocusPrevious',
 			},
-			onEvent: function(event) {
-				console.log(event);
+			handlePageChange: function(event) {
+				event.stopPropagation();
 			},
 			handleFocus: function(event) {
 				var unit = event.detail;
