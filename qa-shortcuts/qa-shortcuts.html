@@ -143,8 +143,9 @@
 				this.$.dlgOnboardingShortcuts.close()
 			},
 			ready: function() {
+				var disablePopupForNow = true;
 				var crmShortcut = document.cookie.match(new RegExp("(; *)?crmShortcutsOnboarding=([^;]*)"));
-				if (!crmShortcut || crmShortcut[2] != "yes") {
+				if (!disablePopupForNow && (!crmShortcut || crmShortcut[2] != "yes")) {
 					this.$.dlgOnboardingShortcuts.open()
 				}
 				
