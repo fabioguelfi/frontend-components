@@ -26,29 +26,18 @@
 			}
 		</style>
 		<div class="layout horizontal justified">
-			<div class="label">{{normalize(item.type)}}</div>
+			<div class="label">{{getTitle(item)}}</div>
 			<div class="badges">
 				<template is="dom-repeat" items="[[badges]]">
 					<qa-badge label="[[item]]" full></qa-badge>
 				</template>
 			</div>
 		</div>
-		<template is="dom-if" if="[[item.metadata.proprietario]]">
+		<div>[[item.metadata.descricao]]</div>
+		<template is="dom-repeat" items="[[getUsers(item)]]" as="user">
 			<div class="info">
-				<qa-badge label="Proprietario"></qa-badge>
-				<div>{{item.metadata.proprietario.nome}}</div>
-			</div>
-		</template>
-		<template is="dom-if" if="[[item.metadata.inquilino]]">
-			<div class="info">
-				<qa-badge label="Inquilino"></qa-badge>
-				<div>{{item.metadata.inquilino.nome}}</div>
-			</div>
-		</template>
-		<template is="dom-if" if="[[item.metadata.gerente]]">
-			<div class="info">
-				<qa-badge label="Gerente"></qa-badge>
-				<div>{{item.metadata.gerente.nome}}</div>
+				<qa-badge label="[[user.title]]"></qa-badge>
+				<div>[[user.name]]</div>
 			</div>
 		</template>
 		<template is="dom-if" if="[[imovelFullAddress]]">
@@ -72,6 +61,35 @@
 				}
 			},
 			behaviors: [ QuintoAndar.Behavior ],
+			getTitle: function(item) {
+				if (item.type == 'Manual') {
+					return item.metadata.assunto;
+				}
+				return this.normalize(item.type);
+			},
+			getUsers: function(item) {
+				var users = [{
+					field: 'proprietario',
+					title: 'Proprietário'
+				}, {
+					field: 'inquilino',
+					title: 'Inquilino',
+				}, {
+					field: 'gerente',
+					title: 'Gerente',
+				}, {
+					field: 'destinatario',
+					title: 'Destinatário'
+				}];
+				return users.filter(function(user) {
+					return item.metadata[user.field];
+				}).map(function(user) {
+					return {
+						title: user.title,
+						name: item.metadata[user.field].nome
+					};
+				});
+			},
 			getImovelFullAddress: function(item) {
 				var base;
 				if (item.metadata.imovel) {
