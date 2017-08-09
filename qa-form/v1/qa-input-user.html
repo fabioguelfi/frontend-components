@@ -145,7 +145,7 @@
 				var input = this.$$('paper-input');
 
 				validator.validate = function() {
-					return !this.required || Boolean(this.user);
+					return !this.required || this.readonly || Boolean(this.user);
 				}.bind(this);
 			},
 			doReset: function() {
