@@ -17,6 +17,7 @@
 <link rel="import" href="../../qa-styles/v1/qa-styles.html">
 <link rel="import" href="../../qa-behavior/v1/qa-behavior.html">
 
+<link rel="import" href="./qa-search-item.html">
 <link rel="import" href="./qa-search-property-item.html">
 <link rel="import" href="./qa-search-person-item.html">
 <link rel="import" href="./qa-search-lead-item.html">
@@ -77,6 +78,9 @@
 			input:-ms-input-placeholder {
 				color: var(--qa-disabled-color);
 			}
+			iron-dropdown {
+				max-height: 90%;
+			}
 			.dropdown-content {
 				@apply(--shadow-elevation-2dp);
 				border-radius: 2px;
@@ -92,7 +96,7 @@
 			}
 			.section {
 				@apply(--layout-horizontal);
-				padding: 8px 12px;
+				padding: 8px 4px 12px 8px;
 			}
 			.section:not(:last-of-type) {
 				border-bottom: 1px solid var(--qa-light-divider-color);
@@ -126,7 +130,9 @@
 						<iron-icon icon="[[types.1.icon]]" item-icon></iron-icon>
 						<div>
 							<template is="dom-repeat" items="[[result.users.items]]">
-								<qa-search-person-item item="[[item]]" on-tap="onTap"></qa-search-person-item>
+								<qa-search-item item="[[item]]">
+									<qa-search-person-item item="[[item]]" on-tap="onTap"></qa-search-person-item>
+								</qa-search-item>
 							</template>
 							<div class="footer" on-tap="onAllPeopleTap">
 								{{getMessage('pessoas', value, result.users.count)}}
@@ -139,7 +145,9 @@
 						<iron-icon icon="[[types.2.icon]]" item-icon></iron-icon>
 						<div>
 							<template is="dom-repeat" items="[[result.properties.items]]">
-								<qa-search-property-item item="[[item]]" on-tap="onTap"></qa-search-property-item>
+								<qa-search-item item="[[item]]">
+									<qa-search-property-item item="[[item]]" on-tap="onTap"></qa-search-property-item>
+								</qa-search-item>
 							</template>
 							<div class="footer" on-tap="onAllPropertiesTap">
 								{{getMessage('imóveis', value, result.properties.count)}}
@@ -152,7 +160,9 @@
 						<iron-icon icon="[[types.3.icon]]" item-icon></iron-icon>
 						<div>
 							<template is="dom-repeat" items="[[result.leads.items]]">
-								<qa-search-lead-item item="[[item]]" on-tap="onTap"></qa-search-lead-item>
+								<qa-search-item item="[[item]]">
+									<qa-search-lead-item item="[[item]]" on-tap="onTap"></qa-search-lead-item>
+								</qa-search-item>
 							</template>
 							<div class="footer" on-tap="onAllLeadsTap">
 								{{getMessage('leads', value, result.leads.count)}}
@@ -165,7 +175,9 @@
 						<iron-icon icon="[[types.4.icon]]" item-icon></iron-icon>
 						<div>
 							<template is="dom-repeat" items="[[result.tasks.items]]">
-								<qa-search-task-item item="[[item]]" on-tap="onTap"></qa-search-task-item>
+								<qa-search-item item="[[item]]">
+									<qa-search-task-item item="[[item]]" on-tap="onTap"></qa-search-task-item>
+								</qa-search-item>
 							</template>
 							<div class="footer" on-tap="onAllTasksTap">
 								{{getMessage('tarefas', value, result.tasks.count)}}
@@ -178,7 +190,9 @@
 						<iron-icon icon="[[types.5.icon]]" item-icon></iron-icon>
 						<div>
 							<template is="dom-repeat" items="[[result.prepropostas.items]]">
-								<qa-search-preproposta-item item="[[item]]" on-tap="onTap"></qa-search-preproposta-item>
+								<qa-search-item item="[[item]]">
+									<qa-search-preproposta-item item="[[item]]" on-tap="onTap"></qa-search-preproposta-item>
+								</qa-search-item>
 							</template>
 							<div class="footer" on-tap="onAllPrepropostasTap">
 								{{getMessage('prepropostas', value, result.prepropostas.count)}}
