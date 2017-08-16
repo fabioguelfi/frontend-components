@@ -40,6 +40,7 @@
 			readonly="[[readonly]]"
 			required="[[required]]"
 			error-message="[[errorMessage]]"
+			always-float-label="[[alwaysFloatLabel]]"
 			value="{{userName}}">
 			<template is="dom-if" if="[[!readonly]]">
 				<paper-icon-button icon="search" on-tap="doSearch" suffix>
@@ -85,6 +86,10 @@
 			is: 'qa-input-user',
 			properties: {
 				label: String,
+				alwaysFloatLabel: {
+					type: Boolean,
+					value: false
+				},
 				noLabelFloat: {
 					type: Boolean,
 					value: false
@@ -145,7 +150,7 @@
 				var input = this.$$('paper-input');
 
 				validator.validate = function() {
-					return !this.required || Boolean(this.user);
+					return !this.required || this.readonly || Boolean(this.user);
 				}.bind(this);
 			},
 			doReset: function() {
