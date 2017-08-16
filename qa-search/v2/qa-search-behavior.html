@@ -1,0 +1,61 @@
+
+<link rel="import" href="../../../bower_components/polymer/polymer.html">
+
+<script>
+
+	window.QuintoAndar = window.QuintoAndar || {};
+
+	/** @polymerBehavior */
+	QuintoAndar.SearchBehavior = {
+		properties: {
+			item: Object
+		},
+		getActions: function(item) {
+
+			if (item.type == 'properties') {
+				return [{
+					label: 'Página do imóvel',
+					viewUrl: item.viewUrl
+				}, {
+					label: 'Tarefas do imóvel',
+					viewUrl: '/busca/?type=tasks&query=Imovel:' + item.id
+				}];
+			} else if (item.type == 'leads') {
+				return [{
+					label: 'Página do lead',
+					viewUrl: item.viewUrl
+				}, {
+					label: 'Tarefas do lead',
+					viewUrl: '/busca/?type=tasks&query=Lead:' + item.id
+				}];
+			} else if (item.type == 'users') {
+				return [{
+					label: 'Página da pessoa',
+					viewUrl: item.viewUrl
+				}, {
+					label: 'Tarefas da pessoa',
+					viewUrl: '/busca/?type=tasks&query=Usuario:' + item.id
+				}];
+			} else if (item.type == 'prepropostas') {
+				return [{
+					label: 'Página da proposta',
+					viewUrl: item.viewUrl
+				}, {
+					label: 'Tarefas da proposta',
+					viewUrl: '/busca/?type=tasks&query=PreProposta:' + item.id
+				}];
+			} else {
+				return [{
+					label: 'Página da tarefa',
+					viewUrl: item.viewUrl
+				}];
+			}
+		},
+		handleTap: function(event) {
+			var action = event.model.action;
+			window.open(action.viewUrl, '_blank');
+		},
+	};
+
+</script>
+
