@@ -18,7 +18,7 @@
 					viewUrl: item.viewUrl
 				}, {
 					label: 'Tarefas do imóvel',
-					viewUrl: '/busca/?type=tasks&query=Imovel:' + item.id
+					viewUrl: '@@USTASKS_URL/busca/?type=tasks&query=Imovel:' + item.id
 				}];
 			} else if (item.type == 'leads') {
 				return [{
@@ -26,7 +26,7 @@
 					viewUrl: item.viewUrl
 				}, {
 					label: 'Tarefas do lead',
-					viewUrl: '/busca/?type=tasks&query=Lead:' + item.id
+					viewUrl: '@@USTASKS_URL/busca/?type=tasks&query=Lead:' + item.id
 				}];
 			} else if (item.type == 'users') {
 				return [{
@@ -34,7 +34,7 @@
 					viewUrl: item.viewUrl
 				}, {
 					label: 'Tarefas da pessoa',
-					viewUrl: '/busca/?type=tasks&query=Usuario:' + item.id
+					viewUrl: '@@USTASKS_URL/busca/?type=tasks&query=Usuario:' + item.id
 				}];
 			} else if (item.type == 'prepropostas') {
 				return [{
@@ -42,7 +42,7 @@
 					viewUrl: item.viewUrl
 				}, {
 					label: 'Tarefas da proposta',
-					viewUrl: '/busca/?type=tasks&query=PreProposta:' + item.id
+					viewUrl: '@@USTASKS_URL/busca/?type=tasks&query=PreProposta:' + item.id
 				}];
 			} else {
 				return [{
