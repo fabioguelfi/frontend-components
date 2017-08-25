@@ -55,7 +55,55 @@
 			var action = event.model.action;
 			window.open(action.viewUrl, '_blank');
 		},
+		getBadges: function (item) {
+			if (item.type == 'properties') {
+				return [item.status];
+			} else if (item.type == 'leads') {
+				return [item.status];
+			} else if (item.type == 'users') {
+				return item.roles;
+			} else if (item.type == 'prepropostas') {
+				return [item.status];
+			} else {
+				var now = new Date();
+				if (item.resolvida || item.realizadaEm) {
+					return ['Fechada'];
+				}
+				if (now < new Date(item.silenciadaAte)) {
+					return ['Agendada'];
+				}
+				if (now < new Date(item.dataInicio)) {
+					return ['Futura'];
+				}
+				return [];
+			}
+		},
+		getUsers: function (item) {
+			var users = [{
+				field: 'proprietario',
+				title: 'Proprietário'
+			}, {
+				field: 'inquilino',
+				title: 'Inquilino',
+			}, {
+				field: 'gerente',
+				title: 'Gerente',
+			}, {
+				field: 'destinatario',
+				title: 'Destinatário'
+			}, {
+				field: 'contatoAgendar',
+				title: 'Contato'
+			}];
+			return users.filter(function (user) {
+				return item.metadata[user.field];
+			}).map(function (user) {
+				return {
+					title: user.title,
+					name: item.metadata[user.field].nome
+				};
+			});
+		}
 	};
 
 </script>
-
