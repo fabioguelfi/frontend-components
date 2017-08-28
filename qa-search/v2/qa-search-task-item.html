@@ -2,6 +2,7 @@
 <link rel="import" href="../../qa-badge/v1/qa-badge.html">
 <link rel="import" href="../../qa-behavior/v1/qa-behavior.html">
 <link rel="import" href="./qa-search-item-styles.html">
+<link rel="import" href="./qa-search-behavior.html">
 
 <dom-module id="qa-search-task-item">
 	<template strip-whitespace>
@@ -60,35 +61,12 @@
 					computed: 'getBadges(item)'
 				}
 			},
-			behaviors: [ QuintoAndar.Behavior ],
+			behaviors: [ QuintoAndar.Behavior, QuintoAndar.SearchBehavior ],
 			getTitle: function(item) {
 				if (item.type == 'Manual') {
 					return item.metadata.assunto;
 				}
 				return this.normalize(item.type);
-			},
-			getUsers: function(item) {
-				var users = [{
-					field: 'proprietario',
-					title: 'Proprietário'
-				}, {
-					field: 'inquilino',
-					title: 'Inquilino',
-				}, {
-					field: 'gerente',
-					title: 'Gerente',
-				}, {
-					field: 'destinatario',
-					title: 'Destinatário'
-				}];
-				return users.filter(function(user) {
-					return item.metadata[user.field];
-				}).map(function(user) {
-					return {
-						title: user.title,
-						name: item.metadata[user.field].nome
-					};
-				});
 			},
 			getImovelFullAddress: function(item) {
 				var base;
@@ -110,20 +88,6 @@
 					(base.cidade ? '* ' + base.cidade : ' ');
 
 				return address.toLowerCase();
-			},
-			getBadges: function(item) {
-				var badges = [];
-				var now = new Date();
-				if (now < new Date(item.dataInicio)) {
-					badges.push('Futura');
-				}
-				if (now < new Date(item.silenciadaAte)) {
-					badges.push('Agendada');
-				}
-				if (item.resolvida || item.realizadaEm) {
-					badges.push('Fechada');
-				}
-				return badges;
 			}
 		});
 	</script>
