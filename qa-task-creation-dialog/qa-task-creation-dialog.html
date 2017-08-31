@@ -291,7 +291,8 @@
 							body[entity.field] = entity.origemId;
 						});
 
-						body['origemData'] = self.activationDate.format();
+						body['origemData'] = new Date();
+						body['dataInicio'] = self.activationDate.format();
 
 						self.$.submit.set('disabled', true);
 
