@@ -11,6 +11,9 @@
 <dom-module id="qa-cpf-cnpj">
 	<template>
         <style is="custom-style">
+            :host {
+                --display: flex;
+            }
             .flex {
                 @apply --layout-horizontal;
             }
@@ -28,12 +31,18 @@
                     width: 100px;
                 };
             }
+            #component {
+                display: var(--display);
+            }
         </style>
-        <div class="layout horizontal flex">
+        <content></content>
+        <div class="layout horizontal" id="component">
             <paper-dropdown-menu
                 class$="[[_getDropdownClass(documentType)]]"
                 label="Tipo de Documento"
                 id="documentType"
+                on-focus="_elementFocused"
+                on-blur="_elementUnfocused"
                 disabled="[[disabled]]">
                 <paper-listbox class="dropdown-content"
                     attr-for-selected="value"
@@ -44,20 +53,24 @@
                 </paper-listbox>
             </paper-dropdown-menu>
             <template is="dom-if" if="[[documentType]]">
-            <template is="dom-if" if="[[isCpf]]">
-                <qa-input-cpf-v2
-                    label="CPF"
-                    value="{{documentCpf}}"
-                    disabled="[[disabled]]">
-                </qa-input-cpf-v2>
-            </template>
-            <template is="dom-if" if="[[!isCpf]]">
-                <qa-input-cnpj
-                    label="CNPJ"
-                    value="{{documentCnpj}}"
-                    disabled="[[disabled]]">
-                </qa-input-cnpj>
-            </template>
+                <template is="dom-if" if="[[isCpf]]">
+                    <qa-input-cpf-v2
+                        label="CPF"
+                        value="{{documentCpf}}"
+                        on-focus="_elementFocused"
+                        on-blur="_elementUnfocused"
+                        disabled="[[disabled]]">
+                    </qa-input-cpf-v2>
+                </template>
+                <template is="dom-if" if="[[!isCpf]]">
+                    <qa-input-cnpj
+                        label="CNPJ"
+                        value="{{documentCnpj}}"
+                        on-focus="_elementFocused"
+                        on-blur="_elementUnfocused"
+                        disabled="[[disabled]]">
+                    </qa-input-cnpj>
+                </template>
             </template>
         </div>
     </template>
@@ -96,8 +109,16 @@
             isCpf: {
                 type: Boolean,
             },
+            display: {
+                type: String,
+                value: 'flex',
+                observer: '_displayChanged',
+            },
         },
         behaviors: [Polymer.IronFormElementBehavior],
+        _displayChanged: function(display) {
+            this.updateStyles({'--display': display || 'flex'});
+        },
         _documentTypeChanged: function(){
             this.isCpf = this.documentType == 'CPF';
             /* polymer calls the property observer callback before updating all properties passed from parent component */
@@ -124,6 +145,12 @@
                 this.documentCpf = null;
                 this.documentCnpj = null;
             }
+        },
+        _elementFocused: function(event) {
+            this.fire('focus', event.target);
+        },
+        _elementUnfocused: function(event) {
+            this.fire('blur', event.target);
         },
         _getDropdownClass: function(documentType) {
             return documentType ? 'selected' : 'unselected';
