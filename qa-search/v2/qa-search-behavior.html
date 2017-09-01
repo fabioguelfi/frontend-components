@@ -18,7 +18,7 @@
 					viewUrl: item.viewUrl
 				}, {
 					label: 'Tarefas do imóvel',
-					viewUrl: '/busca/?type=tasks&query=Imovel:' + item.id
+					viewUrl: '@@USTASKS_URL/busca/?type=tasks&query=Imovel:' + item.id
 				}];
 			} else if (item.type == 'leads') {
 				return [{
@@ -26,7 +26,7 @@
 					viewUrl: item.viewUrl
 				}, {
 					label: 'Tarefas do lead',
-					viewUrl: '/busca/?type=tasks&query=Lead:' + item.id
+					viewUrl: '@@USTASKS_URL/busca/?type=tasks&query=Lead:' + item.id
 				}];
 			} else if (item.type == 'users') {
 				return [{
@@ -34,7 +34,7 @@
 					viewUrl: item.viewUrl
 				}, {
 					label: 'Tarefas da pessoa',
-					viewUrl: '/busca/?type=tasks&query=Usuario:' + item.id
+					viewUrl: '@@USTASKS_URL/busca/?type=tasks&query=Usuario:' + item.id
 				}];
 			} else if (item.type == 'prepropostas') {
 				return [{
@@ -42,7 +42,7 @@
 					viewUrl: item.viewUrl
 				}, {
 					label: 'Tarefas da proposta',
-					viewUrl: '/busca/?type=tasks&query=PreProposta:' + item.id
+					viewUrl: '@@USTASKS_URL/busca/?type=tasks&query=PreProposta:' + item.id
 				}];
 			} else {
 				return [{
@@ -55,7 +55,55 @@
 			var action = event.model.action;
 			window.open(action.viewUrl, '_blank');
 		},
+		getBadges: function (item) {
+			if (item.type == 'properties') {
+				return [item.status];
+			} else if (item.type == 'leads') {
+				return [item.status];
+			} else if (item.type == 'users') {
+				return item.roles;
+			} else if (item.type == 'prepropostas') {
+				return [item.status];
+			} else {
+				var now = new Date();
+				if (item.resolvida || item.realizadaEm) {
+					return ['Fechada'];
+				}
+				if (now < new Date(item.silenciadaAte)) {
+					return ['Agendada'];
+				}
+				if (now < new Date(item.dataInicio)) {
+					return ['Futura'];
+				}
+				return [];
+			}
+		},
+		getUsers: function (item) {
+			var users = [{
+				field: 'proprietario',
+				title: 'Proprietário'
+			}, {
+				field: 'inquilino',
+				title: 'Inquilino',
+			}, {
+				field: 'gerente',
+				title: 'Gerente',
+			}, {
+				field: 'destinatario',
+				title: 'Destinatário'
+			}, {
+				field: 'contatoAgendar',
+				title: 'Contato'
+			}];
+			return users.filter(function (user) {
+				return item.metadata[user.field];
+			}).map(function (user) {
+				return {
+					title: user.title,
+					name: item.metadata[user.field].nome
+				};
+			});
+		}
 	};
 
 </script>
-

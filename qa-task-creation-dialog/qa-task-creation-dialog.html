@@ -287,11 +287,12 @@
 							body['origemId'] = self.user.id;
 						}
 
-						self.entities.slice(self.entityIndex + 1).forEach(function(entity) {
+						self.entities.slice(self.entityIndex).forEach(function(entity) {
 							body[entity.field] = entity.origemId;
 						});
 
-						body['origemData'] = self.activationDate.format();
+						body['origemData'] = new Date();
+						body['dataInicio'] = self.activationDate.format();
 
 						self.$.submit.set('disabled', true);
 
