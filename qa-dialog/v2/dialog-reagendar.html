@@ -1,0 +1,171 @@
+<dom-module id="dialog-reagendar">
+	<template>
+		<style include="iron-flex iron-flex-alignment"></style>
+		<style include="paper-dialog-shared-styles"></style>
+		<style include="qa-input-style qa-dropdown-menu-style qa-button-style"></style>
+		<style include="dialog-style"></style>
+		<h2>{{title}}</h2>
+		<form is="iron-form">
+			<template is="dom-if" if="[[reasons.length]]">
+				<paper-dropdown-menu qa-style label="Motivo do agendamento">
+					<paper-listbox class="dropdown-content" selected="{{reasonIndex}}">
+						<template is="dom-repeat" items="[[reasons]]">
+							<paper-item>{{item.label}}</paper-item>
+						</template>
+					</paper-listbox>
+				</paper-dropdown-menu>
+				<input type="hidden" name$="[[reasonName]]" value$="{{reasonValue}}">
+			</template>
+			<template is="dom-if" if="[[!reasonsOnly]]">
+				<paper-textarea qa-style
+					rows="6"
+					no-label-float
+					label="[[commentLabel]]"
+					maxLength="2048"
+					required="[[commentRequired]]"
+					error-message="Obrigatório informações adicionais"
+					autoValidate
+					char-counter
+					value="{{comment}}"
+					name="[[commentName]]">
+				</paper-textarea>
+			</template>
+			<h3>Novo horário</h3>
+			<input type="hidden" name="tilDate" value$="[[tilDate]]">
+			<div class="layout horizontal justified center">
+				<div class="layout vertical" style="width: 36%; padding-right: 16px;">
+					<qa-input-date
+						qa-style
+						auto-validate
+						label="Data"
+						value="{{date}}">
+					</qa-input-date>
+					<qa-input-time
+						qa-style
+						auto-validate
+						label="Hora"
+						value="{{time}}">
+					</qa-input-time>
+				</div>
+				<div style: "text-align: center;"> OU </div>
+				<div class="layout vertical" style="width: 40%;">
+					<template is="dom-repeat" items="[[quickButtons]]">
+						<paper-button on-tap="handleTap">{{item.label}}</paper-button>
+					</template>
+				</div>
+			</div>
+		</form>
+		<div class="buttons layout flex">
+			<paper-button qa-style-flat dialog-dismiss autofocus>Cancelar</paper-button>
+			<paper-button qa-style-flat submit
+				disabled="[[!validate(reasons, reasonValue, tilDate)]]">
+				Reagendar
+			</qa-button>
+		</div>
+	</template>
+	<script src="../../../bower_components/moment/moment.js"></script>
+	<script src="../../../bower_components/moment/locale/pt.js"></script>
+	<script>
+
+		Polymer({
+			is: 'dialog-reagendar',
+			properties: {
+				title: {
+					type: String,
+					value: 'Reagendar tarefa'
+				},
+				reasons: {
+					type: Array,
+					value: function() {
+						return []
+					}
+				},
+				reasonsOnly: {
+					type: Boolean,
+					value: false
+				},
+				reasonName: {
+					type: String,
+					value: 'reason'
+				},
+				reasonIndex: {
+					type: Number,
+					value: -1
+				},
+				reasonValue: {
+					type: String,
+					computed: 'getReasonValue(reasons, reasonIndex)'
+				},
+				commentLabel: {
+					type: String,
+					value: 'Comentário'
+				},
+				commentName: {
+					type: String,
+					value: 'comment'
+				},
+				commentRequired: {
+					type: Boolean,
+					value: false
+				},
+				date: String,
+				time: String,
+				quickButtons: {
+					type: Array,
+					value: function() {
+						return [];
+					}
+				},
+				tilDate: {
+					type: Date,
+					computed: 'getTilDate(date, time)'
+				},
+			},
+			behaviors: [ Polymer.PaperDialogBehavior, QuintoAndar.DialogFormBehavior ],
+			observers: [ 'onLinkChange(link)' ],
+			onLinkChange: function(link) {
+
+				var task = link.task;
+				console.log(link);
+				var soon = moment().add(15, 'm');
+				var lateAfternoon = moment.max(moment('17:00', 'HH:mm'), moment().add(1, 'h'));
+				var tomorrow = moment('11:00', 'HH:mm').add(1, 'd');
+
+				var current = moment(task.silenciadaAte);
+				if (current < soon) {
+					current = soon;
+				}
+
+				this.set('time', current.format('HH:mm'));
+				this.set('date', current.format('DD/MM/YY'));
+
+				this.set('quickButtons', [{
+					label: '15 minutos - ' + soon.format('HH:mm'),
+					value: soon
+				}, {
+					label: 'Fim da tarde - ' + lateAfternoon.format('HH:mm'),
+					value: lateAfternoon
+				}, {
+					label: 'Amanhã - ' + tomorrow.format('HH.mm'),
+					value: tomorrow
+				}]);
+			},
+			getReasonValue: function(reasons, reasonIndex) {
+				return reasonIndex >= 0 ? reasons[reasonIndex].id : null;
+			},
+			handleTap: function(event) {
+				var value = event.model.item.value;
+				this.set('time', value.format('HH:mm'));
+				this.set('date', value.format('DD/MM/YY'));
+			},
+			getTilDate: function(date, time) {
+				return moment([date, time].join(' '), 'DD/MM/YY HH:mm', true).format();
+			},
+			validate: function(reasons, reason, tilDate) {
+				var isValidDate = moment(tilDate, moment.ISO_8601, true).isValid();
+				return (!reasons.length || reason) && isValidDate;
+			}
+		});
+
+	</script>
+</dom-module>

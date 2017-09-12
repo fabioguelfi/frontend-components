@@ -1,0 +1,52 @@
+<dom-module id="dialog-responsavel">
+	<template>
+
+		<style include="iron-flex iron-flex-alignment"></style>
+		<style include="paper-dialog-shared-styles"></style>
+		<style include="qa-input-style qa-button-style"></style>
+		<style include="dialog-style"></style>
+		<h2>{{title}}</h2>
+		<form is="iron-form">
+			<qa-input-user
+				id="name"
+				name="assigneeId"
+				user-name="{{assigneeName}}"
+				label="Nome ou email do responsável"
+				value="{{assigneeId}}">
+			</qa-input-user>
+		</form>
+		<div class="buttons layout">
+			<paper-button qa-style-flat dialog-dismiss autofocus>Cancelar</paper-button>
+			<paper-button qa-style-flat submit disabled="[[!assigneeId]]">
+				{{actionLabel}}
+			</qa-button>
+		</div>
+	</template>
+	<script>
+
+		Polymer({
+			is: 'dialog-responsavel',
+			properties: {
+				title: {
+					type: String,
+					value: 'Trocar responsável pela tarefa'
+				},
+				assigneeId: {
+					type: Number,
+					value: null
+				},
+				assigneeName: {
+					type: String,
+					value: ''
+				},
+				actionLabel: {
+					type: String,
+					value: 'Salvar'
+				}
+			},
+			behaviors: [ Polymer.PaperDialogBehavior, QuintoAndar.DialogFormBehavior ]
+		});
+
+	</script>
+</dom-module>
+

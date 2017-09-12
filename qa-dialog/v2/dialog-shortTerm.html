@@ -1,0 +1,60 @@
+<dom-module id="dialog-shortTerm">
+
+    <template>
+        <style include="paper-dialog-shared-styles"></style>
+        <style include="qa-input-style qa-dropdown-menu-style qa-button-style"></style>
+        <style include="dialog-style"></style>
+        <h2>Comentários a serem enviados</h2>
+        <form is="iron-form">
+            <p>Comentários para os inquilinos</p>
+            <paper-textarea qa-style
+                rows=6
+                no-label-float
+                label="Comentários para os inquilinos"
+                maxLength="2048"
+                autoValidate
+                value="{{ownerComment}}"
+                name="tenant-comment">
+            </paper-textarea>
+            <br> <br>
+            <p>Comentários para o proprietário</p>
+            <paper-textarea qa-style
+                rows=6
+                no-label-float
+                label="Comentários para o proprietário"
+                maxLength="2048"
+                autoValidate
+                value="{{tenantComment}}"
+                name="owner-comment">
+            </paper-textarea>
+        </form>
+        <div class="buttons layout">
+            <paper-button qa-style-flat dialog-dismiss autofocus>Cancelar</paper-button>
+            <paper-button qa-style-flat submit
+                disabled="[[!validate(ownerComment, tenantComment)]]">
+                Enviar emails
+            </qa-button>
+        </div>
+    </template>
+    <script>
+        Polymer({
+            is: 'dialog-shortTerm',
+            properties: {
+                ownerComment: {
+                    type: String,
+                    value: ''
+                },
+                tenantComment: {
+                    type: String,
+                    value: ''
+                }
+            },
+            behaviors: [ Polymer.PaperDialogBehavior, QuintoAndar.DialogFormBehavior ],
+            validate: function(ownerComment, tenantComment) {
+                return ownerComment.length || tenantComment.length;
+            }
+        });
+
+    </script>
+</dom-module>
+
