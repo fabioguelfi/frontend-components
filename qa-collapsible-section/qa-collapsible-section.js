@@ -9,6 +9,11 @@ Polymer(
 		legend: String,
 		targetId: String,
 		collapseId: String,
+		opened: {
+			type: Boolean,
+			value: false,
+			notify: true
+		},
 		iconClass: {
 			type: String,
 			value: "ico"

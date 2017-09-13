@@ -5,9 +5,9 @@
     	<div class="collapsibles">
 			<section>
 				<button class="heading" on-click="toggle"><span class$="{{iconClass}}"><i class="fa fa-chevron-down"></i> </span>{{legend}}</button>
-		    <iron-collapse id$="{{collapseId}}">
-		    	<div class="content"><content></content></div>
-		    </iron-collapse>
+				<iron-collapse id$="{{collapseId}}" opened="{{opened}}">
+					<div class="content"><content></content></div>
+				</iron-collapse>
 			</section>
 		</div>
 		</template>
