@@ -7,6 +7,7 @@
 		ready: function() {
 			var self = this;
 			var form = this.$$('form');
+			form.setAttribute('method', 'GET');
 			form.setAttribute('content-type', 'application/json');
 			form.addEventListener('iron-form-presubmit', function(event) {
 				var link = self.link;
@@ -32,9 +33,12 @@
 				}
 			});
 			form.addEventListener('iron-form-error', function(event) {
+				var link = self.link;
 				var details = event.detail.error +
-					'; \ntask: ' + self.task._id +
-					'; \nlink: ' + self.link.rel;
+					'; \nlink: ' + link.rel;
+				if (link.task) {
+					details += '; \ntask: ' + link.task._id;
+				}
 				this.fire('toast-show', {
 					id: 'dialog-form-toast',
 					text: 'Ops, algo inesperado aconteceu...',
