@@ -1,9 +1,13 @@
 <link rel="import" href="../../../bower_components/polymer/polymer.html">
 <link rel="import" href="../../../bower_components/iron-ajax/iron-ajax.html">
-<link rel="import" href="../../../bower_components/paper-icon-button/paper-icon-button.html">
 <link rel="import" href="../../../bower_components/iron-icons/communication-icons.html">
-<link rel="import" href="../../../qa-components/qa-loading/v1/qa-loading-overlay.html">
-<link rel="import" href="../../../qa-components/qa-styles/v1/qa-styles.html">
+<link rel="import" href="../../../bower_components/paper-menu-button/paper-menu-button.html">
+<link rel="import" href="../../../bower_components/paper-icon-button/paper-icon-button.html">
+<link rel="import" href="../../../bower_components/paper-menu/paper-menu.html">
+<link rel="import" href="../../../bower_components/paper-item/paper-item.html">
+
+<link rel="import" href="../../qa-loading/v1/qa-loading-overlay.html">
+<link rel="import" href="../../qa-styles/v1/qa-styles.html">
 
 <link rel="import" href="../../qa-link/v1/qa-link.html">
 <link rel="import" href="./qa-history-item.html">
@@ -16,35 +20,78 @@
 		<style is="custom-style">
 			:host {
 				background-color: var(--qa-light-light-color);
-				margin-top: 12px;
 				position: relative;
 				display: block;
 			}
 			.header {
 				@apply(--layout-horizontal);
 				@apply(--layout-justified);
-				@apply(--layout-end);
-				font-weight: 600;
-				font-size: 1.1em;
+				@apply(--layout-center);
+				font-weight: 500 !important;
+				font-size: 17px;
 				color: #656060;
 			}
 			.header span {
 				color: #A0A1A3;
-				font-size: 16px;
+				font-size: 0.9em;
+			}
+			.header a {
+				color: var(--qa-dark-color);
+			}
+			.header .title {
+				@apply(--layout-flex);
+				margin-left: 12px;
 			}
 			qa-link {
 				color: var(--qa-color);
+			}
+			.empty {
+				color: var(--qa-light-secondary-color);
+				text-align: center;
+				font-size: 1.1em;
+				font-weight: 500;
 			}
 			.errors {
 				color: var(--qa-error-color);
 				font-size: 13px;
 				margin-bottom: 24px;
 			}
+			paper-icon-button {
+				width: 29px;
+				height: 29px;
+				padding: 0px;
+			}
+			paper-menu-button {
+				padding: 0px;
+			}
+			.content {
+				@apply(--qa-history-content);
+			}
 		</style>
 		<div class="header">
-			<div>
+			<template is="dom-if" if="[[!noFilters]]">
+				<paper-menu-button>
+					<paper-icon-button icon="filter-list" class="dropdown-trigger"></paper-icon-button>
+					<paper-menu multi selected-items="{{selectedFilterElems}}" class="dropdown-content">
+						<paper-item data-filter="OBSERVACAO">Comentários</paper-item>
+						<paper-item data-filter="FLUXO">Fluxo locação</paper-item>
+						<paper-item data-filter="TASK">Tarefas</paper-item>
+					</paper-menu>
+				</paper-menu-button>
+			</template>
+			<div class="title">
 				<template is="dom-if" if="[[!noTitle]]">
-					{{getTitle(content)}}<span>{{getId(content)}}</span>
+					[[content.root.title]]&nbsp;
+					<span>
+						<template is="dom-if" if="[[content.root.url]]">
+							<a href="[[content.root.url]]" target="_blank">
+								[[getId(content)]]
+							</a>
+						</template>
+						<template is="dom-if" if="[[!content.root.url]]">
+							[[getId(content)]]
+						</template>
+					</span>
 				</template>
 			</div>
 			<div>
@@ -60,11 +107,19 @@
 				</template>
 			</ul>
 		</template>
-		<template is="dom-repeat" items="[[content.history]]">
-			<qa-history-item item="[[item]]"></qa-history-item>
-		</template>
-		<template is="dom-if" if="[[!content.history.length]]">
-			<div>Histórico vazio</div>
+		<div class="content">
+			<template
+				is="dom-repeat"
+				items="[[content.history]]"
+				rendered-item-count="{{itemsCount}}"
+				filter="{{buildFilter(selectedFilterElems)}}">
+				<qa-history-item item="[[item]]"></qa-history-item>
+			</template>
+		</div>
+		<template is="dom-if" if="[[!itemsCount]]">
+			<div class="empty">
+				[[getEmptyMessage(content.history.length, itemsCount)]]
+			</div>
 		</template>
 		<qa-loading-overlay loader="ajax"></qa-loading-overlay>
 		<iron-ajax
@@ -80,6 +135,10 @@
 		Polymer({
 			is: 'qa-history',
 			properties: {
+				noFilters: {
+					type: Boolean,
+					value: false
+				},
 				noTitle: {
 					type: Boolean,
 					value: false
@@ -96,6 +155,13 @@
 						return [];
 					}
 				},
+				selectedFilterElems: {
+					type: Array,
+					value: function() {
+						return [];
+					}
+				},
+				itemsCount: Number,
 				content: Object,
 				auto: Boolean,
 				url: String
@@ -112,18 +178,14 @@
 			onTapMessage: function(e) {
 				this.$$('dialog-observacao').open();
 			},
-			getTitle: function(content) {
-				switch (content.root.type) {
-					case 'FluxoLocacao': return 'Histórico da locação';
-					case 'Lead': return 'Histórico do lead';
-					case 'ConversaoLead': return 'Histórico de conversão de lead';
-					default: return 'Histórico';
-				}
-			},
 			getId: function(content) {
-				return ' - ' + content.root.id;
+				return '#' + content.root.id;
 			},
 			getAllLinks: function(links, tags, content) {
+
+				if (!content) {
+					return [];
+				}
 
 				tags = [].concat(tags, content.root.tag);
 
@@ -141,6 +203,24 @@
 				});
 
 				return allLinks;
+			},
+			getEmptyMessage: function(itemsTotal, itemsCount) {
+				if (!itemsTotal) {
+					return 'Histórico vazio';
+				} else {
+					return 'Não há itens para os filtros selecionados';
+				}
+			},
+			buildFilter: function(selectedFilterElems) {
+				var filters = selectedFilterElems.map(function(elem) {
+					return elem.dataset.filter;
+				});
+				if (!filters.length) {
+					return null;
+				}
+				return function(item) {
+					return filters.indexOf(item.type) >= 0;
+				};
 			}
 		});
 
