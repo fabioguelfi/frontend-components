@@ -1,9 +1,13 @@
 <link rel="import" href="../../../bower_components/polymer/polymer.html">
 <link rel="import" href="../../../bower_components/iron-ajax/iron-ajax.html">
-<link rel="import" href="../../../bower_components/paper-icon-button/paper-icon-button.html">
 <link rel="import" href="../../../bower_components/iron-icons/communication-icons.html">
-<link rel="import" href="../../../qa-components/qa-loading/v1/qa-loading-overlay.html">
-<link rel="import" href="../../../qa-components/qa-styles/v1/qa-styles.html">
+<link rel="import" href="../../../bower_components/paper-menu-button/paper-menu-button.html">
+<link rel="import" href="../../../bower_components/paper-icon-button/paper-icon-button.html">
+<link rel="import" href="../../../bower_components/paper-menu/paper-menu.html">
+<link rel="import" href="../../../bower_components/paper-item/paper-item.html">
+
+<link rel="import" href="../../qa-loading/v1/qa-loading-overlay.html">
+<link rel="import" href="../../qa-styles/v1/qa-styles.html">
 
 <link rel="import" href="../../qa-link/v1/qa-link.html">
 <link rel="import" href="./qa-history-item.html">
@@ -19,33 +23,83 @@
 				position: relative;
 				display: block;
 			}
-			h3 {
-				font-weight: 600;
+			.header {
+				@apply(--layout-horizontal);
+				@apply(--layout-justified);
+				@apply(--layout-center);
+				font-weight: 500 !important;
+				font-size: 17px;
 				color: #656060;
 			}
-			h3 span {
+			.header span {
 				color: #A0A1A3;
-				font-size: 16px;
+				font-size: 0.9em;
 			}
-			.buttons {
-				@apply(--layout-horizontal);
+			.header a {
+				color: var(--qa-dark-color);
+			}
+			.header .title {
+				@apply(--layout-flex);
+				margin-left: 12px;
+			}
+			qa-link {
 				color: var(--qa-color);
-				position: absolute;
-				right: 0px;
-				top: 0px;
+			}
+			.empty {
+				color: var(--qa-light-secondary-color);
+				text-align: center;
+				font-size: 1.1em;
+				font-weight: 500;
 			}
 			.errors {
 				color: var(--qa-error-color);
 				font-size: 13px;
 				margin-bottom: 24px;
 			}
+			paper-icon-button {
+				width: 29px;
+				height: 29px;
+				padding: 0px;
+			}
+			paper-menu-button {
+				padding: 0px;
+			}
+			.content {
+				@apply(--qa-history-content);
+			}
 		</style>
-		<div class="buttons">
-			<template is="dom-repeat" items="[[getAllLinks(links, tags, content)]]">
-				<qa-link link="[[item]]"></qa-link>
+		<div class="header">
+			<template is="dom-if" if="[[!noFilters]]">
+				<paper-menu-button>
+					<paper-icon-button icon="filter-list" class="dropdown-trigger"></paper-icon-button>
+					<paper-menu multi selected-items="{{selectedFilterElems}}" class="dropdown-content">
+						<paper-item data-filter="OBSERVACAO">Comentários</paper-item>
+						<paper-item data-filter="FLUXO">Fluxo locação</paper-item>
+						<paper-item data-filter="TASK">Tarefas</paper-item>
+					</paper-menu>
+				</paper-menu-button>
 			</template>
+			<div class="title">
+				<template is="dom-if" if="[[!noTitle]]">
+					[[content.root.title]]&nbsp;
+					<span>
+						<template is="dom-if" if="[[content.root.url]]">
+							<a href="[[content.root.url]]" target="_blank">
+								[[getId(content)]]
+							</a>
+						</template>
+						<template is="dom-if" if="[[!content.root.url]]">
+							[[getId(content)]]
+						</template>
+					</span>
+				</template>
+			</div>
+			<div>
+				<template is="dom-repeat" items="[[getAllLinks(links, tags, content)]]">
+					<qa-link link="[[item]]"></qa-link>
+				</template>
+			</div>
 		</div>
-		<h3>{{getTitle(content)}}<span>{{getId(content)}}</span></h3>
 		<template is="dom-if" if="[[content.errors]]">
 			<ul class="errors">
 				<template is="dom-repeat" items="[[content.errors]]">
@@ -53,11 +107,19 @@
 				</template>
 			</ul>
 		</template>
-		<template is="dom-repeat" items="[[content.history]]">
-			<qa-history-item item="[[item]]"></qa-history-item>
-		</template>
-		<template is="dom-if" if="[[!content.history.length]]">
-			<div>Histórico vazio</div>
+		<div class="content">
+			<template
+				is="dom-repeat"
+				items="[[content.history]]"
+				rendered-item-count="{{itemsCount}}"
+				filter="{{buildFilter(selectedFilterElems)}}">
+				<qa-history-item item="[[item]]"></qa-history-item>
+			</template>
+		</div>
+		<template is="dom-if" if="[[!itemsCount]]">
+			<div class="empty">
+				[[getEmptyMessage(content.history.length, itemsCount)]]
+			</div>
 		</template>
 		<qa-loading-overlay loader="ajax"></qa-loading-overlay>
 		<iron-ajax
@@ -73,9 +135,34 @@
 		Polymer({
 			is: 'qa-history',
 			properties: {
+				noFilters: {
+					type: Boolean,
+					value: false
+				},
+				noTitle: {
+					type: Boolean,
+					value: false
+				},
+				links: {
+					type: Array,
+					value: function() {
+						return [];
+					}
+				},
+				tags: {
+					type: Array,
+					value: function() {
+						return [];
+					}
+				},
+				selectedFilterElems: {
+					type: Array,
+					value: function() {
+						return [];
+					}
+				},
+				itemsCount: Number,
 				content: Object,
-				links: Array,
-				tags: Array,
 				auto: Boolean,
 				url: String
 			},
@@ -91,34 +178,49 @@
 			onTapMessage: function(e) {
 				this.$$('dialog-observacao').open();
 			},
-			getTitle: function(content) {
-				switch (content.root.type) {
-					case 'FluxoLocacao': return 'Histórico da locação';
-					case 'Lead': return 'Histórico do lead';
-					case 'ConversaoLead': return 'Histórico de conversão de lead';
-					default: return 'Histórico';
-				}
-			},
 			getId: function(content) {
-				return ' - ' + content.root.id;
+				return '#' + content.root.id;
 			},
 			getAllLinks: function(links, tags, content) {
 
-				const allLinks = [].concat(links);
-
-				if (content.root && content.root.tag) {
-					allLinks.push({
-						icon: 'communication:message',
-						uri: '/api/popis/observation',
-						dialog: {
-							type: 'comentar',
-							commentName: 'message',
-							params: { tags: tags }
-						}
-					});
+				if (!content) {
+					return [];
 				}
 
+				tags = [].concat(tags, content.root.tag);
+
+				const allLinks = [].concat(links);
+				const uniqueTags = Array.from(new Set(tags));
+
+				allLinks.push({
+					icon: 'communication:message',
+					uri: '/api/popis/observation',
+					dialog: {
+						type: 'comentar',
+						commentName: 'message',
+						params: { tags: uniqueTags }
+					}
+				});
+
 				return allLinks;
+			},
+			getEmptyMessage: function(itemsTotal, itemsCount) {
+				if (!itemsTotal) {
+					return 'Histórico vazio';
+				} else {
+					return 'Não há itens para os filtros selecionados';
+				}
+			},
+			buildFilter: function(selectedFilterElems) {
+				var filters = selectedFilterElems.map(function(elem) {
+					return elem.dataset.filter;
+				});
+				if (!filters.length) {
+					return null;
+				}
+				return function(item) {
+					return filters.indexOf(item.type) >= 0;
+				};
 			}
 		});
 
