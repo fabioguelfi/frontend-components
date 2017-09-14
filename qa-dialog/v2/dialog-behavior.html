@@ -1,0 +1,28 @@
+<link rel="import" href="../../../bower_components/polymer/polymer.html">
+
+<script>
+
+	window.QuintoAndar = window.QuintoAndar || {};
+
+	/** @polymerBehavior */
+	QuintoAndar.DialogBehavior = {
+		properties: {
+			link: {
+				type: Object,
+				observer: 'onLinkChange'
+			}
+		},
+		listeners: { 'iron-overlay-closed': 'onClose' },
+		onClose: function(event) {
+			if (event.target == this) {
+				this.parentNode.removeChild(this);
+			}
+		},
+		onLinkChange: function(link) {
+			var dialog = link.dialog;
+			Object.keys(dialog).forEach(function(key) {
+				this.set(key, dialog[key]);
+			}, this);
+		}
+	};
+</script>

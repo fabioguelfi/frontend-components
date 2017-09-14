@@ -1,0 +1,166 @@
+<dom-module id="dialog-comentar">
+
+	<template>
+		<style include="paper-dialog-shared-styles"></style>
+		<style include="qa-input-style qa-dropdown-menu-style qa-button-style"></style>
+		<style include="dialog-style"></style>
+		<h2>{{title}}</h2>
+		<h4>{{subtitle}}</h4>
+		<form is="iron-form">
+			<template is="dom-if" if="[[categories.length]]">
+				<paper-dropdown-menu qa-style label="[[categoryLabel]]" >
+					<paper-listbox class="dropdown-content" selected="{{categoryIndex}}">
+						<template is="dom-repeat" items="[[categories]]">
+							<paper-item>{{getLabel(item)}}</paper-item>
+						</template>
+					</paper-listbox>
+				</paper-dropdown-menu>
+				<input type="hidden" name$="[[categoryName]]" value$="[[categoryValue]]">
+			</template>
+			<template is="dom-if" if="[[filteredReasons.length]]">
+				<paper-dropdown-menu qa-style label="[[reasonLabel]]">
+					<paper-listbox class="dropdown-content" selected="{{reasonIndex}}">
+						<template is="dom-repeat" items="[[filteredReasons]]">
+							<paper-item>{{getLabel(item)}}</paper-item>
+						</template>
+					</paper-listbox>
+				</paper-dropdown-menu>
+				<input type="hidden" name$="[[reasonName]]" value$="[[reasonValue]]">
+			</template>
+			<template is="dom-if" if="[[categories.length]]">
+				<br><br>
+			</template>
+			<template is="dom-if" if="{{isCommentVisible}}">
+				<paper-textarea qa-style
+					rows=6
+					no-label-float
+					label="[[label]]"
+					maxLength="2048"
+					autoValidate
+					value="{{comment}}"
+					name="[[commentName]]">
+				</paper-textarea>
+				<input name="commentField" type="hidden" value$="[[commentName]]" />
+			</template>
+		</form>
+		<div class="buttons layout">
+			<paper-button qa-style-flat dialog-dismiss autofocus>Cancelar</paper-button>
+			<paper-button qa-style-flat submit
+				disabled="[[!validate(filteredReasons, reasonValue, comment, optional)]]">
+				{{actionLabel}}
+			</paper-button>
+		</div>
+	</template>
+	<script>
+		Polymer({
+			is: 'dialog-comentar',
+			properties: {
+				title: {
+					type: String,
+					value: 'Comentar'
+				},
+				label: {
+					type: String,
+					value: 'Comentário'
+				},
+				actionLabel: {
+					type: String,
+					value: 'Salvar'
+				},
+				categories: {
+					type: Array,
+					value: function() {
+						return [];
+					}
+				},
+				reasons: {
+					type: Array,
+					value: function() {
+						return [];
+					}
+				},
+				categoryIndex: {
+					type: Number,
+					value: -1
+				},
+				reasonIndex: {
+					type: Number,
+					value: -1
+				},
+				reasonName: {
+					type: String,
+					value: 'reason'
+				},
+				categoryValue: {
+					type: String,
+					computed: 'getCategoryValue(categories, categoryIndex)'
+				},
+				filteredReasons: {
+					type: Array,
+					computed: 'computeFilteredReasons(reasons, categoryValue)'
+				},
+				reasonValue: {
+					type: String,
+					computed: 'computeReasonValue(filteredReasons, reasonIndex)'
+				},
+				categoryLabel: {
+					type: String,
+					value: 'Categoria'
+				},
+				reasonLabel: {
+					type: String,
+					value: 'Motivo'
+				},
+				commentName: {
+					type: String,
+					value: 'comment'
+				},
+				comment: {
+					type: String,
+					value: ''
+				},
+				isCommentVisible : {
+					type: Boolean,
+					value: true
+				},
+				isAgendamento : {
+					type: Boolean,
+					value: false
+				},
+				optional: {
+					type: Boolean,
+					value: false
+				}
+			},
+			behaviors: [ Polymer.PaperDialogBehavior, QuintoAndar.DialogFormBehavior ],
+			getCategoryValue: function (categories, categoryIndex) {
+				return (categoryIndex >= 0 ? categories[categoryIndex].id : null)
+			},
+			computeReasonValue: function (filteredReasons, reasonIndex) {
+				return reasonIndex >= 0 ? filteredReasons[reasonIndex].id : null;
+			},
+			computeFilteredReasons: function (reasons, categoryValue) {
+				if (categoryValue) {
+					var filtered = []
+					reasons.forEach(function(item){
+						if (item.category == categoryValue) {
+							filtered.push(item)
+						}
+					})
+					return filtered
+				}
+				return reasons.slice(0);
+			},
+			getLabel: function(item) {
+				return item.label || item.id;
+			},
+			validate: function(filteredReasons, reasonValue, comment, optional) {
+				if (this.isAgendamento) {
+					return filteredReasons.length && reasonValue && (reasonValue != 'Outro' || comment);
+				}
+				return optional || (filteredReasons.length && reasonValue) || (!filteredReasons.length && comment.length);
+			}
+		});
+
+	</script>
+</dom-module>

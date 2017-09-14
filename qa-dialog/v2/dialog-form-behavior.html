@@ -1,0 +1,75 @@
+<link rel="import" href="../../../bower_components/polymer/polymer.html">
+
+<script>
+
+	/** @polymerBehavior */
+	var DialogFormBehaviorImpl = {
+		ready: function() {
+			var self = this;
+			var form = this.$$('form');
+			form.setAttribute('content-type', 'application/json');
+			form.addEventListener('iron-form-presubmit', function(event) {
+				var link = self.link;
+				var dialog = link.dialog;
+				var params = Object.assign(dialog.params || {}, this.request.params, link.params);
+
+				this.request.set('url', link.uri);
+				this.request.set('method', link.method || 'POST');
+
+				if (this.request.method == 'GET') {
+					this.request.set('params', params);
+				} else if (this.request.method == 'PATCH') {
+					var patches = [];
+					Object.keys(params).forEach(function(key) {
+						var value = params[key];
+						patches.push({ op: 'replace', path: '/' + key, value: value });
+					});
+					this.request.set('params', undefined);
+					this.request.set('body', patches);
+				} else {
+					this.request.set('params', undefined);
+					this.request.set('body', params);
+				}
+			});
+			form.addEventListener('iron-form-error', function(event) {
+				var details = event.detail.error +
+					'; \ntask: ' + self.task._id +
+					'; \nlink: ' + self.link.rel;
+				this.fire('toast-show', {
+					id: 'dialog-form-toast',
+					text: 'Ops, algo inesperado aconteceu...',
+					withBackdrop: true,
+					duration: 0,
+					action: {
+						label: 'Detalhes',
+						callback: function() {
+							alert(details);
+						}
+					}
+				});
+			});
+			form.addEventListener('iron-form-response', function(e) {
+				self.fire('update-task');
+				self.close();
+			});
+		},
+		attached: function() {
+			var submit = this.$$('paper-button[submit]');
+			this.listen(submit, 'tap', 'onTapSubmit');
+		},
+		detached: function() {
+			var submit = this.$$('paper-button[submit]');
+			this.unlisten(submit, 'tap', 'onTapSubmit');
+		},
+		onTapSubmit: function(event) {
+			var form = this.$$('form');
+			form.submit();
+		}
+	};
+
+	window.QuintoAndar = window.QuintoAndar || {};
+
+	/** @polymerBehavior */
+	QuintoAndar.DialogFormBehavior = [ QuintoAndar.DialogBehavior, DialogFormBehaviorImpl ];
+
+</script>

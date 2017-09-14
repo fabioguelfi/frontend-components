@@ -1,0 +1,126 @@
+<link rel="import" href="../../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../../bower_components/iron-ajax/iron-ajax.html">
+<link rel="import" href="../../../bower_components/paper-icon-button/paper-icon-button.html">
+<link rel="import" href="../../../bower_components/iron-icons/communication-icons.html">
+<link rel="import" href="../../../qa-components/qa-loading/v1/qa-loading-overlay.html">
+<link rel="import" href="../../../qa-components/qa-styles/v1/qa-styles.html">
+
+<link rel="import" href="../../qa-link/v1/qa-link.html">
+<link rel="import" href="./qa-history-item.html">
+
+<dom-module id="qa-history">
+
+	<template>
+		<style include="iron-flex iron-flex-alignment"></style>
+		<style include="qa-styles"></style>
+		<style is="custom-style">
+			:host {
+				background-color: var(--qa-light-light-color);
+				position: relative;
+				display: block;
+			}
+			h3 {
+				font-weight: 600;
+				color: #656060;
+			}
+			h3 span {
+				color: #A0A1A3;
+				font-size: 16px;
+			}
+			.buttons {
+				@apply(--layout-horizontal);
+				color: var(--qa-color);
+				position: absolute;
+				right: 0px;
+				top: 0px;
+			}
+			.errors {
+				color: var(--qa-error-color);
+				font-size: 13px;
+				margin-bottom: 24px;
+			}
+		</style>
+		<div class="buttons">
+			<template is="dom-repeat" items="[[getAllLinks(links, tags, content)]]">
+				<qa-link link="[[item]]"></qa-link>
+			</template>
+		</div>
+		<h3>{{getTitle(content)}}<span>{{getId(content)}}</span></h3>
+		<template is="dom-if" if="[[content.errors]]">
+			<ul class="errors">
+				<template is="dom-repeat" items="[[content.errors]]">
+					<li>{{item.message}}</li>
+				</template>
+			</ul>
+		</template>
+		<template is="dom-repeat" items="[[content.history]]">
+			<qa-history-item item="[[item]]"></qa-history-item>
+		</template>
+		<template is="dom-if" if="[[!content.history.length]]">
+			<div>Histórico vazio</div>
+		</template>
+		<qa-loading-overlay loader="ajax"></qa-loading-overlay>
+		<iron-ajax
+			auto="[[auto]]"
+			id="ajax"
+			url="[[url]]"
+			last-response="{{content}}"
+			withCredentials>
+		</iron-ajax>
+	</template>
+	<script>
+
+		Polymer({
+			is: 'qa-history',
+			properties: {
+				content: Object,
+				links: Array,
+				tags: Array,
+				auto: Boolean,
+				url: String
+			},
+			listeners: {
+				'iron-overlay-closed': 'handleDialogClosing'
+			},
+			handleDialogClosing: function(event) {
+				if (event.detail.closingReason != 'canceled' &&
+					event.target.localName == 'dialog-comentar') {
+					this.$.ajax.generateRequest();
+				}
+			},
+			onTapMessage: function(e) {
+				this.$$('dialog-observacao').open();
+			},
+			getTitle: function(content) {
+				switch (content.root.type) {
+					case 'FluxoLocacao': return 'Histórico da locação';
+					case 'Lead': return 'Histórico do lead';
+					case 'ConversaoLead': return 'Histórico de conversão de lead';
+					default: return 'Histórico';
+				}
+			},
+			getId: function(content) {
+				return ' - ' + content.root.id;
+			},
+			getAllLinks: function(links, tags, content) {
+
+				const allLinks = [].concat(links);
+
+				if (content.root && content.root.tag) {
+					allLinks.push({
+						icon: 'communication:message',
+						uri: '/api/popis/observation',
+						dialog: {
+							type: 'comentar',
+							commentName: 'message',
+							params: { tags: tags }
+						}
+					});
+				}
+
+				return allLinks;
+			}
+		});
+
+	</script>
+</dom-module>

@@ -1,0 +1,223 @@
+<link rel="import" href="../../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../../../bower_components/iron-icon/iron-icon.html">
+<link rel="import" href="../../../bower_components/iron-icons/iron-icons.html">
+<link rel="import" href="../../../bower_components/file-upload/file-upload.html">
+
+<link rel="import" href="../../qa-styles/v1/qa-styles.html">
+<link rel="import" href="../../qa-dialog/v2/qa-dialog.html">
+
+<dom-module id="qa-link">
+	<template>
+		<style include="qa-styles qa-button-style"></style>
+		<style is="custom-style">
+			paper-button {
+				min-height: 40px;
+				margin-top: 6px;
+				margin-bottom: 6px;
+				padding: 0px 10px;
+				font-weight: normal !important;
+			}
+			paper-icon-button {
+				width: 32px;
+				height: 32px;
+				padding: 0px;
+				margin-left: 4px;
+			}
+			iron-icon {
+				margin-right: 4px;
+			}
+			iron-icon[icon="autorenew"] {
+				animation:spin 3s linear infinite;
+			}
+			@keyframes spin {
+				100% { transform:rotate(360deg); }
+			}
+			.closing {
+				color: var(--qa-text-color) !important;
+				background-color: var(--qa-darker-color) !important;				
+			}
+		</style>
+		<template is="dom-if" if="[[!link.icon]]">
+			<paper-button qa-style class$="{{getClass(link)}}" on-tap="handleActionTap">
+				<template is="dom-if" if="[[isUpload(link)]]">
+					<iron-icon icon$="[[getIcon(link)]]"></iron-icon>
+				</template>
+				{{getTitle(link)}}
+			</paper-button>
+		</template>
+		<template is="dom-if" if="[[link.icon]]">
+			<paper-icon-button
+				icon="[[link.icon]]"
+				style="[[link.style]]"
+				on-tap="handleActionTap">
+			</paper-icon-button>
+		</template>
+	</template>
+	<script>
+		Polymer({
+			is: 'qa-link',
+			properties: {
+				link: Object,
+				task: Object,
+				toastId: {
+					type: String,
+					computed: 'getToastId(link, task)'
+				}
+			},
+			getTitle: function(link) {
+				if (this.isUpload(link)) {
+					return link.title.replace(/^upload/i, '');
+				} else {
+					return link.title;
+				}
+			},
+			getIcon: function(link) {
+				return 'cloud-upload';
+			},
+			getClass: function(link){
+				return link.closes ? 'closing' : "";  
+			},
+			isUpload: function(link) {
+				return link.method == 'UPLOAD';
+			},
+			getToastId: function(link, task) {
+				return 'qa-link-toast';
+			},
+			handleActionTap: function(event) {
+				var link = this.link;
+				if (this.isUpload(link)) {
+					this.handleUploadLink(link);
+				} else if (link.dialog) {
+					this.handleDialogLink(link);
+				} else {
+					this.handleDirectLink(link);
+				}
+			},
+			handleUploadLink: function(link) {
+
+				var icon = this.$$('iron-icon');
+				var uploader = document.createElement('file-upload');
+				var auth = document.cookie.match(/5AJWT_AUTH=([^;]*)/)[1];
+				var self = this;
+
+				uploader.setAttribute('hidden', true);
+				uploader.set('headers', { '5andar-auth': auth });
+				uploader.set('accept', link.fileType);
+				uploader.set('target', link.uri);
+				uploader.set('method', 'POST');
+				this.appendChild(uploader);
+				uploader._fileClick();
+
+				uploader.addEventListener('before-upload', function(event) {
+					var file = uploader.files[0];
+					icon.setAttribute('icon', 'autorenew');
+					this.fire('toast-show', {
+						id: this.toastId,
+						text: 'Enviando - ' + file.name + '...',
+						action: {
+							label: 'Cancelar',
+							callback: function() {
+								uploader.cancel(file);
+							}
+						}
+					});
+				}.bind(this));
+				uploader.addEventListener('success', function(event) {
+					icon.setAttribute('icon', 'check');
+					this.fire('toast-show', {
+						id: this.toastId,
+						text: 'Feito'
+					});
+				}.bind(this));
+				uploader.addEventListener('error', function(event) {
+					var xhr = event.detail.xhr;
+					icon.setAttribute('icon', 'cloud-upload');
+					var details = xhr.statusText +
+						'; \ndetails: ' + xhr.responseText +
+						'; \ntask: ' + self.task._id +
+						'; \nlink: ' + link.rel;
+					this.fire('toast-show', {
+						id: this.toastId,
+						text: 'Ops, algo inesperado aconteceu...',
+						withBackdrop: true,
+						duration: 0,
+						action: {
+							label: 'Detalhes',
+							callback: function() {
+								alert(details);
+							}
+						}
+					});
+				}.bind(this));
+			},
+			handleDialogLink: function(link) {
+				var dialogType = 'dialog-' + link.dialog.type;
+				var dialogUrl = '../qa-components/qa-dialog/v2/' + dialogType + '.html';
+				this.importHref(dialogUrl, function(event) {
+					var dialog = document.createElement(dialogType);
+					dialog.set('withBackdrop', true);
+					dialog.set('link', link);
+					dialog.set('task', this.task);
+					this.appendChild(dialog);
+					dialog.open();
+				}, function(err) {
+					console.error(err);
+				});
+			},
+			handleDirectLink: function(link) {
+
+				if (!link.active && !link.closes) {
+					window.open(link.uri, '_blank');
+					return;
+				}
+
+				var params = {
+					withCredentials: true,
+					method: link.method,
+					url: link.uri
+				};
+
+				if (params.method != 'GET') {
+					params.headers = { 'content-type': 'application/json' };
+					params.body = JSON.stringify(link.params);
+					params.handleAs = 'json';
+				}
+
+				var request = document.createElement('iron-request');
+
+				var self = this;
+				this.fire('toast-show', {
+					id: this.toastId,
+					text: 'Processando...',
+					duration: 0
+				});
+
+				request.send(params)
+				.then(function() {
+					this.fire('update-task');
+					this.fire('toast-show', {
+						id: this.toastId,
+						text: link.success || 'Feito'
+					});
+				}.bind(this))
+				.catch(function(err) {
+					this.fire('toast-show', {
+						id: this.toastId,
+						text: 'Ops, algo inesperado aconteceu...',
+						withBackdrop: true,
+						action: {
+							label: 'Detalhes',
+							callback: function() {
+								var details = err +
+									'; \ntask: ' + self.task._id +
+									'; \nlink: ' + link.rel;
+								alert(details);
+							}
+						}
+					});
+				}.bind(this));
+			}
+		});
+	</script>
+</dom-module-->

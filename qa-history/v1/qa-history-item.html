@@ -1,0 +1,158 @@
+<link rel="import" href="../../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../../bower_components/iron-icon/iron-icon.html">
+<link rel="import" href="../../../bower_components/iron-icons/iron-icons.html">
+<link rel="import" href="../../../bower_components/iron-icons/communication-icons.html">
+
+<link ewl="import" href="../../qa-styles/v1/qa-styles.html">
+
+<dom-module id="qa-history-item">
+
+	<template>
+		<style include="iron-flex iron-flex-alignment"></style>
+		<style include="qa-styles"></style>
+		<style is="custom-style">
+			:host {
+				@apply(--layout-horizontal);
+				@apply(--layout-flex);
+			}
+			:host(:first-of-type) .line div:first-of-type,
+			:host(:last-of-type) .line div:last-of-type {
+				background-color: inherit;
+			}
+			.line {
+				margin-right: 16px;
+			}
+			.line div {
+				background-color: var(--qa-light-darker-color);
+				margin: auto;
+				width: 4px;
+			}
+			.line div:first-of-type {
+				margin-bottom: -4px;
+				height: 20px;
+			}
+			.line div:last-of-type {
+				margin-top: -4px;
+				height: calc(100% - 16px - 16px + 4px);
+			}
+			.dot {
+				border-radius: 50%;
+				height: 16px;
+				width: 16px !important;
+			}
+			.content {
+				border: 1px solid #E3E3E3;
+				background-color: #EFEFEF;
+				margin-bottom: 16px;
+			}
+			.content > div {
+				padding: 8px 16px;
+			}
+			.content > div:first-of-type {
+				background-color: #E3E3E3;
+				padding: 8px;
+			}
+			.resolved {
+				background-color: #C5E1A5;
+			}
+			.resolved > div:first-of-type {
+				background-color: #B7D199;
+			}
+			.opened {
+				background-color: #EF9A9A;
+			}
+			.opened > div:first-of-type {
+				background-color: #DC8E8E;
+			}
+			.when {
+				font-size: 12px;
+				margin-top: 4px;
+			}
+			.title {
+				font-weight: 600;
+				font-size: 15px;
+			}
+		</style>
+		<div class="line">
+			<div></div>
+			<div class="dot"></div>
+			<div></div>
+		</div>
+		<div class$="content layout flex horizontal {{conditionalClass(item)}}">
+			<div>
+				<iron-icon icon="{{getIcon(item)}}"></iron-icon>
+			</div>
+			<div>
+				<div class="title" on-tap="handleTap">{{item.title}}</div>
+				<div>{{item.description}}</div>
+				<template is="dom-if" if="{{item.comment}}" >
+					<div>Comentário: {{item.comment}}</div>
+				</template>
+				<div class="when">
+					<template is="dom-if" if="[[isManualOpened(item)]]">
+						Criada em
+					</template>
+					<template is="dom-if" if="[[isManualResolved(item)]]">
+						Realizada em
+					</template>
+					{{getDate(item.date)}}
+					<template is="dom-if" if="{{item.userName}}">
+						por {{item.userName}}
+					</template>
+					<template is="dom-if" if="{{item.openedTo}}" >
+						para {{item.openedTo}}
+					</template>
+				</div>
+			</div>
+		</div>
+	</template>
+	<script>
+
+		Polymer({
+			is: 'qa-history-item',
+			properties: {
+				item: Object,
+			},
+			getDate: function(date) {
+				return moment(date).format('DD/MM/YY [às] HH:mm');
+			},
+			getIcon: function(item) {
+				switch (item.type) {
+					case 'FLUXO':
+						return 'communication:import-export';
+					case 'OBSERVACAO':
+						return 'communication:chat';
+					case 'TASK':
+						if (item.state == 'RESOLVIDA') {
+							return 'icons:assignment-turned-in';
+						} else if (item.state == 'TRANSFERIDA') {
+							return 'icons:assignment-ind';
+						} else {
+							return 'icons:assignment-turned-in';
+						}
+					default:
+						return 'icons:error-outline';
+				}
+			},
+			handleTap: function(event) {
+				if (this.item.url) {
+					window.open(this.item.url, '_blank');
+				}
+			},
+			isManualResolved: function(item) {
+				return item.state == 'RESOLVIDA' && item.manual;
+			},
+			isManualOpened: function(item) {
+				return item.state == 'ABERTA' && item.manual;
+			},
+			conditionalClass: function(item) {
+				if(item.realized && item.manual) {
+					return 'resolved';
+				} else if(!item.realized && item.manual) {
+					return 'opened';
+				}
+			}
+		});
+
+	</script>
+</dom-module>
