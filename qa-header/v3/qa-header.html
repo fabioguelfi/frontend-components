@@ -41,12 +41,13 @@
 			</template>
 		</paper-tabs>
 		<div class="layout horizontal flex center-justified">
-			<content></content>
+			<content select=":not(.menu)"></content>
 		</div>
 		<div class="user">
 			<div>{{user.name}}</div>
 			<div>{{user.email}}</div>
 		</div>
+		<content select=".menu"></content>
 	</template>
 
 	<script src="../../../bower_components/jwt-decode/build/jwt-decode.min.js"></script>
