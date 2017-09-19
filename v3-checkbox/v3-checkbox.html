@@ -1,0 +1,60 @@
+
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/paper-checkbox/paper-checkbox.html">
+<link rel="import" href="../../bower_components/iron-ajax/iron-ajax.html">
+<link rel="import" href="../../bower_components/iron-form/iron-form.html">
+<link rel="import" href="../qa-styles/v1/qa-styles.html">
+<dom-module id="v3-checkbox">
+	<template>
+		<style include="iron-flex iron-flex-alignment"></style>
+		<style include="qa-styles"></style>
+		<style is="custom-style">
+		</style>
+		<form is="iron-form" 
+			method="POST"
+			action="/user/crmdata"
+			content-type="application/json" > 
+			<paper-checkbox 
+				name="knowsSupplyNewVersion" 
+				on-tap="submit" 
+				checked="{{knowsSupplyNewVersion}}">
+				Esse usuário conhece a V3.
+			</paper-checkbox>
+			<input type="hidden" value="[[userId]]" name="userId">
+		</form>
+		<iron-ajax
+			auto="{{userId}}"
+			url="/user/crmdata/{{userId}}"
+			on-response="handleResponse"
+			with-credentials>
+		</iron-ajax>
+	</template>
+	<script>
+		Polymer({
+			is: 'v3-checkbox',
+			properties: {
+				knowsSupplyNewVersion: Boolean,
+				userId: Number
+			},
+			ready: function() {
+				var self = this;	
+				this.$$('form').addEventListener('iron-form-presubmit', function(event) {
+					this.request.method = "PUT";
+					this.request.body.knowsSupplyNewVersion = self.knowsSupplyNewVersion;
+				});
+			},
+			handleResponse: function(event) {
+				var crmdata = event.detail.response;
+				if (!crmdata) {
+					this.knowsSupplyNewVersion = false;
+				} else {
+					this.knowsSupplyNewVersion = crmdata.knowsSupplyNewVersion;
+				}
+			},
+			submit: function(event) {
+				this.$$('form').submit();
+			}
+		});
+
+	</script>
+</dom-module>
