@@ -1,96 +1,92 @@
 <link rel="import" href="../../bower_components/polymer/polymer.html">
 <link rel="import" href="../qa-styles/v1/qa-styles.html">
 <dom-module id="qa-call-notification">
-    <script>
-     Polymer({
-         is: 'qa-call-notification',
-         properties: {
-	     host: {
-		 type: String,
-		 value: window.location.host
-	     },
-	     protocol: {
-		 type: String,
-		 value: window.location.protocol == 'https:' ? 'wss:': 'ws:'
-	     },
-	     route: {
-		 type: String,
-		 value: "/api/call"
-	     },
-	     notificationEnabled: {
-		 type: Boolean,
-		 value: true
-	     },
-	     retryPeriod: {
-		 type: Number,
-		 value: 10000
-	     },
-	     pingPeriod: {
-		 type: Number,
-		 value: 3000
-	     }
-	 },
-	 notifyCall: function(extension) {
-	     if (Notification.permission !== "granted"){
-		 Notification.requestPermission();
-	     }
-	     var notification = new Notification('Nova Ligação', {
-		 body: "Nova Ligação de " + extension,
-		 requireInteraction: true,
-		 vibrate: true
-	     });
-	     var notificationLifeSpan = 8000;
-	     setTimeout(function() { notification.close() }, notificationLifeSpan);
-	     notification.onclick = function () {
-		 window.open("/busca?query=" + extension );
-	     }
-	 },
-	 newWebSocket: function(webSocketAddress, pingPeriod){
-	     var connection = new WebSocket(webSocketAddress);
-	     var connectionKeeper;
-	     var self = this;
-	     connection.onopen = function () {
-		 connectionKeeper = setInterval(
-		     function() {
-			 connection.send("I'm alive");
-			 console.log("Sent ping message");
-		     },
-		     pingPeriod
-		 );
-		 console.log("Connected web socket");
-	     };
-	     connection.onmessage = function(e) {
-		 self.notifyCall(e.data);
-	     };
-	     connection.onclose = function(e) {
-		 console.log("Lost websocket connection. Creating new one in " + retryPeriod + "ms");
-		 if(connectionKeeper){
-		     console.log("Clearing interval...");
-		     clearInterval(connectionKeeper);
-		 }
-		 setTimeout(
-		     function() {
-			 newWebSocket(webSocketAddress, pingPeriod, retryPeriod);
-		     },
-		     retryPeriod
-		 );
-	     }
-	 },
-	 ready: function(event) {
-	     var webSocketAddress = this.protocol + "//" + this.host + this.route;
-	     if(this.notificationEnabled) {
-		 var pingPeriod = 3000;
-		 var retryPeriod = 10000;
-		 this.newWebSocket(webSocketAddress, pingPeriod, retryPeriod);
-	     }
-	     if (!Notification) {
-		 alert('Desktop notifications not available in your browser. Try Chromium.'); 
-		 return;
-	     }
-	     if (Notification.permission !== "granted"){
-		 Notification.requestPermission();
-	     }
-	 }
-     });
-    </script>
+	<script>
+	Polymer({
+		is: 'qa-call-notification',
+		properties: {
+			host: {
+				type: String,
+				value: window.location.host
+			},
+			protocol: {
+				type: String,
+				value: window.location.protocol == 'https:' ? 'wss:': 'ws:'
+			},
+			route: {
+				type: String,
+				value: "/api/call"
+			},
+			notificationEnabled: {
+				type: String,
+				value: "false"
+			},
+			retryPeriod: {
+				type: Number,
+				value: 10000
+			},
+			pingPeriod: {
+				type: Number,
+				value: 3000
+			}
+		},
+		notifyCall: function(extension) {
+			var self = this;
+			if (Notification.permission !== "granted"){
+				Notification.requestPermission();
+			}
+			var notification = new Notification('Nova Ligação', {
+				body: "Nova Ligação de " + extension,
+				requireInteraction: true,
+				vibrate: true
+			});
+			var notificationLifeSpan = 8000;
+			setTimeout(function() { notification.close() }, notificationLifeSpan);
+			notification.onclick = function () {
+				window.open(self.host + "/busca?query=" + extension );
+			}
+		},
+		newWebSocket: function(webSocketAddress, pingPeriod){
+			var connection = new WebSocket(webSocketAddress);
+			var connectionKeeper;
+			var self = this;
+			connection.onopen = function () {
+				connectionKeeper = setInterval(function() {
+					connection.send("I'm alive");
+					console.log("Sent ping message");
+				}, pingPeriod);
+				console.log("Connected web socket");
+			};
+			connection.onmessage = function(e) {
+			self.notifyCall(e.data);
+			};
+			connection.onclose = function(e) {
+				console.log("Lost websocket connection. Creating new one in " + self.retryPeriod + "ms");
+				if(connectionKeeper){
+					console.log("Clearing interval...");
+					clearInterval(connectionKeeper);
+				}
+				setTimeout(function() {
+					self.newWebSocket(webSocketAddress, pingPeriod, self.retryPeriod);
+				}, self.retryPeriod);
+			}
+		},
+		ready: function(event) {
+			host = this.host.replace("http://", "").replace("https://", "");
+			var webSocketAddress = this.protocol + "//" + host + this.route;
+			var notificationEnabled = JSON.parse(this.notificationEnabled || false);
+			if(notificationEnabled) {
+				var pingPeriod = 3000;
+				this.newWebSocket(webSocketAddress, pingPeriod, this.retryPeriod);
+			}
+			if (!Notification) {
+				alert('Desktop notifications not available in your browser. Try Chromium.');
+				return;
+			}
+			if (Notification.permission !== "granted"){
+				Notification.requestPermission();
+			}
+		}
+	});
+	</script>
 </dom-module>
