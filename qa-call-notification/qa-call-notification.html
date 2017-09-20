@@ -40,8 +40,6 @@
 				requireInteraction: true,
 				vibrate: true
 			});
-			var notificationLifeSpan = 8000;
-			setTimeout(function() { notification.close() }, notificationLifeSpan);
 			notification.onclick = function () {
 				window.open(self.host + "/busca?query=" + extension );
 			}
