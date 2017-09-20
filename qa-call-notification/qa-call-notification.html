@@ -18,8 +18,8 @@
 		 value: "/api/call"
 	     },
 	     notificationEnabled: {
-		 type: Boolean,
-		 value: true
+     		 type: String,
+		 value: "false"
 	     },
 	     retryPeriod: {
 		 type: Number,
@@ -77,8 +77,9 @@
 	     }
 	 },
 	 ready: function(event) {
-	     var webSocketAddress = this.protocol + "//" + this.host + this.route;
-	     if(this.notificationEnabled) {
+var webSocketAddress = this.protocol + "//" + this.host + this.route;
+	     var notificationEnabled = JSON.parse(this.notificationEnabled || false);
+	     if(notificationEnabled) {
 		 var pingPeriod = 3000;
 		 var retryPeriod = 10000;
 		 this.newWebSocket(webSocketAddress, pingPeriod, retryPeriod);
