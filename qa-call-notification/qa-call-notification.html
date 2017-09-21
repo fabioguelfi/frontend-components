@@ -41,7 +41,8 @@
 				vibrate: true
 			});
 			notification.onclick = function () {
-				window.open(self.host + "/busca?query=" + extension );
+				host = self.host.replace("http://", "").replace("https://", "");
+				window.open(window.location.protocol + "//" + self.host + "/busca?query=" + extension );
 			}
 		},
 		newWebSocket: function(webSocketAddress, pingPeriod){
