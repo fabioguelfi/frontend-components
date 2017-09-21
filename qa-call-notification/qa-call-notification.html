@@ -42,7 +42,7 @@
 			});
 			notification.onclick = function () {
 				host = self.host.replace("http://", "").replace("https://", "");
-				window.open(window.location.protocol + "//" + self.host + "/busca?query=" + extension );
+				window.open(window.location.protocol + "://" + self.host + "/busca?query=" + extension );
 			}
 		},
 		newWebSocket: function(webSocketAddress, pingPeriod){
