@@ -125,6 +125,8 @@
 			observers: [ 'onLinkChange(link)' ],
 			onLinkChange: function(link) {
 
+				QuintoAndar.DialogBehavior.onLinkChange.call(this, link);
+
 				var task = link.task;
 				console.log(link);
 				var soon = moment().add(15, 'm');
