@@ -29,17 +29,18 @@
 		<style include="qa-styles"></style>
 		<style is="custom-style">
 			:host {
-				@apply(--layout-horizontal);
+				@apply(--layout-vertical);
 				@apply(--layout-center);
-				width: 800px;
-				height: 60px;
+			}
+			:host > * {
+				@apply(--layout-self-stretch);
 			}
 			#menu {
 				background-color: var(--qa-darker-color);
 				padding: 0px 8px 0px 0px;
 				position: relative;
 			}
-			iron-icon, paper-icon-button {
+			.section > iron-icon {
 				color: #84b1ca;
 			}
 			#menu > iron-icon {
@@ -54,14 +55,10 @@
 				@apply(--layout-flex);
 				font-size: 16px;
 				border: 0px;
-				height: 70%;
+				min-height: 28px;
 				padding: 0px 10px;
 				color: var(--qa-text-color);
 				background-color: var(--qa-dark-color);
-			}
-			.filter-item-container {
-				padding: 10px;
-				margin: 10px;
 			}
 			input::-webkit-input-placeholder {
 				color: var(--qa-disabled-color);
@@ -81,7 +78,6 @@
 			.dropdown-content {
 				@apply(--shadow-elevation-2dp);
 				border-radius: 2px;
-				width: 100%;
 				background: white;
 			}
 			.footer {
@@ -92,38 +88,22 @@
 				font-weight: normal;
 				font-size: 12px;
 			}
-			.filter-icon {
+			paper-tab {
+				padding: 0px 18px 0 10px;
+			}
+			paper-tab iron-icon {
 				width: 20px;
 				height: 20px;
-				padding: 10px;
-				color: var(--qa-dark-color);
+				padding: 2px;
 			}
-			paper-tab {
-				--paper-tab-content: {
-					margin: 10px;
-				};
-			}
-			span {
-				font-size: 14px;
-				padding: 10px;
-				color: var(--qa-text-color);
+			paper-tab + paper-tab iron-icon {
+				width: 18px;
+				height: 18px;
+				padding: 6px;
 			}
 			paper-tabs {
-				background-color: var(--qa-color);
-				cursor: pointer;
-				--paper-tabs-selection-bar-color: white;
-				--paper-tabs-content: {
-					margin-bottom: 10px;
-				};
-				height: 30%;
-			}
-			.search-container {
-				width: 100%;
-				height: 100%;
-			}
-			#search-input {
-				width: 100%;
-				height: 60%;
+				height: 28px;
+				--paper-tabs-selection-bar-color: var(--qa-secondary-color);
 			}
 			.section {
 				@apply(--layout-horizontal);
@@ -139,17 +119,15 @@
 				margin: 12px 8px 12px 0px;
 			}
 		</style>
-		<div class="search-container">
-			<paper-tabs selected="{{selectedTypeIndex}}">
-				<template is="dom-repeat" items="[[types]]">
-					<paper-tab>
-						<iron-icon icon="[[item.icon]]" class="filter-icon" ></iron-icon>
-						<span class="filter-label">{{item.label}}</span>
-					</paper-tab>
-				</template>
-			</paper-tabs>
-			<input id="search-input" is="iron-input" bind-value="{{value}}" on-keydown="onKeydown" on-input="onInput" placeholder="Buscar...">
-		</div>
+		<paper-tabs selected="{{selectedTypeIndex}}">
+			<template is="dom-repeat" items="[[types]]">
+				<paper-tab>
+					<iron-icon icon="[[item.icon]]"></iron-icon>
+					<span class="filter-label">{{item.label}}</span>
+				</paper-tab>
+			</template>
+		</paper-tabs>
+		<input is="iron-input" bind-value="{{value}}" on-keydown="onKeydown" on-input="onInput" placeholder="Buscar...">
 		<iron-dropdown id="dropdown" no-overlap dynamic-align allow-outside-scroll>
 			<qa-loading class="dropdown-content" loader="ajax">
 				<template is="dom-if" if="[[selectedType.showPeople]]">
