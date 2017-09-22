@@ -129,7 +129,7 @@
 		</paper-tabs>
 		<input is="iron-input" bind-value="{{value}}" on-keydown="onKeydown" on-input="onInput" placeholder="Buscar...">
 		<iron-dropdown id="dropdown" no-overlap dynamic-align allow-outside-scroll>
-			<qa-loading class="dropdown-content" loader="ajax">
+			<qa-loading class="dropdown-content" loading="[[loading]]">
 				<template is="dom-if" if="[[selectedType.showPeople]]">
 					<div class="section">
 						<iron-icon icon="[[types.1.icon]]" item-icon></iron-icon>
