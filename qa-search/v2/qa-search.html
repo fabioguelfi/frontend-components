@@ -32,122 +32,122 @@
 		<style include="iron-flex iron-flex-alignment"></style>
 		<style include="qa-styles"></style>
 		<style is="custom-style">
-		 :host {
-		     @apply(--layout-horizontal);
-		     @apply(--layout-center);
-		     width: 800px;
-		     height: 60px;
-		 }
-		 #menu {
-		     background-color: var(--qa-darker-color);
-		     padding: 0px 8px 0px 0px;
-		     position: relative;
-		 }
-		 iron-icon, paper-icon-button {
-		     color: #84b1ca;
-		 }
-		 #menu > iron-icon {
-		     position: absolute;
-		     right: 0px;
-		 }
-		 paper-icon-button {
-		     padding: 6px;
-		 }
-		 paper-menu-button {
-		     padding: 0px;
-		 }
-		 paper-icon-item {
-		     --paper-item-icon-width: 32px;
-		 }
-		 input {
-		     @apply(--layout-vertical);
-		     @apply(--layout-flex);
-		     font-size: 16px;
-		     border: 0px;
-		     height: 70%;
-		     padding: 0px 10px;
-		     color: var(--qa-text-color);
-		     background-color: var(--qa-dark-color);
-		 }
-		 .filter-item-container {
-		     padding: 10px;
-		     margin: 10px;
-		 }
-		 input::-webkit-input-placeholder {
-		     color: var(--qa-disabled-color);
-		 }
-		 input:-moz-placeholder {
-		     color: var(--qa-disabled-color);
-		 }
-		 input::-moz-placeholder {
-		     color: var(--qa-disabled-color);
-		 }
-		 input:-ms-input-placeholder {
-		     color: var(--qa-disabled-color);
-		 }
-		 iron-dropdown {
-		     max-height: 90%;
-		 }
-		 .dropdown-content {
-		     @apply(--shadow-elevation-2dp);
-		     border-radius: 2px;
-		     width: 100%;
-		     background: white;
-		 }
-		 .footer {
-		     cursor: pointer;
-		     color: var(--qa-dark-color);
-		     padding: 2px 16px;
-		     text-align: center;
-		     font-weight: normal;
-		     font-size: 12px;
-		 }
-		 .filter-icon {
-		     width: 20px;
-		     height: 20px;
-		     padding: 10px;
-		     color: var(--qa-dark-color);
-		 }
-		 paper-tab {
-		     --paper-tab-content: {
-			 margin: 10px;
-		     };
-		 }
-		 span {
-		     font-size: 14px;
-		     padding: 10px;
-		     color: var(--qa-text-color);
-		 }
-		 paper-tabs {
-		     background-color: var(--qa-color);
-		     cursor: pointer;
-		     --paper-tabs-selection-bar-color: white;
-		     --paper-tabs-content: {
-			 margin-bottom: 10px;
-		     };
-		     height: 30%;
-		 }
-		 .search-container {
-		     width: 100%;
-		     height: 100%;
-		 }
-		 #search-input {
-		     width: 100%;
-		     height: 60%;
-		 }
-		 .section {
-		     @apply(--layout-horizontal);
-		     padding: 8px 4px 12px 8px;
-		 }
-		 .section:not(:last-of-type) {
-		     border-bottom: 1px solid var(--qa-light-divider-color);
-		 }
-		 .section > div {
-		     @apply(--layout-flex);
-		 }
-		 .footer, .section > iron-icon {
-		     margin: 12px 8px 12px 0px;
-		 }
+			:host {
+				@apply(--layout-horizontal);
+				@apply(--layout-center);
+				width: 800px;
+				height: 60px;
+			}
+			#menu {
+				background-color: var(--qa-darker-color);
+				padding: 0px 8px 0px 0px;
+				position: relative;
+			}
+			iron-icon, paper-icon-button {
+				color: #84b1ca;
+			}
+			#menu > iron-icon {
+				position: absolute;
+				right: 0px;
+			}
+			paper-icon-button {
+				padding: 6px;
+			}
+			paper-menu-button {
+				padding: 0px;
+			}
+			paper-icon-item {
+				--paper-item-icon-width: 32px;
+			}
+			input {
+				@apply(--layout-vertical);
+				@apply(--layout-flex);
+				font-size: 16px;
+				border: 0px;
+				height: 70%;
+				padding: 0px 10px;
+				color: var(--qa-text-color);
+				background-color: var(--qa-dark-color);
+			}
+			.filter-item-container {
+				padding: 10px;
+				margin: 10px;
+			}
+			input::-webkit-input-placeholder {
+				color: var(--qa-disabled-color);
+			}
+			input:-moz-placeholder {
+				color: var(--qa-disabled-color);
+			}
+			input::-moz-placeholder {
+				color: var(--qa-disabled-color);
+			}
+			input:-ms-input-placeholder {
+				color: var(--qa-disabled-color);
+			}
+			iron-dropdown {
+				max-height: 90%;
+			}
+			.dropdown-content {
+				@apply(--shadow-elevation-2dp);
+				border-radius: 2px;
+				width: 100%;
+				background: white;
+			}
+			.footer {
+				cursor: pointer;
+				color: var(--qa-dark-color);
+				padding: 2px 16px;
+				text-align: center;
+				font-weight: normal;
+				font-size: 12px;
+			}
+			.filter-icon {
+				width: 20px;
+				height: 20px;
+				padding: 10px;
+				color: var(--qa-dark-color);
+			}
+			paper-tab {
+				--paper-tab-content: {
+					margin: 10px;
+				};
+			}
+			span {
+				font-size: 14px;
+				padding: 10px;
+				color: var(--qa-text-color);
+			}
+			paper-tabs {
+				background-color: var(--qa-color);
+				cursor: pointer;
+				--paper-tabs-selection-bar-color: white;
+				--paper-tabs-content: {
+					margin-bottom: 10px;
+				};
+				height: 30%;
+			}
+			.search-container {
+				width: 100%;
+				height: 100%;
+			}
+			#search-input {
+				width: 100%;
+				height: 60%;
+			}
+			.section {
+				@apply(--layout-horizontal);
+				padding: 8px 4px 12px 8px;
+			}
+			.section:not(:last-of-type) {
+				border-bottom: 1px solid var(--qa-light-divider-color);
+			}
+			.section > div {
+				@apply(--layout-flex);
+			}
+			.footer, .section > iron-icon {
+				margin: 12px 8px 12px 0px;
+			}
 		</style>
 		<div class="search-container">
 			<paper-tabs selected="{{selectedTypeIndex}}">
