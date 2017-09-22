@@ -1,5 +1,4 @@
 <link rel="import" href="../../../bower_components/polymer/polymer.html">
-<link rel="import" href="../../../bower_components/iron-resizable-behavior/iron-resizable-behavior.html">
 <link rel="import" href="../../../bower_components/iron-input/iron-input.html">
 <link rel="import" href="../../../bower_components/iron-dropdown/iron-dropdown.html">
 <link rel="import" href="../../../bower_components/iron-ajax/iron-ajax.html">
@@ -11,9 +10,6 @@
 <link rel="import" href="../../../bower_components/paper-item/paper-icon-item.html">
 <link rel="import" href="../../../bower_components/paper-tabs/paper-tabs.html">
 <link rel="import" href="../../../bower_components/paper-tabs/paper-tab.html">
-<link rel="import" href="../../../bower_components/paper-menu/paper-menu.html">
-<link rel="import" href="../../../bower_components/paper-menu-button/paper-menu-button.html">
-<link rel="import" href="../../../bower_components/paper-icon-button/paper-icon-button.html">
 
 <link rel="import" href="../../qa-loading/v1/qa-loading.html">
 <link rel="import" href="../../qa-styles/v1/qa-styles.html">
@@ -49,12 +45,6 @@
 			#menu > iron-icon {
 				position: absolute;
 				right: 0px;
-			}
-			paper-icon-button {
-				padding: 6px;
-			}
-			paper-menu-button {
-				padding: 0px;
 			}
 			paper-icon-item {
 				--paper-item-icon-width: 32px;
@@ -349,10 +339,6 @@
 					}
 				}
 			},
-			behaviors: [ Polymer.IronResizableBehavior ],
-			listeners: {
-				'iron-resize': 'onResize'
-			},
 			observers: [
 				'onDelegate(types, delegateType, page)',
 				'onSelectType(types, selectedTypeIndex)'
@@ -437,10 +423,6 @@
 				if (this.selectedType.id != this.delegateType) {
 					this.$.dropdown.open();
 				}
-			},
-			onResize: function() {
-				this.$$('paper-menu-button').verticalOffset = this.offsetHeight;
-				this.$.dropdown.style.minWidth = this.offsetWidth + 'px';
 			},
 			onResponse: function(event) {
 				var response = event.detail.response;
