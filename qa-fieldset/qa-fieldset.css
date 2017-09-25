@@ -1,5 +1,5 @@
 fieldset {
-    margin: 20px auto;
+    margin: 20px auto 0px;
     width: calc(85% - 10px);
     background-color: #CBCCCC;
     padding-bottom: 10px;
