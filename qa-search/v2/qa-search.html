@@ -1,5 +1,4 @@
 <link rel="import" href="../../../bower_components/polymer/polymer.html">
-<link rel="import" href="../../../bower_components/iron-resizable-behavior/iron-resizable-behavior.html">
 <link rel="import" href="../../../bower_components/iron-input/iron-input.html">
 <link rel="import" href="../../../bower_components/iron-dropdown/iron-dropdown.html">
 <link rel="import" href="../../../bower_components/iron-ajax/iron-ajax.html">
@@ -9,9 +8,8 @@
 <link rel="import" href="../../../bower_components/iron-icons/notification-icons.html">
 <link rel="import" href="../../../bower_components/iron-icons/editor-icons.html">
 <link rel="import" href="../../../bower_components/paper-item/paper-icon-item.html">
-<link rel="import" href="../../../bower_components/paper-menu/paper-menu.html">
-<link rel="import" href="../../../bower_components/paper-menu-button/paper-menu-button.html">
-<link rel="import" href="../../../bower_components/paper-icon-button/paper-icon-button.html">
+<link rel="import" href="../../../bower_components/paper-tabs/paper-tabs.html">
+<link rel="import" href="../../../bower_components/paper-tabs/paper-tab.html">
 
 <link rel="import" href="../../qa-loading/v1/qa-loading.html">
 <link rel="import" href="../../qa-styles/v1/qa-styles.html">
@@ -31,27 +29,23 @@
 		<style include="qa-styles"></style>
 		<style is="custom-style">
 			:host {
-				@apply(--layout-horizontal);
+				@apply(--layout-vertical);
 				@apply(--layout-center);
-				width: 480px;
+			}
+			:host > * {
+				@apply(--layout-self-stretch);
 			}
 			#menu {
 				background-color: var(--qa-darker-color);
 				padding: 0px 8px 0px 0px;
 				position: relative;
 			}
-			iron-icon, paper-icon-button {
+			.section > iron-icon {
 				color: #84b1ca;
 			}
 			#menu > iron-icon {
 				position: absolute;
 				right: 0px;
-			}
-			paper-icon-button {
-				padding: 6px;
-			}
-			paper-menu-button {
-				padding: 0px;
 			}
 			paper-icon-item {
 				--paper-item-icon-width: 32px;
@@ -61,7 +55,7 @@
 				@apply(--layout-flex);
 				font-size: 16px;
 				border: 0px;
-				height: 100%;
+				min-height: 28px;
 				padding: 0px 10px;
 				color: var(--qa-text-color);
 				background-color: var(--qa-dark-color);
@@ -94,6 +88,23 @@
 				font-weight: normal;
 				font-size: 12px;
 			}
+			paper-tab {
+				padding: 0px 18px 0 10px;
+			}
+			paper-tab iron-icon {
+				width: 20px;
+				height: 20px;
+				padding: 2px;
+			}
+			paper-tab + paper-tab iron-icon {
+				width: 18px;
+				height: 18px;
+				padding: 6px;
+			}
+			paper-tabs {
+				height: 28px;
+				--paper-tabs-selection-bar-color: var(--qa-secondary-color);
+			}
 			.section {
 				@apply(--layout-horizontal);
 				padding: 8px 4px 12px 8px;
@@ -108,23 +119,17 @@
 				margin: 12px 8px 12px 0px;
 			}
 		</style>
-		<div id="menu">
-			<iron-icon id="arrow" icon="arrow-drop-down"></iron-icon>
-			<paper-menu-button >
-				<paper-icon-button icon="[[selectedType.icon]]" class="dropdown-trigger"></paper-icon-button>
-				<paper-menu class="dropdown-content" selected="{{selectedTypeIndex}}">
-					<template is="dom-repeat" items="[[types]]">
-						<paper-icon-item>
-							<iron-icon icon="[[item.icon]]" item-icon></iron-icon>
-							{{item.label}}
-						</paper-icon-item>
-					</template>
-				</paper-menu>
-			</paper-menu-button>
-		</div>
+		<paper-tabs selected="{{selectedTypeIndex}}">
+			<template is="dom-repeat" items="[[types]]">
+				<paper-tab>
+					<iron-icon icon="[[item.icon]]"></iron-icon>
+					<span class="filter-label">{{item.label}}</span>
+				</paper-tab>
+			</template>
+		</paper-tabs>
 		<input is="iron-input" bind-value="{{value}}" on-keydown="onKeydown" on-input="onInput" placeholder="Buscar...">
 		<iron-dropdown id="dropdown" no-overlap dynamic-align allow-outside-scroll>
-			<qa-loading class="dropdown-content" loader="ajax">
+			<qa-loading class="dropdown-content" loading="[[loading]]">
 				<template is="dom-if" if="[[selectedType.showPeople]]">
 					<div class="section">
 						<iron-icon icon="[[types.1.icon]]" item-icon></iron-icon>
@@ -312,10 +317,6 @@
 					}
 				}
 			},
-			behaviors: [ Polymer.IronResizableBehavior ],
-			listeners: {
-				'iron-resize': 'onResize'
-			},
 			observers: [
 				'onDelegate(types, delegateType, page)',
 				'onSelectType(types, selectedTypeIndex)'
@@ -400,10 +401,6 @@
 				if (this.selectedType.id != this.delegateType) {
 					this.$.dropdown.open();
 				}
-			},
-			onResize: function() {
-				this.$$('paper-menu-button').verticalOffset = this.offsetHeight;
-				this.$.dropdown.style.minWidth = this.offsetWidth + 'px';
 			},
 			onResponse: function(event) {
 				var response = event.detail.response;
