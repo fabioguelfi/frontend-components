@@ -1,0 +1,59 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/iron-ajax/iron-ajax.html">
+<link rel="import" href="../qa-styles/v1/qa-styles.html">
+<dom-module id="v3-awareness-badge">
+	<template>
+		<style include="iron-flex iron-flex-alignment"></style>
+		<style include="qa-styles"></style>
+		<style is="custom-style">
+			:host {
+				color: var(--google-grey-100);
+				font-weight: bold;
+			}
+			.knows {
+				background-color: #338417;
+			}
+			.doesnt-know {
+				background-color: #E03E2F;
+			}
+			.knows, .doesnt-know {
+				padding: 10px;
+				border-radius: 5px;
+			}
+		</style>
+		<template is="dom-if" if="[[knowsSupplyNewVersion]]">
+			<span class="knows">Conhece a V3</span>
+		</template>
+		<template is="dom-if" if="[[!knowsSupplyNewVersion]]">
+			<span class="doesnt-know">Não conhece a V3</span>
+		</template>
+		<iron-ajax
+			auto="[[userId]]"
+			url="/user/crmdata/[[userId]]"
+			on-response="handleResponse"
+			with-credentials>
+		</iron-ajax>
+	</template>
+
+	<script>
+		Polymer({
+			is: 'v3-awareness-badge',
+			properties: {
+				userId: Number,
+				contactType: String,
+				knowsSupplyNewVersion: Boolean
+			},
+			handleResponse: function(event) {
+				var crmdata = event.detail.response;
+				if (this.contactType === 'Proprietário'){
+					if (crmdata) {
+						this.set('knowsSupplyNewVersion', crmdata.knowsSupplyNewVersion);
+					}
+					else {
+						this.set('knowsSupplyNewVersion', false);
+					}
+				}
+			}
+		});
+	</script>
+</dom-module>
