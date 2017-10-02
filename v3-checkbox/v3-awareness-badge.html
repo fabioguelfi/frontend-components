@@ -41,11 +41,12 @@
 			properties: {
 				userId: Number,
 				contactType: String,
-				knowsSupplyNewVersion: Boolean
+				knowsSupplyNewVersion: Boolean,
+				isProprietario: Boolean
 			},
 			handleResponse: function(event) {
 				var crmdata = event.detail.response;
-				if (this.contactType === 'Proprietário'){
+				if (this.isProprietario) {
 					if (crmdata) {
 						this.set('knowsSupplyNewVersion', crmdata.knowsSupplyNewVersion);
 					}
