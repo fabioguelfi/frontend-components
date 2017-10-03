@@ -35,7 +35,7 @@
 			}
 			.closing {
 				color: var(--qa-text-color) !important;
-				background-color: var(--qa-darker-color) !important;				
+				background-color: var(--qa-darker-color) !important;
 			}
 		</style>
 		<template is="dom-if" if="[[!link.icon]]">
@@ -59,10 +59,9 @@
 			is: 'qa-link',
 			properties: {
 				link: Object,
-				task: Object,
 				toastId: {
 					type: String,
-					computed: 'getToastId(link, task)'
+					computed: 'getToastId(link)'
 				}
 			},
 			getTitle: function(link) {
@@ -76,13 +75,13 @@
 				return 'cloud-upload';
 			},
 			getClass: function(link){
-				return link.closes ? 'closing' : "";  
+				return link.closes ? 'closing' : "";
 			},
 			isUpload: function(link) {
 				return link.method == 'UPLOAD';
 			},
-			getToastId: function(link, task) {
-				return 'qa-link-toast';
+			getToastId: function(link) {
+				return (link.task || {})._id;
 			},
 			handleActionTap: function(event) {
 				var link = this.link;
@@ -135,7 +134,7 @@
 					icon.setAttribute('icon', 'cloud-upload');
 					var details = xhr.statusText +
 						'; \ndetails: ' + xhr.responseText +
-						'; \ntask: ' + self.task._id +
+						'; \ntask: ' + link.task._id +
 						'; \nlink: ' + link.rel;
 					this.fire('toast-show', {
 						id: this.toastId,
@@ -158,7 +157,7 @@
 					var dialog = document.createElement(dialogType);
 					dialog.set('withBackdrop', true);
 					dialog.set('link', link);
-					dialog.set('task', this.task);
+					dialog.set('task', link.task);
 					this.appendChild(dialog);
 					dialog.open();
 				}, function(err) {
