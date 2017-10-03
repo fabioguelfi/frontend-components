@@ -49,7 +49,7 @@
 			}
 		</style>
 		<template is="dom-repeat" items="[[toasts]]">
-			<div id="[[item.id]]" class="toast">
+			<div id="[[item.id]]" class="toast opened">
 				<div class="content" on-tap="handleTap">
 					<span>{{item.text}}</span>
 					<template is="dom-if" if="[[item.action]]">
@@ -87,7 +87,7 @@
 			},
 			hide: function(toast) {
 				clearTimeout(toast.timer);
-				this.$$('#' + toast.id).classList.remove('opened');
+				document.getElementById(toast.id).classList.remove('opened');
 				this.async(function() {
 					this.arrayDelete('toasts', toast);
 				}, 300);
@@ -114,10 +114,6 @@
 				}
 
 				this.splice('toasts', position, 0, options);
-
-				this.async(function() {
-					this.$$('#' + options.id).classList.add('opened');
-				}, 30);
 			}
 		});
 
