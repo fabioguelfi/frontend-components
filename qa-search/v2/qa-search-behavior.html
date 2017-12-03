@@ -44,6 +44,11 @@
 					label: 'Tarefas da proposta',
 					viewUrl: '@@USTASKS_URL/busca/?type=tasks&query=PreProposta:' + item.id
 				}];
+			} else if (item.type == 'offers') {
+				return [{
+					label: 'Nadas',
+					viewUrl: item.viewUrl
+				}];
 			} else {
 				return [{
 					label: 'Página da tarefa',

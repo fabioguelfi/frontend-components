@@ -21,6 +21,7 @@
 <link rel="import" href="./qa-search-lead-item.html">
 <link rel="import" href="./qa-search-task-item.html">
 <link rel="import" href="./qa-search-preproposta-item.html">
+<link rel="import" href="./qa-search-offer-item.html">
 
 <dom-module id="qa-search">
 
@@ -199,8 +200,13 @@
 									<qa-search-preproposta-item item="[[item]]" on-tap="onTap"></qa-search-preproposta-item>
 								</qa-search-item>
 							</template>
+							<template is="dom-repeat" items="[[result.offers.items]]">
+								<qa-search-item item="[[item]]">
+									<qa-search-offer-item item="[[item]]" on-tap="onTap"></qa-search-offer-item>
+								</qa-search-item>
+							</template>
 							<div class="footer" on-tap="onAllPrepropostasTap">
-								{{getMessage('prepropostas', value, result.prepropostas.count)}}
+								{{getMessageTwoCounts('prepropostas', value, result.prepropostas.count, result.offers.count)}}
 							</div>
 						</div>
 					</div>
@@ -313,6 +319,12 @@
 							label: 'Propostas',
 							showPrepropostas: true,
 							icon: 'editor:insert-drive-file'
+						}, {
+							id: 'offers',
+							size: 10,
+							label: 'Propostas',
+							showPrepropostas: true,
+							icon: 'editor:insert-drive-file'
 						}];
 					}
 				}
@@ -421,6 +433,10 @@
 				} else {
 					return 'Sua busca - ' + value + ' - não encontrou ' + type;
 				}
+			},
+			getMessageTwoCounts: function(type, value, countFirst, countSecond) {
+				var count = countFirst + countSecond;
+				return this.getMessage(type, value, count);
 			},
 			onAllPeopleTap: function() {
 				var url = this.result.fullContentLinks['users'];
