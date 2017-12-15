@@ -41,9 +41,9 @@
 				vibrate: true
 			});
 			notification.onclick = function () {
-				host = self.host.replace("http://", "").replace("https://", "");
+				host = "@@ACCOUNTS_URL".replace("http://", "").replace("https://", "");
 				protocol = window.location.protocol.replace(":", "");
-				window.open(protocol + "://" + host + "/busca?query=" + extension );
+				window.open(protocol + "://" + host + "/usuarios/busca?phones=" + extension );
 			}
 		},
 		newWebSocket: function(webSocketAddress, pingPeriod){
