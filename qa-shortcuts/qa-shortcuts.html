@@ -200,7 +200,9 @@
 				}
 			},
 			_contextChanged : function(){
-				this.set('allCommands',this.allCommands.slice(0))
+				if (this.allCommands) {
+					this.set('allCommands',this.allCommands.slice(0))
+				}
 				this._commandFiltered()
 			},
 			availableCommands : function(allCommands,extraCommands){
