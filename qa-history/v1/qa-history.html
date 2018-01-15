@@ -187,7 +187,7 @@
 					return [];
 				}
 
-				tags = [].concat(tags, content.root.tag);
+				tags = [].concat(content.root.tag, tags);
 
 				const allLinks = [].concat(links);
 				const uniqueTags = Array.from(new Set(tags));
