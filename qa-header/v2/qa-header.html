@@ -93,7 +93,7 @@
 		</paper-toolbar>
 		<iron-ajax
 			auto
-			url="@@USTASKS_URL/views.json"
+			url="getViewsUrl()"
 			last-response="{{views}}"
 			with-credentials>
 		</iron-ajax>
@@ -124,6 +124,9 @@
 						return [];
 					}
 				}
+			},
+			getViewsUrl: function(){
+				return ((typeof CONFIG !== "undefined" ? CONFIG : {}).USTASKS_URL || "@@USTASKS_URL") + '/views.json';
 			},
 			isSelected: function(itemId, selectedId) {
 				return itemId == selectedId ? 'selected' : '';

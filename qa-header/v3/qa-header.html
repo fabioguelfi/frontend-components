@@ -68,11 +68,11 @@
 						return [{
 							id: 'ustasks',
 							label: 'Tarefas',
-							url: '@@USTASKS_URL'
+							url: (typeof CONFIG !== "undefined" ? CONFIG : {}).USTASKS_URL || "@@USTASKS_URL"
 						}, {
 							id: 'reports',
 							label: 'Relatórios',
-							url: '@@USTASKS_URL/relatorios'
+							url: ((typeof CONFIG !== "undefined" ? CONFIG : {}).USTASKS_URL || "@@USTASKS_URL") + '/relatorios'
 						}];
 					}
 				},
@@ -96,7 +96,7 @@
 			},
 			attached: function() {
 				if (!this.skipAuth && !this.user) {
-					var auth_url = '@@MAIN_URL/auth/login?redirect=';
+					var auth_url = ((typeof CONFIG !== "undefined" ? CONFIG : {}).MAIL_URL || "@@MAIN_URL") + '/auth/login?redirect=';
 					var current_href = encodeURIComponent(window.location.href);
 					window.location.href = auth_url + current_href;
 				}

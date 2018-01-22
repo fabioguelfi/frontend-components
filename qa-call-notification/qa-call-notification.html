@@ -41,7 +41,7 @@
 				vibrate: true
 			});
 			notification.onclick = function () {
-				host = "@@ACCOUNTS_URL".replace("http://", "").replace("https://", "");
+				host = ((typeof CONFIG !== "undefined" ? CONFIG : {}).ACCOUNTS_URL || "@@ACCOUNTS_URL").replace("http://", "").replace("https://", "");
 				protocol = window.location.protocol.replace(":", "");
 				window.open(protocol + "://" + host + "/usuarios/busca?phones=" + extension );
 			}
