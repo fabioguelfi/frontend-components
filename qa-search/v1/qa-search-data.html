@@ -104,13 +104,13 @@
 			var imoveis = e.detail.response.properties.items;
 
 			users.forEach(function(user) {
-				user.viewUrl = ['@@ACCOUNTS_URL', 'usuarios', user.id].join('/');
+				user.viewUrl = [((typeof CONFIG !== "undefined" ? CONFIG : {}).ACCOUNTS_URL || "@@ACCOUNTS_URL"), 'usuarios', user.id].join('/');
 			}, this);
 
 			imoveis.forEach(function(imovel) {
 				imovel.translatedType = this.translateType(imovel.property_type);
-				imovel.foto_capa = ['@@CLOUDFRONT_URL', imovel.foto_capa].join('/');
-				imovel.viewUrl = ['@@PROPERTIES_URL', 'imoveis', imovel.id].join('/');
+				imovel.foto_capa = [((typeof CONFIG !== "undefined" ? CONFIG : {}).CLOUDFRONT_URL || "@@CLOUDFRONT_URL", imovel.foto_capa].join('/');
+				imovel.viewUrl = [((typeof CONFIG !== "undefined" ? CONFIG : {}).PROPERTIES_URL || "@@PROPERTIES_URL"), 'imoveis', imovel.id].join('/');
 			}, this);
 
 			this.splice.apply(this, ['users', 0, this.users.length].concat(users));
