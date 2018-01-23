@@ -109,7 +109,7 @@
 
 			imoveis.forEach(function(imovel) {
 				imovel.translatedType = this.translateType(imovel.property_type);
-				imovel.foto_capa = [((typeof CONFIG !== "undefined" ? CONFIG : {}).CLOUDFRONT_URL || "@@CLOUDFRONT_URL", imovel.foto_capa].join('/');
+				imovel.foto_capa = [((typeof CONFIG !== "undefined" ? CONFIG : {}).CLOUDFRONT_URL || "@@CLOUDFRONT_URL"), imovel.foto_capa].join('/');
 				imovel.viewUrl = [((typeof CONFIG !== "undefined" ? CONFIG : {}).PROPERTIES_URL || "@@PROPERTIES_URL"), 'imoveis', imovel.id].join('/');
 			}, this);
 
