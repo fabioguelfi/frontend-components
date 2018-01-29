@@ -41,29 +41,29 @@ div.fotos div.item img {
 /* box descrição 
 -----------------------------------------------------------------------------------*/
 
-fieldset .descricao {
+.qa-imovel-infobox.descricao {
     display: inline-block;
     width: 52%;
     height: 100%;
     vertical-align: top;
 }
 
-fieldset .titulo {
+.qa-imovel-infobox.titulo {
     color: #00A2F6;
     font-size: 18px;
     margin-bottom: 5px;
     font-weight: bold;
 }
 
-fieldset .titulo a {
+.qa-imovel-infobox.titulo a {
     color: #00A2F6;
 }
 
-fieldset .titulo a:hover {
+.qa-imovel-infobox.titulo a:hover {
     text-decoration: underline;
 }
 
-fieldset .endereco {
+.qa-imovel-infobox.endereco {
     font-size: 16px;
     line-height: 20px;
     min-height: 42px;
