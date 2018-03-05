@@ -44,8 +44,13 @@
                     </template>
                 </div>
             </paper-listbox>
-        </paper-menu-button>
-        <div class="title"><span>[[selectedViewLabel]]</span></div>
+		</paper-menu-button>
+		<div class="title">
+			<span>[[selectedViewLabel]]</span>
+			<template is="dom-if" if="[[secondaryTitle]]">
+				<span class="secondary-title">[[secondaryTitle]]</span>
+			</template>
+		</div>
 		<iron-image alt="Quinto Andar" src="https://d406l28ic3dl5.cloudfront.net/5a-logo.svg"></iron-image>
 		<div class="custom-content">
 			<content></content>
