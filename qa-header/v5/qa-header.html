@@ -89,6 +89,12 @@
 				activeGroup: {
 					type: String,
 					value: ''
+				},
+				selectedViewObj: {
+					type: Object,
+					value: function() {
+						return {};
+					}
 				}
 			},
 			behaviors: [ QuintoAndar.UserBehavior ],
@@ -96,6 +102,7 @@
 			selectView: function() {
 				this.views.forEach(function(view, index) {
 					if (view.id == this.selectedView) {
+						this.set('selectedViewObj', view);
 						this.$$('paper-listbox').select(index);
 					}
 				}, this);
@@ -105,12 +112,9 @@
                 this.setSelectedViewLabel();
             },
             setSelectedViewLabel: function() {
-                this.views.forEach(function(view, index) {
-                    if (view.id == this.selectedView) {
-						var labelPrefix = view.group ? view.group + ' - ' : '';
-                        this.set('selectedViewLabel', labelPrefix + view.label);
-                    }
-                }, this);
+				var view = this.selectedViewObj;
+				var labelPrefix = view.group ? view.group + ' - ' : '';
+				this.set('selectedViewLabel', labelPrefix + view.label);
             },
 			onTapView: function(event) {
 				var sourceEvent = event.detail.sourceEvent;
@@ -147,7 +151,7 @@
 				}
 			},
 			showView: function(activeGroup, view) {
-				return (!view.group || activeGroup === view.group || this.selectedView == view.id);
+				return (!view.group || activeGroup === view.group || this.selectedViewObj.group == view.group);
 			},
 			showViewGroup: function(viewGroup) {
 				if (!viewGroup || this.viewGroups.indexOf(viewGroup) > -1) {
