@@ -107,7 +107,8 @@
             setSelectedViewLabel: function() {
                 this.views.forEach(function(view, index) {
                     if (view.id == this.selectedView) {
-                        this.set('selectedViewLabel', view.label);
+						var labelPrefix = view.group ? view.group + ' - ' : '';
+                        this.set('selectedViewLabel', labelPrefix + view.label);
                     }
                 }, this);
             },
