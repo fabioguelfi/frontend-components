@@ -1,0 +1,263 @@
+<link rel="import" href="../../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../../bower_components/iron-icon/iron-icon.html">
+<link rel="import" href="../../../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../../../qa-components/qa-styles/v1/qa-styles.html">
+
+<dom-module id="qa-datepicker">
+	<template>
+		<style include="iron-flex iron-flex-alignment"></style>
+		<style include="qa-styles"></style>
+		<style is="custom-style">
+			:host {
+				@apply(--layout-horizontal);
+			}
+			:host::after {
+				display: none;
+			}
+			.date {
+				background-color: var(--qa-dark-color);
+				color: var(--qa-text-color);
+				font-weight: 600;
+				padding: 16px;
+			}
+			.date .year {
+				color: var(--qa-secondary-color);
+			}
+			.date .day {
+				line-height: 36px;
+				font-size: 32px;
+				min-width: 4em;
+			}
+			.calendar, .buttons {
+				background-color: var(--qa-light-light-color);
+			}
+			.calendar {
+				color: var(--qa-light-text-color);
+				padding: 16px 16px 0px 16px;
+			}
+			.calendar .month {
+				color: var(--qa-dark-color);
+			}
+			.calendar .month > div {
+				text-align: center;
+				font-weight: 600;
+			}
+			.calendar .weekday {
+				color: var(--qa-light-secondary-color);
+				font-weight: 600;
+				font-size: 12px;
+				margin: 4px;
+			}
+			.calendar .round {
+				--paper-button: {
+					font-size: 14px;
+					border-radius: 50%;
+					padding: 0px;
+					margin: 0px 4px;
+					min-height: 32px;
+					min-width: 32px;
+				};
+				--paper-button-ink-color: var(--qa-dark-color);
+			}
+			.calendar .round.selected {
+				background-color: var(--qa-dark-color);
+				color: var(--qa-light-light-color);
+				font-weight: 600;
+			}
+			.buttons {
+				font-size: 14px;
+				font-weight: 600;
+				padding: 0px 4px 8px 0px;
+				color: var(--qa-dark-color);
+				@apply(--layout-horizontal);
+				@apply(--layout-end-justified);
+			}
+		</style>
+		<div class="date">
+			<div class="year">{{_getYear(selected)}}</div>
+			<div class="day">
+				<div>{{_getWeekdayShort(selected)}}, </div>
+				<div>
+					{{_getDate(selected)}}<span> </span>{{_getMonthShort(selected)}}
+				</div>
+			</div>
+		</div>
+		<div>
+			<div class="calendar">
+				<div class="month layout horizontal flex center">
+					<paper-button class="round" on-tap="_decMonth">
+						<iron-icon icon="chevron-left"></iron-icon>
+					</paper-button>
+					<div class="layout flex">
+						{{_getMonth(date)}}<span> </span>{{_getYear(date)}}
+					</div>
+					<paper-button class="round" on-tap="_incMonth">
+						<iron-icon icon="chevron-right"></iron-icon>
+					</paper-button>
+				</div>
+				<div class="layout horizontal justified">
+					<template is="dom-repeat" items="[[_getWeekdaysFirstChar()]]">
+						<paper-button noink class="round weekday">{{item}}</paper-button>
+					</template>
+				</div>
+				<div class="layout vertical flex">
+					<template is="dom-repeat" items="[[_getMonthWeeks(date)]]">
+						<div class="layout horizontal justified">
+							<template is="dom-repeat" items="[[item]]" as="day">
+								<template is="dom-if" if="[[day.current]]">
+									<paper-button
+										class$="round {{_isSelected(day.date, selected)}}"
+										on-tap="_handleSelect">
+										{{day.day}}
+									</paper-button>
+								</template>
+								<template is="dom-if" if="[[!day.current]]">
+									<paper-button class="round" noink></paper-button>
+								</template>
+							</template>
+						</div>
+					</template>
+				</div>
+			</div>
+			<div class="buttons">
+				<paper-button on-tap="_handleCancel">Cancelar</paper-button>
+				<paper-button on-tap="_handleOk">Ok</paper-button>
+			</div>
+		</div>
+	</template>
+	<script src="../../../bower_components/moment/min/moment.min.js"></script>
+	<script src="../../../bower_components/moment/locale/pt-br.js"></script>
+	<script>
+		Polymer({
+			is: 'qa-datepicker',
+			properties: {
+				value: {
+					type: String,
+					notify: true,
+					value: '',
+				},
+				oldSelected: {
+					type: String,
+					value: function() {
+						moment.locale('pt-br');
+						return moment().format();
+					},
+				},
+				selected: {
+					type: String,
+					readOnly: true,
+					value: function() {
+						moment.locale('pt-br');
+						return moment().format();
+					},
+				},
+				date: {
+					type: String,
+					readOnly: true,
+					value: function() {
+						moment.locale('pt-br');
+						return moment().format('YYYY-MM-DD');
+					},
+				},
+				labels: Object,
+				format: {
+					type: String,
+					value: 'DD/MM/YY'
+				},
+			},
+			observers: [ '_onChangeValue(value, format)' ],
+			_onChangeValue: function(value, format) {
+				moment.locale('pt-br');
+				var date = moment(value, format);
+				if (!date.isValid()) {
+					date = moment().startOf('day');
+				}
+				this._setSelected(date.format());
+				this._setDate(date.format());
+			},
+			_getDate: function(date) {
+				moment.locale('pt-br');
+				return moment(date).date()
+			},
+			_getYear: function(date) {
+				moment.locale('pt-br');
+				return moment(date).year()
+			},
+			_getWeekdayShort: function(date) {
+				moment.locale('pt-br');
+				return moment.weekdaysShort(moment(date).day());
+			},
+			_getMonth: function(date) {
+				moment.locale('pt-br');
+				return moment.months(moment(date).month());
+			},
+			_getMonthShort: function(date) {
+				moment.locale('pt-br');
+				return moment.monthsShort(moment(date).month());
+			},
+			_getWeekdaysFirstChar: function() {
+				moment.locale('pt-br');
+				var weekdays = moment.weekdays().map(function(weekday) {
+					return weekday.charAt(0);
+				});
+				var first = moment.localeData().firstDayOfWeek();
+				return [].concat(weekdays.slice(first), weekdays.slice(0, first));
+			},
+			_incMonth: function() {
+				moment.locale('pt-br');
+				var date = moment(this.date);
+				date.add(1, 'month');
+				this._setDate(date.format());
+			},
+			_decMonth: function() {
+				moment.locale('pt-br');
+				var date = moment(this.date);
+				date.subtract(1, 'month');
+				this._setDate(date.format());
+			},
+			_getMonthWeeks: function(date) {
+				var weeks = [];
+				moment.locale('pt-br');
+				date = moment(date);
+				var end = moment(date);
+				end.endOf('month');
+				date.startOf('month');
+				date.startOf('week');
+				while (weeks.length < 6) {
+					var days = [];
+					var day = moment(date);
+					date.add(1, 'week');
+					while (day.isBefore(date)) {
+						var current = day.month() == end.month() ? 'current' : '';
+						days.push({
+							day: day.date(),
+							date: day.format(),
+							current: current
+						});
+						day.add(1, 'day');
+					}
+					weeks.push(days);
+				}
+				return weeks;
+			},
+			_handleSelect: function(event) {
+				var selected = event.model.day.date;
+				this._setSelected(selected);
+			},
+			_isSelected: function(date, selected) {
+				return moment(selected).format('DD/MM/YY') == moment(date).format('DD/MM/YY') ? 'selected' : '';
+			},
+			_handleOk: function(event) {
+				moment.locale('pt-br');
+				this.set('value', moment(this.selected).format(this.format));
+				this.set('oldSelected', this.selected);
+				this.fire('qa-datepicker-selected', this.selected);
+			},
+			_handleCancel: function(event) {
+				this._setSelected(this.oldSelected);
+				this.fire('qa-datepicker-canceled');
+			}
+
+		});
+	</script>
+</dom-module>
