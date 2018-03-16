@@ -73,15 +73,17 @@
 				@apply(--layout-end-justified);
 			}
 		</style>
-		<div class="date">
-			<div class="year">{{_getYear(selected)}}</div>
-			<div class="day">
-				<div>{{_getWeekdayShort(selected)}}, </div>
-				<div>
-					{{_getDate(selected)}}<span> </span>{{_getMonthShort(selected)}}
+		<template is="dom-if" if="[[!reduced]]">
+			<div class="date">
+				<div class="year">{{_getYear(selected)}}</div>
+				<div class="day">
+					<div>{{_getWeekdayShort(selected)}}, </div>
+					<div>
+						{{_getDate(selected)}}<span> </span>{{_getMonthShort(selected)}}
+					</div>
 				</div>
 			</div>
-		</div>
+		</template>
 		<div>
 			<div class="calendar">
 				<div class="month layout horizontal flex center">
@@ -163,6 +165,10 @@
 				format: {
 					type: String,
 					value: 'DD/MM/YY'
+				},
+				reduced: {
+					type: Boolean,
+					value: false,
 				},
 			},
 			observers: [ '_onChangeValue(value, format)' ],
