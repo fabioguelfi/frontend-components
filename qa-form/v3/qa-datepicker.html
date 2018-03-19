@@ -9,6 +9,7 @@
 		<style include="qa-styles"></style>
 		<style is="custom-style">
 			:host {
+				--padding: '16px 16px 0 16px';
 				@apply(--layout-horizontal);
 			}
 			:host::after {
@@ -33,7 +34,7 @@
 			}
 			.calendar {
 				color: var(--qa-light-text-color);
-				padding: 16px 16px 0px 16px;
+				padding: var(--calendar-padding, '16px 16px 0 16px');
 			}
 			.calendar .month {
 				color: var(--qa-dark-color);
@@ -67,7 +68,7 @@
 			.buttons {
 				font-size: 14px;
 				font-weight: 600;
-				padding: 0px 4px 8px 0px;
+				padding: 0 0 8px 0;
 				color: var(--qa-dark-color);
 				@apply(--layout-horizontal);
 				@apply(--layout-end-justified);
@@ -169,6 +170,7 @@
 				reduced: {
 					type: Boolean,
 					value: false,
+					observer: '_reducedChanged'
 				},
 			},
 			observers: [ '_onChangeValue(value, format)' ],
@@ -180,6 +182,10 @@
 				}
 				this._setSelected(date.format());
 				this._setDate(date.format());
+			},
+			_reducedChanged: function(reduced) {
+				var padding = reduced ? '16px 0 0 0' : '16px 16px 0 16px';
+				this.updateStyles({'--calendar-padding': padding});
 			},
 			_getDate: function(date) {
 				moment.locale('pt-br');
