@@ -1,0 +1,176 @@
+<link rel="import" href="../../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../../bower_components/paper-tabs/paper-tabs.html">
+<link rel="import" href="../../../bower_components/paper-tabs/paper-tab.html">
+<link rel="import" href="../../../bower_components/iron-image/iron-image.html">
+<link rel="import" href="../../../bower_components/paper-menu-button/paper-menu-button.html">
+<link rel="import" href="../../../bower_components/paper-icon-button/paper-icon-button.html">
+<link rel="import" href="../../../bower_components/paper-listbox/paper-listbox.html">
+<link rel="import" href="../../../bower_components/iron-icons/iron-icons.html">
+<link rel="import" href="../../../bower_components/iron-icon/iron-icon.html">
+<link rel="import" href="../../qa-behavior/v1/qa-user-behavior.html">
+<link rel="import" href="../../qa-styles/v1/qa-styles.html">
+<link rel="import" href="../../qa-header/v5/qa-header-style.html">
+
+<dom-module id="qa-header">
+	<template>
+		<style include="iron-flex iron-flex-alignment"></style>
+		<style include="qa-styles"></style>
+		<style include="qa-v5-header-style"></style>
+
+        <paper-menu-button>
+            <paper-icon-button icon="icons:menu" class="dropdown-trigger" no-overlap></paper-icon-button>
+            <paper-listbox class="dropdown-content">
+                <div class="menu-header layout">
+					<div class="user-icon-wrapper">
+						<iron-icon class="user-icon" icon="icons:account-circle"></iron-icon>
+					</div>
+                    <div class="user-info">
+                        <p>{{user.name}}</p>
+                        <p class="user-email">{{user.email}}</p>
+                    </div>
+                </div>
+                <div class="menu-content">
+                    <template is="dom-repeat" items="[[views]]">
+						<template is="dom-if" if="[[showViewGroup(item.group)]]">
+							<paper-item on-mouseover="onHoverViewGroup" class="view-group">
+								{{item.group}}
+							</paper-item>
+						</template>
+						<template is="dom-if" if="[[showView(activeGroup, item)]]">
+							<paper-item data-url="[[item.url]]" on-tap="onTapView" class$="[[getViewClass(item)]] view-link">
+								{{item.label}}
+							</paper-item>
+						</template>
+                    </template>
+                </div>
+            </paper-listbox>
+		</paper-menu-button>
+		<div class="title">
+			<span>[[selectedViewLabel]]</span>
+			<template is="dom-if" if="[[secondaryTitle]]">
+				<span class="secondary-title">[[secondaryTitle]]</span>
+			</template>
+		</div>
+		<div class="custom-content">
+			<content></content>
+		</div>
+		<iron-image alt="Quinto Andar" src="https://d406l28ic3dl5.cloudfront.net/5a-logo.svg"></iron-image>
+	</template>
+
+	<script src="../../../bower_components/jwt-decode/build/jwt-decode.min.js"></script>
+
+	<script>
+		Polymer({
+			is: "qa-header",
+			properties: {
+				user: Object,
+				selectedView: {
+					type: String,
+					value: ''
+				},
+                selectedViewLabel: {
+                    type: String,
+                    value: ''
+                },
+				views: {
+					type: Array,
+					value: function() {
+						return [];
+					}
+				},
+				skipAuth: {
+					type: Boolean,
+					value: false
+				},
+				viewGroups: {
+					type: Array,
+					value: []
+				},
+				activeGroup: {
+					type: String,
+					value: ''
+				},
+				selectedViewObj: {
+					type: Object,
+					value: function() {
+						return {};
+					}
+				}
+			},
+			behaviors: [ QuintoAndar.UserBehavior ],
+			observers: [ 'selectedViewChanged(selectedView, views)' ],
+			selectView: function() {
+				this.views.forEach(function(view, index) {
+					if (view.id == this.selectedView) {
+						this.set('selectedViewObj', view);
+						this.$$('paper-listbox').select(index);
+					}
+				}, this);
+			},
+            selectedViewChanged: function(selectedView, views) {
+                this.selectView();
+                this.setSelectedViewLabel();
+            },
+            setSelectedViewLabel: function() {
+				var view = this.selectedViewObj;
+				var labelPrefix = view.group ? view.group + ' - ' : '';
+				this.set('selectedViewLabel', labelPrefix + view.label);
+            },
+			onTapView: function(event) {
+				var sourceEvent = event.detail.sourceEvent;
+				if (sourceEvent.ctrlKey) {
+					window.open(event.model.item.url, '_blank');
+				} else {
+					window.open(event.model.item.url, '_self');
+				}
+				this.async(this.selectView, 1);
+			},
+			onHoverViewGroup: function(event) {
+				if (event && event.model && event.model.item && event.model.item.group) {
+					this.set('activeGroup', event.model.item.group);
+				}
+			},
+			onMiddleClickView: function(event) {
+				if (event.which === 2) {
+					window.open(event.target.dataUrl, '_blank');
+				}
+			},
+            getViewClass: function(view) {
+				var classes = '';
+                if (this.selectedView == view.id) {
+					classes += 'current-view ';
+				}
+				if (view.group) {
+					classes += 'grouped ';
+				}
+				return classes;
+			},
+            getViewGroupClass: function(activeGroup, view) {
+				if (activeGroup && activeGroup === view.group) {
+					return 'active';
+				}
+			},
+			showView: function(activeGroup, view) {
+				return (!view.group || activeGroup === view.group || this.selectedViewObj.group == view.group);
+			},
+			showViewGroup: function(viewGroup) {
+				if (!viewGroup || this.viewGroups.indexOf(viewGroup) > -1) {
+					return false;
+				} else {
+					this.push('viewGroups', viewGroup);
+					return true;
+				}
+			},
+			attached: function() {
+				if (!this.skipAuth && !this.user) {
+					var auth_url = '@@MAIN_URL/auth/login?redirect=';
+					var current_href = encodeURIComponent(window.location.href);
+					window.location.href = auth_url + current_href;
+				}
+				this.querySelectorAll('.view-link').forEach(function(tabLink) {
+					tabLink.addEventListener('mouseup', this.onMiddleClickView);
+				}, this);
+			}
+		});
+	</script>
+</dom-module>

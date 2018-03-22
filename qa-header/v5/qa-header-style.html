@@ -1,0 +1,116 @@
+<dom-module id="qa-v5-header-style">
+    <template>
+        <style>
+            :host {
+                padding-right: 12px;
+				@apply(--layout-horizontal);
+				@apply(--layout-center);
+				@apply(--layout-flex);
+				@apply(--layout-wrap);
+			}
+			paper-tab {
+				--paper-tab-ink: var(--qa-text-color);
+				--paper-tab: {
+					font-size: 15px;
+					font-weight: bold;
+					color: var(--qa-text-color);
+				};
+			}
+            .title {
+                padding: 5px 0;
+            }
+            .title span {
+                font-size: 20px;
+                font-weight: 400;
+                padding: 8px 16px;
+            }
+            iron-image {
+                pointer-events: none;
+            }
+            paper-menu-button {
+                margin-top: 2px;
+                --paper-menu-button-dropdown: {
+                    left: 0 !important;
+                    top: 0 !important;
+                };
+                --paper-menu-button-content: {
+                    overflow-y: hidden !important;
+                    height: 100vh;
+                    box-shadow: none;
+                };
+            }
+            .dropdown-content {
+                padding-top: 0;
+                width: 320px;
+            }
+            .dropdown-content .menu-header {
+                font-size: 15px;
+                line-height: 20px;
+                color: rgba(0,0,0,0.54);
+                height: 145px;
+                background-color: #F6F6F7;
+                display: flex;
+                flex-wrap: wrap;
+                justify-content: flex-start;
+                align-items: flex-end;
+                outline:none;
+                padding-bottom: 12px;
+                padding-left: 18px;
+            }
+            .dropdown-content .menu-header .user-icon-wrapper {
+                width: 100%;
+                padding-top: 22px;
+            }
+            .dropdown-content .menu-header .user-icon {
+                --iron-icon-width: 55px;
+                --iron-icon-height: 55px;
+                --iron-icon-fill-color: #2691CA;
+            }
+            .dropdown-content .menu-header .user-info {
+                padding-left: 4px;
+                line-height: 21px;
+            }
+            .dropdown-content .menu-header .user-info p {
+                margin: 0;
+            }
+            .dropdown-content .menu-header .user-info .user-email {
+                font-weight: 400;
+            }
+            .dropdown-content .menu-content {
+                padding-top: 16px;
+                font-weight: 500;
+                outline:none;
+            }
+            .dropdown-content .menu-content paper-item {
+                color: #464646;
+                opacity: 0.87;
+                font-size: 13px;
+                font-weight: 500;
+                padding-left: 50px;
+                --paper-item-selected-weight: 500;
+            }
+            .dropdown-content .menu-content paper-item:hover {
+                cursor: pointer;
+                background-color: #F0F0F0;
+            }
+            .dropdown-content .menu-content paper-item.current-view {
+                color: #2196F3;
+                background-color: #A5EAFF;
+            }
+            .dropdown-content .menu-content paper-item.view-group {
+                color: rgba(0,0,0,0.54);
+                text-transform: uppercase;
+            }
+            .dropdown-content .menu-content paper-item.view-group:hover {
+                cursor: default;
+                background-color: #FFFFFF;
+            }
+            .dropdown-content .menu-content paper-item.grouped {
+                padding-left: 72px;
+            }
+            .secondary-title {
+                border-left: 1px solid #FFFFFF;
+            }
+        </style>
+    </template>
+</dom-module>
