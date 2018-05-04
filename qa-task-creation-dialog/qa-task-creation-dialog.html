@@ -168,24 +168,24 @@
 							roles="">
 						</qa-input-user>
 					</template>
-					<template is="dom-if" if="[[!isEqual(selectedTab, 2)]]">
+					<template is="dom-if" if="[[!isEqual(selectedTab, teamTab)]]">
 						<paper-input
 							label="Tipo de tarefa"
 							name="assunto"
 							maxlength="60"
 							qa-style
-							required="[[!isEqual(selectedTab, 2)]]"
-							disabled="[[isEqual(selectedTab, 2)]]"
+							required="[[!isEqual(selectedTab, teamTab)]]"
+							disabled="[[isEqual(selectedTab, teamTab)]]"
 							error-message="Informe o tipo de tarefa">
 						</paper-input>
 					</template>
-					<template is="dom-if" if="[[isEqual(selectedTab, 2)]]">
+					<template is="dom-if" if="[[isEqual(selectedTab, teamTab)]]">
 						<vaadin-combo-box
 							id="taskTitleBox"
 							name="assunto"
 							label="Tipo de tarefa"
-							required="[[isEqual(selectedTab, 2)]]"
-							disabled="[[!isEqual(selectedTab, 2)]]"
+							required="[[isEqual(selectedTab, teamTab)]]"
+							disabled="[[!isEqual(selectedTab, teamTab)]]"
 							allow-custom-value
 							error-message="Informe o tipo de tarefa"
 							on-value-changed="selectDefaultTaskDescription"
@@ -238,6 +238,10 @@
 				selectedTab: {
 					type: Number,
 					value: 0
+				},
+				teamTab: {
+					type: Number,
+					value: 2
 				},
 				opened: {
 					type: Boolean,
@@ -397,10 +401,12 @@
 			},
 			selectDefaultTaskDescription: function(){
 				var combobox = document.querySelector('#taskTitleBox');
-				if(combobox != null && combobox.value != "" && combobox.selectedItem != null && combobox.selectedItem.desc.length > 0)
+				if(combobox != null && combobox.value != "" && combobox.selectedItem != null && combobox.selectedItem.desc.length > 0){
 					this.description = combobox.selectedItem.desc;
-				else
+				}
+				else{
 					this.description = null;
+				}
 			},
 			open: function() {
 				this.$.taskForm.reset();
