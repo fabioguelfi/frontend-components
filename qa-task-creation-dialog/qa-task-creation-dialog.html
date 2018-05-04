@@ -11,6 +11,7 @@
 <link rel="import" href="../../bower_components/paper-item/paper-item.html">
 <link rel="import" href="../../bower_components/paper-icon-button/paper-icon-button.html">
 <link rel="import" href="../../bower_components/iron-ajax/iron-ajax.html">
+<link rel="import" href="../../bower_components/vaadin-combo-box/vaadin-combo-box.html">
 
 <link rel="import" href="../qa-behavior/v1/qa-user-behavior.html">
 <link rel="import" href="../qa-form/v1/qa-input-user.html">
@@ -113,6 +114,7 @@
 							error-message="Informe a equipe responsável">
 							<paper-listbox
 								class="dropdown-content"
+								on-iron-select="resetSelectedTaskTitle"
 								selected="{{workgroupIndex}}">
 								<template is="dom-repeat" items="[[workgroups]]">
 									<paper-item>[[item.title]]</paper-item>
@@ -166,15 +168,33 @@
 							roles="">
 						</qa-input-user>
 					</template>
-					<paper-input
-						label="Tipo de tarefa"
-						name="assunto"
-						maxlength="60"
-						qa-style
-						required
-						error-message="Informe o tipo de tarefa">
-					</paper-input>
+					<template is="dom-if" if="[[!isEqual(selectedTab, teamTab)]]">
+						<paper-input
+							label="Tipo de tarefa"
+							name="assunto"
+							maxlength="60"
+							qa-style
+							required="[[!isEqual(selectedTab, teamTab)]]"
+							disabled="[[isEqual(selectedTab, teamTab)]]"
+							error-message="Informe o tipo de tarefa">
+						</paper-input>
+					</template>
+					<template is="dom-if" if="[[isEqual(selectedTab, teamTab)]]">
+						<vaadin-combo-box
+							id="taskTitleBox"
+							name="assunto"
+							label="Tipo de tarefa"
+							required="[[isEqual(selectedTab, teamTab)]]"
+							disabled="[[!isEqual(selectedTab, teamTab)]]"
+							allow-custom-value
+							error-message="Informe o tipo de tarefa"
+							on-value-changed="selectDefaultTaskDescription"
+							items="{{filterTaskTitles(workgroupIndex, workgroups, allTaskTitles)}}"
+							item-value-path="title"
+							item-label-path="title">
+					</template>
 					<paper-textarea
+						value={{description}}
 						qa-style
 						label="Descrição"
 						name="descricao"
@@ -192,6 +212,12 @@
 			url="/api/workgroups"
 			withCredentials
 			last-response="{{workgroups}}">
+		</iron-ajax>
+		<iron-ajax
+			auto="[[opened]]"
+			url="/api/tasktitles"
+			withCredentials
+			last-response="{{allTaskTitles}}">
 		</iron-ajax>
 	</template>
 	<script>
@@ -213,6 +239,10 @@
 					type: Number,
 					value: 0
 				},
+				teamTab: {
+					type: Number,
+					value: 2
+				},
 				opened: {
 					type: Boolean,
 					value: false
@@ -226,6 +256,19 @@
 				},
 				workgroupIndex: Number,
 				workgroups: {
+					type: Array,
+					value: function() {
+						return [];
+					}
+				},
+				taskTitleIndex: Number,
+				taskTitles: {
+					type: Array,
+					value: function() {
+						return [];
+					}
+				},
+				allTaskTitles: {
 					type: Array,
 					value: function() {
 						return [];
@@ -340,6 +383,31 @@
 			onTapDate: function(event) {
 				this.$$('qa-datetime-dialog').open();
 			},
+			filterTaskTitles: function(workgroupIndex, workgroups, allTaskTitles){
+				if(workgroups.length > 0 && workgroupIndex != null){
+					var workgroupId = workgroups[workgroupIndex]._id;
+					var taskTitles = allTaskTitles.filter(function(taskTitle) {
+						return taskTitle.workgroup == workgroupId
+					});
+					if(taskTitles.length > 0){
+						return taskTitles[0].tasks;
+					}
+				}
+				return null;
+			},
+			resetSelectedTaskTitle: function(){
+				var combobox = document.querySelector('#taskTitleBox');
+				combobox._clear();
+			},
+			selectDefaultTaskDescription: function(){
+				var combobox = document.querySelector('#taskTitleBox');
+				if(combobox != null && combobox.value != "" && combobox.selectedItem != null && combobox.selectedItem.desc.length > 0){
+					this.description = combobox.selectedItem.desc;
+				}
+				else{
+					this.description = null;
+				}
+			},
 			open: function() {
 				this.$.taskForm.reset();
 				this.$.dialog.open();
@@ -352,4 +420,3 @@
 
 	</script>
 </dom-module>
-
