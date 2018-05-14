@@ -413,19 +413,11 @@
 			},
 			resetTaskTitles: function(){
 				this.taskTitles = this.filterTaskTitles(this.workgroupIndex, this.workgroups, this.allTaskTitles);
-
-				var combobox = document.querySelector('#taskTitleBox');
-				if(combobox != null){
-					combobox._clear();
-				}
 			},
 			selectDefaultTaskDescription: function(){
 				var combobox = document.querySelector('#taskTitleBox');
 				if(combobox != null && combobox.value != "" && combobox.selectedItem != null && combobox.selectedItem.desc.length > 0){
 					this.description = combobox.selectedItem.desc;
-				}
-				else{
-					this.description = null;
 				}
 			},
 			open: function() {
