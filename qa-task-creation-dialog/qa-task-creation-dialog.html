@@ -91,7 +91,7 @@
 							<paper-tab>[[item]]</paper-tab>
 						</template>
 					</paper-tabs>
-					<iron-pages selected="[[selectedTab]]">
+					<iron-pages selected="[[selectedTab]]" id=taskPages>
 						<paper-input
 							qa-style
 							readonly
@@ -111,11 +111,11 @@
 						<paper-dropdown-menu
 							qa-style
 							label="Equipe responsável"
-							required="[[isEqual(selectedTab, 2)]]"
+							required="[[isEqual(selectedTab, teamTab)]]"
 							error-message="Informe a equipe responsável">
 							<paper-listbox
 								class="dropdown-content"
-								on-iron-select="resetSelectedTaskTitle"
+								on-iron-select="resetTaskTitles"
 								selected="{{workgroupIndex}}">
 								<template is="dom-repeat" items="[[workgroups]]">
 									<paper-item>[[item.title]]</paper-item>
@@ -169,28 +169,28 @@
 							roles="">
 						</qa-input-user>
 					</template>
-					<template is="dom-if" if="[[!isEqual(selectedTab, teamTab)]]">
+					<template is="dom-if" if="[[!displayTaskTitlesBox]]">
 						<paper-input
-							label="Tipo de tarefa"
+							label="Título de tarefa"
 							name="assunto"
 							maxlength="60"
 							qa-style
-							required="[[!isEqual(selectedTab, teamTab)]]"
-							disabled="[[isEqual(selectedTab, teamTab)]]"
+							required="[[!displayTaskTitlesBox]]"
+							disabled="[[displayTaskTitlesBox]]"
 							error-message="Informe o tipo de tarefa">
 						</paper-input>
 					</template>
-					<template is="dom-if" if="[[isEqual(selectedTab, teamTab)]]">
+					<template is="dom-if" if="[[displayTaskTitlesBox]]">
 						<vaadin-combo-box
 							id="taskTitleBox"
 							name="assunto"
 							label="Tipo de tarefa"
-							required="[[isEqual(selectedTab, teamTab)]]"
-							disabled="[[!isEqual(selectedTab, teamTab)]]"
+							required="[[displayTaskTitlesBox]]"
+							disabled="[[!displayTaskTitlesBox]]"
 							allow-custom-value
 							error-message="Informe o tipo de tarefa"
 							on-value-changed="selectDefaultTaskDescription"
-							items="{{filterTaskTitles(workgroupIndex, workgroups, allTaskTitles)}}"
+							items="{{taskTitles}}"
 							item-value-path="title"
 							item-label-path="title">
 					</template>
@@ -275,6 +275,10 @@
 						return [];
 					}
 				},
+				displayTaskTitlesBox: {
+					type: Boolean,
+					value: false
+				},
 				recipientIndex: Number,
 				recipients: {
 					type: Array,
@@ -293,7 +297,8 @@
 			behaviors: [ QuintoAndar.UserBehavior ],
 			ready: function() {
 				var self = this;
-				var form = this.$.taskForm;
+				var form = this.$.taskForm;			
+				var pages = this.$.taskPages;
 
 				form.addEventListener('iron-form-presubmit', function(event) {
 
@@ -361,6 +366,9 @@
 						elem.set('selected', null);
 					});
 				});
+				pages.addEventListener('iron-select', function(event){
+					self.displayTaskTitlesBox = self.hasAnyTaskTitle();
+				});
 			},
 			getClientSearchLabel: function(recipientsLength) {
 				return recipientsLength ? '' : 'Cliente';
@@ -384,6 +392,14 @@
 			onTapDate: function(event) {
 				this.$$('qa-datetime-dialog').open();
 			},
+			hasAnyTaskTitle: function(){
+				if(this.taskTitles != null && this.taskTitles.length > 0 && this.isEqual(this.selectedTab, this.teamTab)){
+					return true;
+				}
+				else {
+					return false;
+				}
+			},
 			filterTaskTitles: function(workgroupIndex, workgroups, allTaskTitles){
 				if(workgroups.length > 0 && workgroupIndex != null){
 					var workgroupId = workgroups[workgroupIndex]._id;
@@ -396,17 +412,13 @@
 				}
 				return null;
 			},
-			resetSelectedTaskTitle: function(){
-				var combobox = document.querySelector('#taskTitleBox');
-				combobox._clear();
+			resetTaskTitles: function(){
+				this.taskTitles = this.filterTaskTitles(this.workgroupIndex, this.workgroups, this.allTaskTitles);
 			},
 			selectDefaultTaskDescription: function(){
 				var combobox = document.querySelector('#taskTitleBox');
 				if(combobox != null && combobox.value != "" && combobox.selectedItem != null && combobox.selectedItem.desc.length > 0){
 					this.description = combobox.selectedItem.desc;
-				}
-				else{
-					this.description = null;
 				}
 			},
 			open: function() {
@@ -421,3 +433,4 @@
 
 	</script>
 </dom-module>
+
