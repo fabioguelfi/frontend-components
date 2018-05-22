@@ -416,11 +416,13 @@
 				this.taskTitles = this.filterTaskTitles(this.workgroupIndex, this.workgroups, this.allTaskTitles);
 				
 				var combobox = document.querySelector('#taskTitleBox');
-				combobox._clear();
+					if(combobox != null){
+					combobox._clear();
+				}
 			},
 			selectDefaultTaskDescription: function(){
 				var combobox = document.querySelector('#taskTitleBox');
-				if(combobox != null && combobox.value != "" && combobox.selectedItem != null && combobox.selectedItem.desc.length > 0){
+				if(combobox != null && combobox.selectedItem != null){
 					this.description = combobox.selectedItem.desc;
 				}
 				else{
