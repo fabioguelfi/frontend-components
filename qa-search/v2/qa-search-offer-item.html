@@ -49,7 +49,7 @@
 				</template>
 			</div>
 			<div class="badges">
-				<qa-badge label="{{item.status}}" full></qa-badge>
+				<qa-badge label="[[getOfferStatusLabel(item.status)]]" full></qa-badge>
 			</div>
 		</div>
 	</template>
@@ -58,6 +58,16 @@
 			is: 'qa-search-offer-item',
 			properties: {
 				item: Object
+			},
+			getOfferStatusLabel: function(status) {
+				switch (status) {
+					case 'Draft': return 'Rascunho';
+					case 'Proposed': return 'Em negociação';
+					case 'Accepted': return 'Aceita';
+					case 'Rejected': return 'Cancelada';
+					case 'Dismiss': return 'Cancelada';
+				}
+				return '';
 			},
 		});
 	</script>
