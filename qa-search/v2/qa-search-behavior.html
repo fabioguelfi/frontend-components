@@ -44,6 +44,9 @@
 					label: 'Tarefas da proposta',
 					viewUrl: ((typeof CONFIG !== "undefined" ? CONFIG : {}).USTASKS_URL || "@@USTASKS_URL") + '/busca/?type=tasks&query=PreProposta:' + item.id
 				}];
+			} else if (item.type == 'offers') {
+				// TODO add link to godfather
+				return [];
 			} else {
 				return [{
 					label: 'Página da tarefa',
@@ -62,7 +65,7 @@
 				return [item.status];
 			} else if (item.type == 'users') {
 				return item.roles;
-			} else if (item.type == 'prepropostas') {
+			} else if (['prepropostas', 'offers'].includes(item.type)) {
 				return [item.status];
 			} else {
 				var now = new Date();

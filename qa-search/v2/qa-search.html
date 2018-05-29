@@ -21,6 +21,7 @@
 <link rel="import" href="./qa-search-lead-item.html">
 <link rel="import" href="./qa-search-task-item.html">
 <link rel="import" href="./qa-search-preproposta-item.html">
+<link rel="import" href="./qa-search-offer-item.html">
 
 <dom-module id="qa-search">
 
@@ -194,13 +195,18 @@
 					<div class="section">
 						<iron-icon icon="[[types.5.icon]]" item-icon></iron-icon>
 						<div>
-							<template is="dom-repeat" items="[[result.prepropostas.items]]">
+							<template is="dom-repeat" items="[[getProposals(result)]]">
 								<qa-search-item item="[[item]]">
-									<qa-search-preproposta-item item="[[item]]" on-tap="onTap"></qa-search-preproposta-item>
+									<template is="dom-if" if="[[isPreProposta(item)]]">
+										<qa-search-preproposta-item item="[[item]]" on-tap="onTap"></qa-search-preproposta-item>
+									</template>
+									<template is="dom-if" if="[[isOffer(item)]]">
+										<qa-search-offer-item item="[[item]]" on-tap="onTap"></qa-search-offer-item>
+									</template>
 								</qa-search-item>
 							</template>
 							<div class="footer" on-tap="onAllPrepropostasTap">
-								{{getMessage('prepropostas', value, result.prepropostas.count)}}
+								{{getMessageTwoLists('prepropostas', value, result.prepropostas, result.offers)}}
 							</div>
 						</div>
 					</div>
@@ -415,6 +421,16 @@
 					}, 100);
 				}
 			},
+			getMessageTwoLists: function(type, value, result1, result2) {
+				var nItems = 0;
+				if (result1) {
+					nItems += result1.count;
+				}
+				if (result2) {
+					nItems += result2.count;
+				}
+				return this.getMessage(type, value, nItems);
+			},
 			getMessage: function(type, value, count) {
 				if (count) {
 					return 'Ver todos os resultados de ' + type;
@@ -444,6 +460,22 @@
 			},
 			onTap: function(event) {
 				window.open(event.model.item.viewUrl, '_blank');
+			},
+			getProposals: function (result) {
+				var proposals = [];
+				if(result.prepropostas) {
+					proposals = proposals.concat(result.prepropostas.items);
+				}
+				if(result.offers) {
+					proposals = proposals.concat(result.offers.items);
+				}
+				return proposals;
+			},
+			isOffer: function (item) {
+				return item.type == 'offers';
+			},
+			isPreProposta: function (item) {
+				return item.type == 'prepropostas';
 			}
 		});
 
