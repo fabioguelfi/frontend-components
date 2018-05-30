@@ -3,7 +3,7 @@
 <link rel="import" href="../../bower_components/paper-button/paper-button.html">
 <link rel="import" href="../../bower_components/paper-checkbox/s-checkbox.html">
 
-<link rel="import" href="../qa-behavior/v1/qa-behavior.html">
+<link rel="import" href="../qa-behavior/v1/qa-date-behavior.html">
 <link rel="import" href="../qa-behavior/v1/qa-user-behavior.html">
 
 <dom-module id="qa-shortcuts">
@@ -62,7 +62,7 @@
 	<script>
 		Polymer({
 			is: 'qa-shortcuts-onboarding',
-			behaviors: [ QuintoAndar.Behavior, QuintoAndar.UserBehavior ],
+			behaviors: [ QuintoAndar.DateBehavior, QuintoAndar.UserBehavior ],
 			properties: {
 				exampleCommands: Array,
 				dontShowOnboarding: false
@@ -77,10 +77,10 @@
 				this.$.dlgOnboardingShortcuts.close()
 			},
 			ready: function() {
-				var userIsOld = new Date(this.user.userCreatedAt);
+				var userCreatedBeforeOneMonthAgo = new Date(this.user.userCreatedAt) < this.monthBefore();
 				var hasSeenOnboarding = this.getCookieValue("hasSeenOnboarding", "no");
-				if (!userIsOld && hasSeenOnboarding != "yes") {
-					this.$.dlgOnboardingShortcuts.open()
+				if (userCreatedBeforeOneMonthAgo && hasSeenOnboarding != "yes") {
+					this.$.dlgOnboardingShortcuts.open();
 				}
 			}
 		});
