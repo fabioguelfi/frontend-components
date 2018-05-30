@@ -6,7 +6,7 @@
 <link rel="import" href="../qa-behavior/v1/qa-date-behavior.html">
 <link rel="import" href="../qa-behavior/v1/qa-user-behavior.html">
 
-<dom-module id="qa-shortcuts">
+<dom-module id="qa-shortcuts-onboarding">
 	<template>
 		<paper-dialog id="dlgOnboardingShortcuts" modal>
 			<h1>YES, nós temos atalhos!</h1>
@@ -15,7 +15,7 @@
 				Veja alguns deles:
 			</p>
 			<ul>
-				<li><span class="shortcut">[[baseShortCut]]</span>Abrir Busca/Lista de atalhos</li>
+				<li><span class="shortcut">[[baseShortcut]]</span>Abrir Busca/Lista de atalhos</li>
 				<template is="dom-repeat" items="[[exampleCommands]]">
 					<template is="dom-if" if="[[!item.depends]]">
 						<li><span class="shortcut">[[item.shortcut]]</span>[[item.description]]</li>
@@ -23,7 +23,7 @@
 				</template>
 			</ul>
 			<p>
-				Lembre-se: para pesquisar os atalhos disponíveis você pode usar o "[[baseShortCut]]"
+				Lembre-se: para pesquisar os atalhos disponíveis você pode usar o "[[baseShortcut]]"
 			</p>
 			<paper-button raised active on-tap="closeOnboarding">Ok, entendi!</paper-button>
 			<paper-checkbox checked="{{dontShowOnboarding}}">Já entendi e não quero mais ver essa tela :)</paper-checkbox>
@@ -77,9 +77,9 @@
 				this.$.dlgOnboardingShortcuts.close()
 			},
 			ready: function() {
-				var userCreatedBeforeOneMonthAgo = new Date(this.user.userCreatedAt) < this.monthBefore();
+				var userCreatedBeforeTwoMonthAgo = this.asDate(this.user.userCreatedAt) < this.monthBefore(new Date(), 2);
 				var hasSeenOnboarding = this.getCookieValue("hasSeenOnboarding", "no");
-				if (userCreatedBeforeOneMonthAgo && hasSeenOnboarding != "yes") {
+				if (!userCreatedBeforeTwoMonthAgo && hasSeenOnboarding != "yes") {
 					this.$.dlgOnboardingShortcuts.open();
 				}
 			}

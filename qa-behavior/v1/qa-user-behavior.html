@@ -32,15 +32,15 @@
 		},
 		setCookieOnBaseDomain: function(key, value, options) {
 			var opts = (options || {});
-			opts.domain = window.location.href.host.replace(/^.*((forno|dev|staging)\.)(quintoandar.com.br)$/g, '.$1$2');
-			setCookie(key, value, opts);
+			opts.domain = window.location.host.replace(/^.*?((forno|dev|staging)\.)?(quintoandar.com.br)$/g, '.$1$3');
+			this.setCookie(key, value, opts);
 		},
 		setCookie: function(key, value, options) {
-			var opts = { maxAge: 86400, path: '/' };
+			var opts = { maxAge: 2592000, path: '/' };
 			opts.domain = (options && options.domain);
 			opts.path = (options && options.path) || opts.path;
 			opts.maxAge = (options && options.maxAge) || opts.maxAge;
-			document.cookie = key + "=" + value + "; path=" + opts.path + "; maxAge=" + opts.maxAge + "; domain=" + opts.domain;
+			document.cookie = key + "=" + value + "; path=" + opts.path + "; max-age=" + opts.maxAge + "; domain=" + opts.domain;
 		}
 	};
 

@@ -11,8 +11,11 @@
 		formatDateTime: function(date) {
 			return moment(date).format('DD/MM/YYYY HH:mm');
 		},
-		monthBefore: function(date) {
-			return moment(date || new Date()).subtract(1, 'months');
+		asDate: function(date) {
+			return moment(date).toDate()
+		},
+		monthBefore: function(date, amount) {
+			return moment(date || new Date()).subtract(amount || 1, 'months').toDate();
 		}
 	};
 

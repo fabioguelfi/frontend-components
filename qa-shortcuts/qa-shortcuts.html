@@ -13,7 +13,7 @@
 	<template>
 		<iron-a11y-keys target="[[cmdPalTarget]]" keys="esc" on-keys-pressed="closeCommandPallete"></iron-a11y-keys>
 		<iron-a11y-keys target="[[cmdPalTarget]]" keys="ctrl+alt+3" on-keys-pressed="openCommandPallete" stop-keyboard-event-propagation="true"></iron-a11y-keys>
-		<qa-shortcuts-onboarding baseShortCut="CTRL+ALT+3" example-commands="[[allCommands]]"></qa-shortcuts-onboarding>
+		<qa-shortcuts-onboarding base-shortcut="ctrl+alt+3" example-commands="[[allCommands]]"></qa-shortcuts-onboarding>
 		<template is="dom-repeat" items="[[listaComandos]]">
 			<iron-a11y-keys target="[[cmdPalTarget]]" keys="[[item.shortcut]]" on-keys-pressed="_actOnShortcut" data-command-index="[[index]]">
 			</iron-a11y-keys>
