@@ -40,7 +40,7 @@
 			opts.domain = (options && options.domain);
 			opts.path = (options && options.path) || opts.path;
 			opts.maxAge = (options && options.maxAge) || opts.maxAge;
-			document.cookie = `${key}=${value}; path=${opts.path}; maxAge=${opts.maxAge}; domain=${opts.domain}`;
+			document.cookie = key + "=" + value + "; path=" + opts.path + "; maxAge=" + opts.maxAge + "; domain=" + opts.domain;
 		}
 	};
 
