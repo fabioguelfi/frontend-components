@@ -14,7 +14,7 @@
 				Para facilitar sua vida, nós colocamos atalhos dentro do CRM.<br />
 				Veja alguns deles:
 			</p>
-			<ul>
+			<ul class="sample-shortcut-list">
 				<li><span class="shortcut">[[baseShortcut]]</span>Abrir Busca/Lista de atalhos</li>
 				<template is="dom-repeat" items="[[exampleCommands]]">
 					<template is="dom-if" if="[[!item.depends]]">
@@ -25,26 +25,19 @@
 			<p>
 				Lembre-se: para pesquisar os atalhos disponíveis você pode usar o "[[baseShortcut]]"
 			</p>
-			<paper-button raised active on-tap="closeOnboarding">Ok, entendi!</paper-button>
+			<paper-button class$="close" raised active on-tap="closeOnboarding">Ok, entendi!</paper-button>
 			<paper-checkbox checked="{{dontShowOnboarding}}">Já entendi e não quero mais ver essa tela :)</paper-checkbox>
 		</paper-dialog>
 		<style is="custom-style">
-			#dlgOnboardingShortcuts ul,
-			#dlgOnboardingShortcuts li {
+			ul.sample-shortcut-list {
 				list-style: none;
 			}
-			#dlgOnboardingShortcuts li {
+			ul.sample-shortcut-list li {
+				list-style: none;
 				display:block;
 				padding: 5px 10px;
 			}
-			#dlgOnboardingShortcuts paper-button {
-				background-color: #00A2F6;
-				color: #ffffff;
-				font-weight: bold;
-				padding: 10px 22px;
-				margin-left: 24px;
-			}
-			li .shortcut {
+			ul.sample-shortcut-list li .shortcut {
 				border-radius: 5px;
 				background-color: #888888;
 				color: #ffffff;
@@ -56,6 +49,13 @@
 				right: 0;
 				font-weight: bold;
 				margin-right: 20px;
+			}
+			#dlgOnboardingShortcuts paper-button.close {
+				background-color: #00A2F6;
+				color: #ffffff;
+				font-weight: bold;
+				padding: 10px 22px;
+				margin-left: 24px;
 			}
 		</style>
 	</template>
