@@ -15,14 +15,32 @@
 			}
 		},
 		ready: function() {
-			var token = document.cookie
-				.replace(/(?:(?:^|.*;\s*)5AJWT_AUTH\s*\=\s*([^;]*).*$)|^.*$/, "$1");
+			var token = this.getCookieValue("5AJWT_AUTH");
 			try {
 				var user = jwt_decode(token);
 				this.set('user', user);
 			} catch (err) {
 				console.warn('user not found');
 			}
+		},
+		getCookieValue: function(key, defaultVal) {
+			var cookieVal = document.cookie.match(new RegExp(key+"\\s*=\\s*([^;]*)"));
+			if (cookieVal && cookieVal[1]) {
+				return cookieVal[1];
+			}
+			return defaultVal;
+		},
+		setCookieOnBaseDomain: function(key, value, options) {
+			var opts = (options || {});
+			opts.domain = window.location.host.replace(/^.*?((forno|dev|staging)\.)?(quintoandar.com.br)$/g, '.$1$3');
+			this.setCookie(key, value, opts);
+		},
+		setCookie: function(key, value, options) {
+			var opts = { maxAge: 2592000, path: '/' };
+			opts.domain = (options && options.domain);
+			opts.path = (options && options.path) || opts.path;
+			opts.maxAge = (options && options.maxAge) || opts.maxAge;
+			document.cookie = key + "=" + value + "; path=" + opts.path + "; max-age=" + opts.maxAge + "; domain=" + opts.domain;
 		}
 	};
 

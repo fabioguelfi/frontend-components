@@ -7,31 +7,13 @@
 <link rel="import" href="../../bower_components/paper-checkbox/paper-checkbox.html">
 
 <link rel="import" href="../qa-behavior/v1/qa-behavior.html">
+<link rel="import" href="qa-shortcuts-onboarding.html">
 
 <dom-module id="qa-shortcuts">
 	<template>
 		<iron-a11y-keys target="[[cmdPalTarget]]" keys="esc" on-keys-pressed="closeCommandPallete"></iron-a11y-keys>
 		<iron-a11y-keys target="[[cmdPalTarget]]" keys="ctrl+alt+3" on-keys-pressed="openCommandPallete" stop-keyboard-event-propagation="true"></iron-a11y-keys>
-		<paper-dialog id="dlgOnboardingShortcuts" modal="true">
-			<h1>YES, nós temos atalhos!</h1>
-			<p>
-				Para facilitar sua vida, nós colocamos atalhos dentro do CRM.<br />
-				Veja alguns deles:
-			</p>
-			<ul>
-				<li><span class="shortcut">CTRL+ALT+3</span>Abrir Busca/Lista de atalhos</li>
-				<template is="dom-repeat" items="[[allCommands]]">
-					<template is="dom-if" if="[[!item.depends]]">
-						<li><span class="shortcut">[[item.shortcut]]</span>[[item.description]]</li>
-					</template>
-				</template>
-			</ul>
-			<p>
-				Lembre-se: para pesquisar os atalhos disponíveis você pode usar o "CTRL+ALT+3"
-			</p>
-			<paper-button raised active on-tap="closeOnboarding">Ok, entendi!</paper-button>
-			<paper-checkbox checked="{{dontShowOnboarding}}">Já entendi e não quero mais ver essa tela :)</paper-checkbox>
-		</paper-dialog>
+		<qa-shortcuts-onboarding base-shortcut="ctrl+alt+3" example-commands="[[allCommands]]"></qa-shortcuts-onboarding>
 		<template is="dom-repeat" items="[[listaComandos]]">
 			<iron-a11y-keys target="[[cmdPalTarget]]" keys="[[item.shortcut]]" on-keys-pressed="_actOnShortcut" data-command-index="[[index]]">
 			</iron-a11y-keys>
@@ -46,22 +28,7 @@
 			</paper-listbox>
 		</paper-dialog>
 		<style is="custom-style">
-			#dlgOnboardingShortcuts ul,
-			#dlgOnboardingShortcuts li {
-				list-style: none;
-			}
-			#dlgOnboardingShortcuts li {
-				display:block;
-				padding: 5px 10px;
-			}
-			#dlgOnboardingShortcuts paper-button {
-				background-color: #00A2F6;
-				color: #ffffff;
-				font-weight: bold;
-				padding: 10px 22px;
-				margin-left: 24px;
-			}
-			paper-item .shortcut, li .shortcut {
+			paper-item .shortcut {
 				border-radius: 5px;
 				background-color: #888888;
 				color: #ffffff;
@@ -108,7 +75,7 @@
 				},
 				commandDisplayMaxCount : {
 					type: Number,
-					value: 5
+					value: 8
 				},
 				listaFiltrada: Array,
 				allCommands: Array,
@@ -130,25 +97,8 @@
 				propertiesUrl: {type: String, value:""},
 				accountsUrl: {type: String, value:""},
 				searchUrl: {type: String, value:""},
-				dontShowOnboarding: false
-			},
-			behaviors: [ QuintoAndar.Behavior ],
-			closeOnboarding: function() {
-				if (this.dontShowOnboarding) {
-					var crmShortcut = document.cookie.match(new RegExp("(; *)?crmShortcutsOnboarding=([^;]*)"));
-					if (!crmShortcut || crmShortcut[2] != "yes") {
-						document.cookie = "crmShortcutsOnboarding=yes; path=/";
-					}
-				}
-				this.$.dlgOnboardingShortcuts.close()
 			},
 			ready: function() {
-				var disablePopupForNow = true;
-				var crmShortcut = document.cookie.match(new RegExp("(; *)?crmShortcutsOnboarding=([^;]*)"));
-				if (!disablePopupForNow && (!crmShortcut || crmShortcut[2] != "yes")) {
-					this.$.dlgOnboardingShortcuts.open()
-				}
-				
 				this.set('cmdPalTarget',document.body)
 				this.set('allCommands',[
 					{description:"Abrir página apartamento/imóvel", shortcut:"ctrl+shift+a", depends: ["house"],
@@ -158,10 +108,10 @@
 						action: this.openSearchUrl('/imovel/',['house','id'])
 					},
 					{description:"Abrir página inquilino", shortcut:"ctrl+shift+i", depends: ["tenant"],
-						action: this.openUsAccountsUrl('/usuarios/',['tenant','id'])
+						action: this.openUsAccountsUrl('/busca?email=',['tenant','email'])
 					},
 					{description:"Abrir página proprietário", shortcut:"ctrl+shift+p", depends: ["owner"],
-						action: this.openUsAccountsUrl('/usuarios/',['owner','id'])
+						action: this.openUsAccountsUrl('/busca?email=',['owner','email'])
 					},
 					{description:"Abrir essa tarefa/task em nova aba", shortcut:"ctrl+alt+t", depends: ["task"],
 						action: this.openUsTasksUrl('/tarefas?taskId=',['task','_id'])
