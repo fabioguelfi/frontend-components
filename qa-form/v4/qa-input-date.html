@@ -1,0 +1,147 @@
+<link rel="import" href="../../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../../bower_components/paper-icon-button/paper-icon-button.html">
+<link rel="import" href="../../../bower_components/iron-dropdown/iron-dropdown.html">
+<link rel="import" href="../../../bower_components/iron-flex-layout/iron-flex-layout.html">
+<link rel="import" href="../../../bower_components/iron-icons/iron-icons.html">
+<link rel="import" href="../../../bower_components/iron-input/iron-input.html">
+
+<link rel="import" href="../v3/qa-datepicker.html">
+<link rel="import" href="../v2/qa-input-behavior.html">
+<link rel="import" href="../v2/datetime-validator.html">
+
+<dom-module id="qa-input-date">
+    <template>
+        <style>
+            :host {
+                display: flex;
+            }
+            input::-webkit-input-placeholder {
+                color: var(--paper-input-container-color, --secondary-text-color);
+            }
+            input:-moz-placeholder {
+                color: var(--paper-input-container-color, --secondary-text-color);
+            }
+            input::-moz-placeholder {
+                color: var(--paper-input-container-color, --secondary-text-color);
+            }
+            input:-ms-input-placeholder {
+                color: var(--paper-input-container-color, --secondary-text-color);
+            }
+            .dropdown-content {
+                @apply(--shadow-elevation-6dp);
+                border-radius: 2px;
+            }
+            paper-icon-button {
+                padding: 0;
+                height: 24px;
+                width: 24px;
+                top: -4px;
+            }
+            qa-datepicker {
+                --qa-dark-color: var(--datepicker-primary-color);
+            }
+        </style>
+
+        <datetime-validator format="{{format}}"></datetime-validator>
+
+        <paper-input-container
+            class="layout horizontal"
+            no-label-float="[[noLabelFloat]]"
+            always-float-label="[[_computeAlwaysFloatLabel(alwaysFloatLabel,placeholder)]]"
+            auto-validate$="[[autoValidate]]"
+            disabled$="[[disabled]]"
+            invalid="[[invalid]]">
+
+            <content select="[prefix]"></content>
+
+            <label hidden$="[[!label]]">[[label]]</label>
+
+            <input is="iron-input"
+                   id="input"
+                   class="flex"
+                   aria-labelledby$="[[_ariaLabelledBy]]"
+                   aria-describedby$="[[_ariaDescribedBy]]"
+                   disabled$="[[disabled]]"
+                   title$="[[title]]"
+                   bind-value="{{value}}"
+                   invalid="{{invalid}}"
+                   prevent-invalid-input="[[preventInvalidInput]]"
+                   validator="datetime-validator"
+                   type$="[[type]]"
+                   pattern$="[[pattern]]"
+                   required$="[[required]]"
+                   autocomplete$="[[autocomplete]]"
+                   autofocus$="[[autofocus]]"
+                   inputmode$="[[inputmode]]"
+                   minlength$="[[minlength]]"
+                   maxlength$="[[maxlength]]"
+                   min$="[[min]]"
+                   max$="[[max]]"
+                   step$="[[step]]"
+                   name$="[[name]]"
+                   placeholder$="[[placeholder]]"
+                   readonly$="[[readonly]]"
+                   list$="[[list]]"
+                   size$="[[size]]"
+                   autocapitalize$="[[autocapitalize]]"
+                   autocorrect$="[[autocorrect]]"
+                   on-change="_onChange"
+                   tabindex$="[[tabindex]]"
+                   autosave$="[[autosave]]"
+                   results$="[[results]]"
+                   accept$="[[accept]]"
+                   multiple$="[[multiple]]">
+
+            <paper-icon-button suffix icon="today" on-tap="_handleTap"></paper-icon-button>
+
+            <template is="dom-if" if="[[errorMessage]]">
+                <paper-input-error>[[errorMessage]]</paper-input-error>
+            </template>
+
+            <template is="dom-if" if="[[charCounter]]">
+                <paper-input-char-counter></paper-input-char-counter>
+            </template>
+
+        </paper-input-container>
+
+        <iron-dropdown no-overlap dynamic-align>
+            <qa-datepicker
+                value="{{value}}"
+                format="[[format]]"
+                class="dropdown-content">
+            </qa-datepicker>
+        </iron-dropdown>
+
+    </template>
+    <script>
+        Polymer({
+            is: 'qa-input-date',
+            properties: {
+                format: {
+                    type: String,
+                    value: 'DD/MM/YY'
+                },
+                separatorsPattern: {
+                    type: String,
+                    value: '[\/]'
+                }
+            },
+            behaviors: [ QuintoAndar.InputBehavior ],
+            listeners: {
+                'qa-datepicker-selected': '_handleClose',
+                'qa-datepicker-canceled': '_handleClose'
+            },
+            _handleTap: function(event) {
+                this.$$('iron-dropdown').toggle();
+            },
+            _handleClose: function(event) {
+                this.$$('iron-dropdown').close();
+            },
+            _getElement: function(element) {
+                return this.$$(element);
+            }
+        });
+    </script>
+</dom-module>
+
+
