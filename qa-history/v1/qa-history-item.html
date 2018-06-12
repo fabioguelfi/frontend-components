@@ -53,6 +53,9 @@
 				background-color: #E3E3E3;
 				padding: 8px;
 			}
+			.desc {
+				white-space: pre-line;
+			}
 			.resolved {
 				background-color: #C5E1A5;
 			}
@@ -85,7 +88,7 @@
 			</div>
 			<div>
 				<div class="title" on-tap="handleTap">{{item.title}}</div>
-				<div>{{item.description}}</div>
+				<div class="desc">{{item.description}}</div>
 				<template is="dom-if" if="{{item.comment}}" >
 					<div>Comentário: {{item.comment}}</div>
 				</template>
