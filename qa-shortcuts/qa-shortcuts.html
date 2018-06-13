@@ -8,6 +8,7 @@
 
 <link rel="import" href="../qa-behavior/v1/qa-behavior.html">
 <link rel="import" href="qa-shortcuts-onboarding.html">
+<script src="../../bower_components/fuzzy-string-matching/min/fuzzy-string-matching.min.js"></script>
 
 <dom-module id="qa-shortcuts">
 	<template>
@@ -122,6 +123,13 @@
 					{description:"Abrir performance em nova aba", shortcut:"ctrl+alt+d", action: this.openUsTasksUrl('/dashboard/')},
 					{description:"Ligar inquilino", shortcut:"ctrl+alt+i", depends: ["tenant"], action: this.callTenant.bind(this)},
 					{description:"Ligar proprietário",shortcut:"ctrl+alt+p", depends: ["owner"], action: this.callOwner.bind(this)}
+					
+					{description:"Abrir Contrato em nova aba", shortcut:"ctrl+alt+k", depends: [["contract","id"]],
+						action: this.openUsPropertiesUrl('/contracts/#', ['contract','id'])
+					}
+					{description:"Abrir Proposta em nova aba", shortcut:"ctrl+alt+o", depends: [["offer","id"]],
+						action: this.openUsPropertiesUrl('/offers/#', ['offer','id'])
+					}
 				]);
 				this._commandFiltered();
 				setTimeout(function(){
@@ -159,7 +167,7 @@
 				var available = [];
 				var filterCommands = function(commands, avail){
 					commands.forEach(function(cmd){
-						if (!cmd.depends || cmd.depends.reduce(function(bef,cur){return bef && this[cur]}.bind(this),true)) {
+						if (!cmd.depends || cmd.depends.reduce(function(bef,cur){return bef && this.evaluatePath(cur)}.bind(this),true)) {
 							avail.push(cmd);
 							return false
 						}
@@ -240,7 +248,7 @@
 				}
 			},
 			evaluatePath:function(pathArray) {
-				var val = this.get(pathArray[0]);
+				var val = this.get(pathArray[0]) || {};
 				pathArray.slice(1).forEach(function(pathPiece){
 					val = val[pathPiece];
 				})
