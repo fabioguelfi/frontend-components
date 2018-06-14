@@ -35,6 +35,6 @@
     "paper-ripple": "PolymerElements/paper-ripple#^1.0.10",
     "iron-a11y-keys": "PolymerElements/iron-a11y-keys#^1.0.6",
     "paper-checkbox": "PolymerElements/paper-checkbox#1.4.2",
-    "fuzzy-string-matching": "^1.0.2"
+    "fuzzy": "^0.1.3"
   }
 }
