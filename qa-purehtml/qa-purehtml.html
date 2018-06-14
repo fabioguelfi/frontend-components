@@ -1,0 +1,28 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+
+<dom-module id="qa-purehtml">
+	<template>
+		<span class="content"></span>
+	</template>
+	<script>
+		Polymer({
+			is: 'qa-purehtml',
+			properties: {
+				value: { 
+					type : String,
+					observer: '_valueChanged'
+				},
+			},
+			ready: function() {
+				this.update(this.value);
+			},
+			_valueChanged: function(current, before) {
+				this.update(current);
+			},
+			update: function(newContent) {
+				this.$$(".content").innerHTML = newContent;
+			}
+		});
+	</script>
+</dom-module>
+
