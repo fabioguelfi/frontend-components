@@ -129,10 +129,10 @@
 					{description:"Ligar inquilino", shortcut:"ctrl+alt+i", depends: ["tenant"], action: this.callTenant.bind(this)},
 					{description:"Ligar proprietário",shortcut:"ctrl+alt+p", depends: ["owner"], action: this.callOwner.bind(this)},
 					
-					{description:"Abrir Contrato em nova aba", shortcut:"ctrl+alt+k", depends: [["contract","id"]],
+					{description:"Abrir Contrato em nova aba", shortcut:"ctrl+alt+k", depends: ["contract"],
 						action: this.openUsPropertiesUrl('/contracts/#', ['contract','id'])
 					},
-					{description:"Abrir Proposta em nova aba", shortcut:"ctrl+alt+o", depends: [["offer","id"]],
+					{description:"Abrir Proposta em nova aba", shortcut:"ctrl+alt+o", depends: ["offer"],
 						action: this.openUsPropertiesUrl('/offers/#', ['offer','id'])
 					}
 				]);
