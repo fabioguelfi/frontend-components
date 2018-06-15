@@ -7,7 +7,10 @@
 <link rel="import" href="../../bower_components/paper-checkbox/paper-checkbox.html">
 
 <link rel="import" href="../qa-behavior/v1/qa-behavior.html">
+<link rel="import" href="../qa-purehtml/qa-purehtml.html">
 <link rel="import" href="qa-shortcuts-onboarding.html">
+
+<script src="../../bower_components/fuzzy/fuzzy-min.js"></script>
 
 <dom-module id="qa-shortcuts">
 	<template>
@@ -23,7 +26,10 @@
 			<iron-a11y-keys target="[[commandFilterNode]]" keys="esc enter down up" on-keys-pressed="commandFilterKeyPressed"></iron-a11y-keys>
 			<paper-listbox id="listCmd" selected="{{selectedCommandIndex}}">
 				<template is="dom-repeat" items="[[listaFiltrada]]">
-					<paper-item on-tap="_onCommandTap" data-command-index="[[index]]"><span class="shortcut">[[item.shortcut]]</span>[[item.description]]</paper-item>
+					<paper-item on-tap="_onCommandTap" data-command-index="[[index]]">
+						<span class="shortcut">[[item.shortcut]]</span>
+						<qa-purehtml value="[[item.description]]" />
+					</paper-item>
 				</template>
 			</paper-listbox>
 		</paper-dialog>
@@ -81,7 +87,7 @@
 				allCommands: Array,
 				listaComandos: {
 					type: Array,
-					computed: 'availableCommands(allCommands,extraCommands)'
+					computed: 'availableCommands(allCommands, extraCommands)'
 				},
 				commandFilter : { type : String, observer: '_commandFiltered' },
 				selectedCommandIndex: Number,
@@ -91,7 +97,7 @@
 				},
 				extraCommands: {
 					type: Array,
-					value: []
+					value: function() { return []; },
 				},
 				tasksUrl: {type: String, value:""},
 				propertiesUrl: {type: String, value:""},
@@ -117,11 +123,18 @@
 						action: this.openUsTasksUrl('/tarefas?taskId=',['task','_id'])
 					},
 					{description:"Abrir busca em nova aba", shortcut:"ctrl+alt+b", action: this.openUsTasksUrl('/busca')},
-					{description:"Abrir tarefas em nova aba", shortcut:"ctrl+alt+b", action: this.openUsTasksUrl('/tarefas')},
+					{description:"Abrir tarefas em nova aba", shortcut:"ctrl+alt+j", action: this.openUsTasksUrl('/tarefas')},
 					{description:"Abrir relatórios em nova aba", shortcut:"ctrl+alt+r", action: this.openUsTasksUrl('/relatorios')},
 					{description:"Abrir performance em nova aba", shortcut:"ctrl+alt+d", action: this.openUsTasksUrl('/dashboard/')},
 					{description:"Ligar inquilino", shortcut:"ctrl+alt+i", depends: ["tenant"], action: this.callTenant.bind(this)},
-					{description:"Ligar proprietário",shortcut:"ctrl+alt+p", depends: ["owner"], action: this.callOwner.bind(this)}
+					{description:"Ligar proprietário",shortcut:"ctrl+alt+p", depends: ["owner"], action: this.callOwner.bind(this)},
+					
+					{description:"Abrir Contrato em nova aba", shortcut:"ctrl+alt+k", depends: ["contract"],
+						action: this.openUsPropertiesUrl('/contracts/#', ['contract','id'])
+					},
+					{description:"Abrir Proposta em nova aba", shortcut:"ctrl+alt+o", depends: ["offer"],
+						action: this.openUsPropertiesUrl('/offers/#', ['offer','id'])
+					}
 				]);
 				this._commandFiltered();
 				setTimeout(function(){
@@ -155,12 +168,17 @@
 				}
 				this._commandFiltered()
 			},
-			availableCommands : function(allCommands,extraCommands){
+			availableCommands : function(allCommands,extraCommands) {
+				var usedCommands = {};
 				var available = [];
 				var filterCommands = function(commands, avail){
 					commands.forEach(function(cmd){
-						if (!cmd.depends || cmd.depends.reduce(function(bef,cur){return bef && this[cur]}.bind(this),true)) {
+						if (!cmd.depends || cmd.depends.reduce(function(bef,cur){return bef && (typeof cur === "Array" ? this.evaluatePath(cur) : this[cur])}.bind(this),true)) {
 							avail.push(cmd);
+							if (usedCommands[cmd.shortcut]) {
+								throw new Error("There is already a shortcut for '" + cmd.shortcut + "': " + usedCommands[cmd.shortcut].description);
+							}
+							usedCommands[cmd.shortcut] = cmd;
 							return false
 						}
 						return true
@@ -172,18 +190,32 @@
 			},
 			_commandFiltered : function(){
 				var filt = [];
-				var filtering = this.removeDiacritics((this.commandFilter||'').toLowerCase());
-				for(cmdIdx in this.listaComandos) {
-					var cmd = this.listaComandos[cmdIdx];
-					if(this.removeDiacritics(cmd.description.toLowerCase()).indexOf(filtering) >= 0) {
-						filt.push(cmd)
-					}
-					if (filt.length >= this.commandDisplayMaxCount) {
-						break;
-					}
+				var filtering = this.removeDiacritics((this.commandFilter||''));
+				
+				var extractCmdFuzzySearch = (function(cmd) {
+					return this.removeDiacritics(cmd.description);
+				}).bind(this);
+				
+				filt = fuzzy.filter(filtering, this.listaComandos, {
+					pre: '<b>',
+					post:'</b>',
+					extract: extractCmdFuzzySearch
+				});
+				
+				//sort by relevance
+				filt = filt.sort(function(itemA, itemB) { return itemA.score - itemB.score })
+				//at most (this.commandDisplayMaxCount) valuesShown
+				if (filt.length > this.commandDisplayMaxCount) {
+					filt = filt.slice(0, this.commandDisplayMaxCount);
 				}
-				this.set('listaFiltrada',filt)
-				this.set('selectedCommandIndex',"0")
+				
+				//maps the fuzzy return to actual 'cmds'
+				this.set('listaFiltrada', filt.map(function(item) {
+					var cmdAux = Object.assign({}, item.original);
+					cmdAux.description = item.string;
+					return cmdAux;
+				}));
+				this.set('selectedCommandIndex', "0")
 			},
 			openCommandPallete: function(e) {
 				if (! this.$.dlgCmdPallete.opened) {
@@ -240,7 +272,7 @@
 				}
 			},
 			evaluatePath:function(pathArray) {
-				var val = this.get(pathArray[0]);
+				var val = this.get(pathArray[0]) || {};
 				pathArray.slice(1).forEach(function(pathPiece){
 					val = val[pathPiece];
 				})
