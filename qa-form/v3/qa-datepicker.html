@@ -11,12 +11,13 @@
 			:host {
 				--padding: '16px 16px 0 16px';
 				@apply(--layout-horizontal);
+				--qa-datepicker-color: var(--qa-dark-color);
 			}
 			:host::after {
 				display: none;
 			}
 			.date {
-				background-color: var(--qa-dark-color);
+				background-color: var(--qa-datepicker-color);
 				color: var(--qa-text-color);
 				font-weight: 600;
 				padding: 16px;
@@ -37,7 +38,7 @@
 				padding: var(--calendar-padding, '16px 16px 0 16px');
 			}
 			.calendar .month {
-				color: var(--qa-dark-color);
+				color: var(--qa-datepicker-color);
 			}
 			.calendar .month > div {
 				text-align: center;
@@ -58,10 +59,10 @@
 					min-height: 32px;
 					min-width: 32px;
 				};
-				--paper-button-ink-color: var(--qa-dark-color);
+				--paper-button-ink-color: var(--qa-datepicker-color);
 			}
 			.calendar .round.selected {
-				background-color: var(--qa-dark-color);
+				background-color: var(--qa-datepicker-color);
 				color: var(--qa-light-light-color);
 				font-weight: 600;
 			}
@@ -69,7 +70,7 @@
 				font-size: 14px;
 				font-weight: 600;
 				padding: 0 0 8px 0;
-				color: var(--qa-dark-color);
+				color: var(--qa-datepicker-color);
 				@apply(--layout-horizontal);
 				@apply(--layout-end-justified);
 			}
