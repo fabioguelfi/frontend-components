@@ -54,6 +54,7 @@
 			});
 			form.addEventListener('iron-form-response', function(e) {
 				self.fire('update-task');
+				self.fire('update-current-task');
 				self.close();
 			});
 		},
