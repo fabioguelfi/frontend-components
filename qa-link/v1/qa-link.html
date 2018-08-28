@@ -195,6 +195,7 @@
 				request.send(params)
 				.then(function() {
 					this.fire('update-task');
+					this.fire('update-current-task');
 					this.fire('toast-show', {
 						id: this.toastId,
 						text: link.success || 'Feito'
