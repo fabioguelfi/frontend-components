@@ -72,20 +72,7 @@
 			}
 		},
 		ready: function(event) {
-			host = this.host.replace("http://", "").replace("https://", "");
-			var webSocketAddress = this.protocol + "//" + host + this.route;
-			var notificationEnabled = JSON.parse(this.notificationEnabled || false);
-			if(notificationEnabled) {
-				var pingPeriod = 3000;
-				this.newWebSocket(webSocketAddress, pingPeriod, this.retryPeriod);
-			}
-			if (!Notification) {
-				alert('Desktop notifications not available in your browser. Try Chromium.');
-				return;
-			}
-			if (Notification.permission !== "granted"){
-				Notification.requestPermission();
-			}
+			
 		}
 	});
 	</script>
