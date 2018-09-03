@@ -52,8 +52,8 @@ Polymer(
 
 		$.getJSON(this.getMessagesPath(), function(json, textStatus)
 		{
-			var messages = json.comments;
-			_.map(messages, function(message) {
+			const messages = json.comments || [];
+			messages.map(function(message) {
 				self.push('comments', message);	
 			});
 		});
